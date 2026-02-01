@@ -65,7 +65,58 @@ const GlobalDentalLab = {
     this.initSlider();
     this.initHeaderScroll();
     this.initMobileMenu();
+    this.initParallax();
     this.initScrollAnimations();
+    this.initMagneticButtons();
+  },
+
+  initParallax() {
+    const heroSection = document.getElementById("hero-slider") || document.querySelector("#hero-container section > .absolute.inset-0");
+    if (!heroSection) return;
+
+    window.addEventListener("scroll", () => {
+      const scrollY = window.scrollY;
+      const speed = 0.5;
+      
+      // Target the active slide's background or the static hero background
+      const activeSlideBg = document.querySelector(".slide[style*='opacity: 1'] .bg-cover") || document.querySelector("#hero-container .bg-cover");
+      
+      if (activeSlideBg) {
+         // Simple parallax translation
+         activeSlideBg.style.transform = `translateY(${scrollY * speed}px) scale(1.1)`;
+      }
+      
+      // Parallax for text content (slower/faster for depth)
+      const content = document.querySelector("#hero-container .relative.z-10");
+      if (content) {
+        content.style.transform = `translateY(${scrollY * 0.2}px)`;
+        content.style.opacity = 1 - Math.min(1, scrollY / 700);
+      }
+    });
+  },
+
+  initMagneticButtons() {
+     const buttons = document.querySelectorAll('.btn-primary');
+     buttons.forEach(btn => {
+         btn.addEventListener('mousemove', (e) => {
+             const rect = btn.getBoundingClientRect();
+             const x = e.clientX - rect.left;
+             const y = e.clientY - rect.top;
+             
+             // Calculate distance from center
+             const centerX = rect.width / 2;
+             const centerY = rect.height / 2;
+             
+             const deltaX = (x - centerX) / 8; // Strength
+             const deltaY = (y - centerY) / 8;
+             
+             btn.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+         });
+         
+         btn.addEventListener('mouseleave', () => {
+             btn.style.transform = '';
+         });
+     });
   },
 
   renderHeader() {
