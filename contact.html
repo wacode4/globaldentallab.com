@@ -10,21 +10,21 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://globaldentallab.com/contact.html">
+    <meta property="og:url" content="contact.html">
     <meta property="og:title" content="Contact Us - Get Started with Global Dental Lab">
     <meta property="og:description"
         content="Contact Global Dental Laboratory for dental lab services. Located in Hong Kong and Shenzhen. Call +852 9142 4923 or email info@globaldentallab.com">
-    <meta property="og:image" content="https://globaldentallab.com/images/og-image.jpg">
+    <meta property="og:image" content="images/og-image.jpg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://globaldentallab.com/contact.html">
+    <meta property="twitter:url" content="contact.html">
     <meta property="twitter:title" content="Contact Us - Get Started with Global Dental Lab">
     <meta property="twitter:description"
         content="Contact Global Dental Laboratory for dental lab services. Located in Hong Kong and Shenzhen. Call +852 9142 4923 or email info@globaldentallab.com">
-    <meta property="twitter:image" content="https://globaldentallab.com/images/og-image.jpg">
+    <meta property="twitter:image" content="images/og-image.jpg">
 
-    <link rel="canonical" href="https://globaldentallab.com/contact.html">
+    <link rel="canonical" href="contact.html">
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
@@ -34,7 +34,7 @@
       "mainEntity": {
         "@type": "DentalLaboratory",
         "name": "Global Dental Laboratory",
-        "image": "https://globaldentallab.com/images/logo.png",
+        "image": "images/logo.png",
         "telephone": "+85291424923",
         "email": "info@globaldentallab.com",
         "address": {
@@ -55,8 +55,8 @@
         rel="stylesheet">
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <script data-cfasync="false">
         tailwind.config = {
             theme: {
                 extend: {
@@ -99,7 +99,9 @@
                     <!-- Contact Form -->
                     <div>
                         <h2 class="text-2xl font-bold text-navy mb-6">Send Us a Message</h2>
-                        <form action="#" method="POST" class="space-y-6">
+                        <form id="contactForm" class="space-y-6">
+                            <!-- Form Message -->
+                            <div id="formMessage" class="hidden p-4 rounded-lg text-center font-medium"></div>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="firstName" class="block text-sm font-medium text-navy mb-2">First Name
@@ -434,10 +436,65 @@
 
     <!-- Header & Hero Component -->
     <script src="js/header-hero.js"></script>
+
+    <!-- Contact Form Handler -->
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const messageDiv = document.getElementById('formMessage');
+            const originalBtnText = submitBtn.textContent;
+
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            messageDiv.classList.add('hidden');
+
+            const formData = {
+                firstName: form.firstName.value,
+                lastName: form.lastName.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                clinic: form.clinic.value,
+                service: form.service.value,
+                message: form.message.value
+            };
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                messageDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+
+                if (result.success) {
+                    messageDiv.classList.add('bg-green-100', 'text-green-700');
+                    messageDiv.textContent = result.message;
+                    form.reset();
+                } else {
+                    messageDiv.classList.add('bg-red-100', 'text-red-700');
+                    messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
+                }
+            } catch (error) {
+                messageDiv.classList.remove('hidden');
+                messageDiv.classList.add('bg-red-100', 'text-red-700');
+                messageDiv.textContent = 'Network error. Please check your connection.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            }
+        });
+    </script>
     <script>
         GlobalDentalLab.init({
             heroType: 'static',
-            heroImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80',
+            heroImage: 'images/hero/contact-hero.jpg',
             heroTitle: "Let's Work Together",
             heroSubtitle: 'Ready to experience the Global Dental Lab difference? Get in touch with our team.',
             heroLabel: 'Contact Us',

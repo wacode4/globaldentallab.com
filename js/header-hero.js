@@ -65,13 +65,16 @@ const GlobalDentalLab = {
     this.initSlider();
     this.initHeaderScroll();
     this.initMobileMenu();
+    this.initLanguageSwitcher();
     this.initParallax();
     this.initScrollAnimations();
     this.initMagneticButtons();
   },
 
   initParallax() {
-    const heroSection = document.getElementById("hero-slider") || document.querySelector("#hero-container section > .absolute.inset-0");
+    const heroSection =
+      document.getElementById("hero-slider") ||
+      document.querySelector("#hero-container section > .absolute.inset-0");
     if (!heroSection) return;
 
     window.addEventListener("scroll", () => {
@@ -79,7 +82,9 @@ const GlobalDentalLab = {
       const speed = 0.5;
 
       // Target the active slide's background or the static hero background
-      const activeSlideBg = document.querySelector(".slide[style*='opacity: 1'] .bg-cover") || document.querySelector("#hero-container .bg-cover");
+      const activeSlideBg =
+        document.querySelector(".slide[style*='opacity: 1'] .bg-cover") ||
+        document.querySelector("#hero-container .bg-cover");
 
       if (activeSlideBg) {
         // Simple parallax translation
@@ -96,9 +101,9 @@ const GlobalDentalLab = {
   },
 
   initMagneticButtons() {
-    const buttons = document.querySelectorAll('.btn-primary');
-    buttons.forEach(btn => {
-      btn.addEventListener('mousemove', (e) => {
+    const buttons = document.querySelectorAll(".btn-primary");
+    buttons.forEach((btn) => {
+      btn.addEventListener("mousemove", (e) => {
         const rect = btn.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -113,8 +118,8 @@ const GlobalDentalLab = {
         btn.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
       });
 
-      btn.addEventListener('mouseleave', () => {
-        btn.style.transform = '';
+      btn.addEventListener("mouseleave", () => {
+        btn.style.transform = "";
       });
     });
   },
@@ -142,8 +147,47 @@ const GlobalDentalLab = {
               ${this.renderNavItems()}
             </nav>
 
-            <!-- CTA Buttons -->
+            <!-- Language Switcher & CTA Buttons -->
             <div class="hidden lg:flex items-center gap-3">
+              <!-- Language Dropdown -->
+              <div class="relative" id="lang-dropdown">
+                <button id="lang-btn" class="flex items-center gap-1 px-3 py-2 text-white/80 hover:text-white transition-colors cursor-pointer">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+                    <path stroke-width="1.5" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                  <span class="text-xs font-medium" id="current-lang">EN</span>
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div id="lang-menu" class="hidden absolute right-0 top-full mt-2 bg-white rounded-lg shadow-xl py-2 min-w-[160px] z-50">
+                  <a href="?lang=en" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇬🇧</span> English
+                  </a>
+                  <a href="?lang=fr" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇫🇷</span> Français
+                  </a>
+                  <a href="?lang=de" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇩🇪</span> Deutsch
+                  </a>
+                  <a href="?lang=it" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇮🇹</span> Italiano
+                  </a>
+                  <a href="?lang=es" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇪🇸</span> Español
+                  </a>
+                  <a href="?lang=pt" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇵🇹</span> Português
+                  </a>
+                  <a href="?lang=ar" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇸🇦</span> العربية
+                  </a>
+                  <a href="?lang=he" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <span class="w-6 text-center">🇮🇱</span> עברית
+                  </a>
+                </div>
+              </div>
               <a href="tel:+85291424923" class="flex items-center gap-2 px-4 py-2 border border-white/30 rounded text-[13px] text-white font-semibold hover:bg-white/10 transition-colors duration-200 cursor-pointer header-btn whitespace-nowrap">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
@@ -189,6 +233,20 @@ const GlobalDentalLab = {
               <a href="contact.html" class="block mt-3 bg-primary text-white text-center py-3 rounded font-semibold cursor-pointer">
                 Get Started
               </a>
+              <!-- Mobile Language Selector -->
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Language</p>
+                <div class="grid grid-cols-4 gap-2">
+                  <a href="?lang=en" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇬🇧 EN</a>
+                  <a href="?lang=fr" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇫🇷 FR</a>
+                  <a href="?lang=de" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇩🇪 DE</a>
+                  <a href="?lang=it" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇮🇹 IT</a>
+                  <a href="?lang=es" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇪🇸 ES</a>
+                  <a href="?lang=pt" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇵🇹 PT</a>
+                  <a href="?lang=ar" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇸🇦 AR</a>
+                  <a href="?lang=he" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇮🇱 HE</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -262,12 +320,12 @@ const GlobalDentalLab = {
             <div class="absolute top-full ${item.label === "Contact" ? "right-0" : "left-0"} pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
               <div class="bg-white rounded-lg shadow-2xl py-3 min-w-[220px]">
                 ${item.dropdownItems
-              .map(
-                (sub) => `
+                  .map(
+                    (sub) => `
                   <a href="${sub.href}" class="block px-5 py-3 hover:bg-gray-50 text-navy hover:text-primary cursor-pointer transition-colors duration-200">${sub.label}</a>
                 `,
-              )
-              .join("")}
+                  )
+                  .join("")}
               </div>
             </div>
           </div>
@@ -316,12 +374,12 @@ const GlobalDentalLab = {
       ? `
       <div class="absolute bottom-10 left-10 lg:left-24 z-20 flex gap-3">
         ${slides
-        .map(
-          (_, index) => `
+          .map(
+            (_, index) => `
           <button class="slider-dot w-3 h-3 rounded-full ${index === 0 ? "bg-primary active" : "bg-white/30"} hover:bg-white transition-all duration-200 cursor-pointer" data-slide="${index}" aria-label="Slide ${index + 1}"></button>
         `,
-        )
-        .join("")}
+          )
+          .join("")}
       </div>
     `
       : "";
@@ -410,7 +468,7 @@ const GlobalDentalLab = {
     const ctasHTML = this.config.heroCTAs
       .map((cta) => {
         // Return solid primary or white outline - EXACTLY matching homepage buttons
-        if (cta.style === 'primary') {
+        if (cta.style === "primary") {
           return `
             <a href="${cta.href}" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
               ${cta.text}
@@ -607,6 +665,54 @@ const GlobalDentalLab = {
         mobileMenu.classList.toggle("hidden");
       });
     }
+  },
+
+  initLanguageSwitcher() {
+    const langBtn = document.getElementById("lang-btn");
+    const langMenu = document.getElementById("lang-menu");
+    const currentLang = document.getElementById("current-lang");
+
+    if (!langBtn || !langMenu) return;
+
+    // Language code to display mapping
+    const langMap = {
+      en: "EN",
+      fr: "FR",
+      de: "DE",
+      it: "IT",
+      es: "ES",
+      pt: "PT",
+      ar: "AR",
+      he: "HE",
+    };
+
+    // Get current language from URL or localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const savedLang =
+      urlParams.get("lang") || localStorage.getItem("gdl-lang") || "en";
+    if (currentLang) currentLang.textContent = langMap[savedLang] || "EN";
+    if (savedLang !== "en") localStorage.setItem("gdl-lang", savedLang);
+
+    // Toggle dropdown
+    langBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      langMenu.classList.toggle("hidden");
+    });
+
+    // Close on outside click
+    document.addEventListener("click", () => {
+      langMenu.classList.add("hidden");
+    });
+
+    // Prevent menu clicks from closing
+    langMenu.addEventListener("click", (e) => {
+      const lang = new URL(e.target.href, window.location).searchParams.get(
+        "lang",
+      );
+      if (lang) {
+        localStorage.setItem("gdl-lang", lang);
+      }
+    });
   },
 
   initScrollAnimations() {

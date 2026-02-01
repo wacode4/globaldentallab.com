@@ -1,0 +1,8 @@
+name = "globaldentallab"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "globaldentallab-db"
+database_id = "00b4f3a6-ca31-4a3e-a0b8-c9a4419b43b1"
