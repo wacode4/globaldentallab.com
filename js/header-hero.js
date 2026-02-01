@@ -77,15 +77,15 @@ const GlobalDentalLab = {
     window.addEventListener("scroll", () => {
       const scrollY = window.scrollY;
       const speed = 0.5;
-      
+
       // Target the active slide's background or the static hero background
       const activeSlideBg = document.querySelector(".slide[style*='opacity: 1'] .bg-cover") || document.querySelector("#hero-container .bg-cover");
-      
+
       if (activeSlideBg) {
-         // Simple parallax translation
-         activeSlideBg.style.transform = `translateY(${scrollY * speed}px) scale(1.1)`;
+        // Simple parallax translation
+        activeSlideBg.style.transform = `translateY(${scrollY * speed}px) scale(1.1)`;
       }
-      
+
       // Parallax for text content (slower/faster for depth)
       const content = document.querySelector("#hero-container .relative.z-10");
       if (content) {
@@ -96,27 +96,27 @@ const GlobalDentalLab = {
   },
 
   initMagneticButtons() {
-     const buttons = document.querySelectorAll('.btn-primary');
-     buttons.forEach(btn => {
-         btn.addEventListener('mousemove', (e) => {
-             const rect = btn.getBoundingClientRect();
-             const x = e.clientX - rect.left;
-             const y = e.clientY - rect.top;
-             
-             // Calculate distance from center
-             const centerX = rect.width / 2;
-             const centerY = rect.height / 2;
-             
-             const deltaX = (x - centerX) / 8; // Strength
-             const deltaY = (y - centerY) / 8;
-             
-             btn.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-         });
-         
-         btn.addEventListener('mouseleave', () => {
-             btn.style.transform = '';
-         });
-     });
+    const buttons = document.querySelectorAll('.btn-primary');
+    buttons.forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Calculate distance from center
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const deltaX = (x - centerX) / 8; // Strength
+        const deltaY = (y - centerY) / 8;
+
+        btn.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
   },
 
   renderHeader() {
@@ -262,12 +262,12 @@ const GlobalDentalLab = {
             <div class="absolute top-full ${item.label === "Contact" ? "right-0" : "left-0"} pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
               <div class="bg-white rounded-lg shadow-2xl py-3 min-w-[220px]">
                 ${item.dropdownItems
-                  .map(
-                    (sub) => `
+              .map(
+                (sub) => `
                   <a href="${sub.href}" class="block px-5 py-3 hover:bg-gray-50 text-navy hover:text-primary cursor-pointer transition-colors duration-200">${sub.label}</a>
                 `,
-                  )
-                  .join("")}
+              )
+              .join("")}
               </div>
             </div>
           </div>
@@ -305,7 +305,8 @@ const GlobalDentalLab = {
         (slide, index) => `
       <div class="slide absolute inset-0 ${index === 0 ? "opacity-100" : "opacity-0"} transition-opacity duration-1000" data-slide="${index}">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${slide.image}');"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-navy/80 via-navy/50 to-transparent"></div>
+        <!-- Gradient Overlay: Navy on left, transparent on right -->
+        <div class="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/70 to-transparent"></div>
       </div>
     `,
       )
@@ -313,38 +314,81 @@ const GlobalDentalLab = {
 
     const dotsHTML = this.config.showSliderDots
       ? `
-      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex gap-3">
+      <div class="absolute bottom-10 left-10 lg:left-24 z-20 flex gap-3">
         ${slides
-          .map(
-            (_, index) => `
-          <button class="slider-dot w-3 h-3 rounded-full ${index === 0 ? "bg-white active" : "bg-white/50"} hover:bg-white transition-all duration-200 cursor-pointer" data-slide="${index}" aria-label="Slide ${index + 1}"></button>
+        .map(
+          (_, index) => `
+          <button class="slider-dot w-3 h-3 rounded-full ${index === 0 ? "bg-primary active" : "bg-white/30"} hover:bg-white transition-all duration-200 cursor-pointer" data-slide="${index}" aria-label="Slide ${index + 1}"></button>
         `,
-          )
-          .join("")}
+        )
+        .join("")}
       </div>
     `
       : "";
 
+    // Left-aligned content structure
+    // Added overflow-hidden to section to prevent background bleeding
     return `
-      <section class="relative min-h-screen">
+      <section class="relative min-h-[85vh] flex items-center overflow-hidden">
         <div id="hero-slider" class="absolute inset-0 z-0">
           ${slidesHTML}
         </div>
 
-        ${this.renderHeroContent(slides[0].title, slides[0].subtitle, true)}
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+             <div class="max-w-3xl fade-up">
+                  <span class="inline-block py-1 px-3 border border-white/20 rounded-sm text-white/80 text-xs font-bold tracking-[0.2em] uppercase mb-6 backdrop-blur-sm">
+                      Premium Dental Restorations
+                  </span>
+                  <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg" style="font-family: 'Albert Sans', sans-serif;">
+                      The Most Trusted <br/>
+                      <span class="text-primary">Dental Lab</span> Partner
+                  </h1>
+                  <p class="text-xl text-gray-200 mb-10 max-w-2xl leading-relaxed font-light drop-shadow-md">
+                      Combining <strong>artistic craftsmanship</strong> with <strong>digital precision</strong>. 
+                      Global Dental Lab delivers consistent, high-quality results for dentists locally and globally.
+                  </p>
+                  
+                  <div class="flex flex-col sm:flex-row gap-5">
+                      <a href="contact.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
+                          Send a Case
+                      </a>
+                      <a href="services.html" class="btn-secondary inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-white hover:bg-white hover:text-navy rounded-sm">
+                          Explore Services
+                      </a>
+                  </div>
+
+                  <!-- Trust Badges -->
+                  <div class="mt-16 flex items-center gap-8 opacity-90">
+                      <div class="flex flex-col border-l-2 border-primary pl-4">
+                          <span class="text-3xl font-bold text-white leading-none">10+</span>
+                          <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Years Exp</span>
+                      </div>
+                      <div class="flex flex-col border-l-2 border-primary pl-4">
+                          <span class="text-3xl font-bold text-white leading-none">ISO</span>
+                          <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Certified</span>
+                      </div>
+                      <div class="flex flex-col border-l-2 border-primary pl-4">
+                          <span class="text-3xl font-bold text-white leading-none">FDA</span>
+                          <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Registered</span>
+                      </div>
+                  </div>
+             </div>
+        </div>
         ${dotsHTML}
       </section>
     `;
   },
 
   renderStaticHero(fullHeight) {
-    const heightClass = fullHeight ? "min-h-screen" : "min-h-[60vh]";
+    // UPDATED: Standardized height to min-h-[85vh] for consistency with homepage
+    const heightClass = fullHeight ? "min-h-[85vh]" : "min-h-[60vh]";
     const image = this.config.heroImage;
     const title = this.config.heroTitle;
     const subtitle = this.config.heroSubtitle;
 
+    // Added overflow-hidden
     return `
-      <section class="relative ${heightClass}">
+      <section class="relative ${heightClass} overflow-hidden">
         <div class="absolute inset-0 z-0">
           <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${image}');"></div>
           <div class="absolute inset-0 bg-gradient-to-r from-navy/80 via-navy/50 to-transparent"></div>
@@ -357,64 +401,63 @@ const GlobalDentalLab = {
 
   renderHeroContent(title, subtitle, fullHeight) {
     const paddingClass = fullHeight ? "py-32" : "py-24 pt-32";
+
+    // Updated typography classes to completely match homepage
     const titleSizeClass = fullHeight
-      ? "text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
-      : "text-4xl md:text-5xl lg:text-6xl";
+      ? "text-5xl md:text-7xl"
+      : "text-4xl md:text-6xl";
 
     const ctasHTML = this.config.heroCTAs
       .map((cta) => {
-        const styleClass =
-          cta.style === "white"
-            ? "bg-white text-navy shadow-lg hover:shadow-xl"
-            : "bg-primary hover:bg-primary-dark text-white shadow-lg";
-        return `
-        <a href="${cta.href}" class="btn-primary inline-flex items-center justify-center ${styleClass} px-8 py-4 rounded font-bold text-lg cursor-pointer">
-          ${cta.text}
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-          </svg>
-        </a>
-      `;
+        // Return solid primary or white outline - EXACTLY matching homepage buttons
+        if (cta.style === 'primary') {
+          return `
+            <a href="${cta.href}" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
+              ${cta.text}
+            </a>`;
+        } else {
+          return `
+            <a href="${cta.href}" class="btn-secondary inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-white hover:bg-white hover:text-navy rounded-sm">
+              ${cta.text}
+            </a>`;
+        }
       })
       .join("");
 
     const trustBadgesHTML = this.config.showTrustBadges
       ? `
-      <div class="mt-12 flex flex-wrap items-center gap-6 fade-up fade-up-delay-4">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span class="text-white/80 text-sm font-medium">CE Certified</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span class="text-white/80 text-sm font-medium">ISO 13485</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span class="text-white/80 text-sm font-medium">FDA Approved</span>
-        </div>
+      <div class="mt-16 flex items-center gap-8 opacity-90 fade-up fade-up-delay-3">
+          <div class="flex flex-col border-l-2 border-primary pl-4">
+              <span class="text-3xl font-bold text-white leading-none">10+</span>
+              <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Years Exp</span>
+          </div>
+          <div class="flex flex-col border-l-2 border-primary pl-4">
+              <span class="text-3xl font-bold text-white leading-none">ISO</span>
+              <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Certified</span>
+          </div>
+          <div class="flex flex-col border-l-2 border-primary pl-4">
+              <span class="text-3xl font-bold text-white leading-none">FDA</span>
+              <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Registered</span>
+          </div>
       </div>
     `
       : "";
 
     return `
-      <div class="relative z-10 ${fullHeight ? "min-h-screen" : ""} flex items-center">
+      <div class="relative z-10 ${fullHeight ? "min-h-[85vh]" : ""} flex items-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${paddingClass}">
           <div class="max-w-3xl">
-            ${this.config.heroLabel ? `<p class="text-accent font-semibold tracking-[0.2em] uppercase text-sm mb-4 fade-up">${this.config.heroLabel}</p>` : ""}
-            <h1 class="hero-title ${titleSizeClass} font-bold text-white leading-[1.1] mb-6 fade-up fade-up-delay-1 font-heading" style="font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;">
+            ${this.config.heroLabel ? `<span class="inline-block py-1 px-3 border border-white/20 rounded-sm text-white/80 text-xs font-bold tracking-[0.2em] uppercase mb-6 backdrop-blur-sm fade-up">${this.config.heroLabel}</span>` : ""}
+            
+            <h1 class="hero-title ${titleSizeClass} font-extrabold text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg fade-up fade-up-delay-1" style="font-family: 'Albert Sans', sans-serif;">
               ${title}
             </h1>
-            <p class="hero-subtitle text-xl md:text-2xl lg:text-3xl text-white/90 mb-10 leading-relaxed font-light max-w-xl fade-up fade-up-delay-2">
+            
+            <p class="hero-subtitle text-xl text-gray-200 mb-10 max-w-2xl leading-relaxed font-light drop-shadow-md fade-up fade-up-delay-2">
               ${subtitle}
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 fade-up fade-up-delay-3">
+            
+            <div class="flex flex-col sm:flex-row gap-5 fade-up fade-up-delay-3">
               ${ctasHTML}
             </div>
             ${trustBadgesHTML}
@@ -590,7 +633,8 @@ const GlobalDentalLab = {
       document.querySelectorAll("section .fade-up").forEach((el) => {
         if (
           el.closest("section")?.classList.contains("min-h-screen") ||
-          el.closest("section")?.classList.contains("min-h-[60vh]")
+          el.closest("section")?.classList.contains("min-h-[60vh]") ||
+          el.closest("section")?.classList.contains("min-h-[85vh]")
         ) {
           el.classList.add("visible");
         }

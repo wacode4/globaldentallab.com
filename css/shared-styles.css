@@ -7,18 +7,20 @@
 /* Using !important to override Tailwind preflight resets */
 body,
 html {
-  font-family: "Montserrat", sans-serif !important;
+  font-family: "Inter", sans-serif !important;
   font-weight: 400;
   font-size: 16px;
-  line-height: 2;
+  line-height: 1.6;
+  color: #001B39;
+  /* Navy */
 }
 
-/* Force Montserrat on all elements as base */
-body *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
-  font-family: inherit;
+/* Force Inter on all elements as base */
+body *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(.heading-font) {
+  font-family: "Inter", sans-serif !important;
 }
 
-/* Headings - Open Sans Condensed (Keating style) */
+/* Headings - Albert Sans (Keating style) */
 h1,
 h2,
 h3,
@@ -26,183 +28,103 @@ h4,
 h5,
 h6,
 .heading-font {
-  font-family: "Open Sans Condensed", "Open Sans", sans-serif !important;
-  font-weight: 700 !important;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  font-family: "Albert Sans", sans-serif !important;
+  font-weight: 800 !important;
+  color: #001B39;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 42px;
-  line-height: 1.2;
+  font-size: 56px;
+  /* Larger, bolder */
 }
 
 h2 {
   font-size: 42px;
-  line-height: 1.2;
 }
 
 h3 {
-  font-size: 26px;
-  line-height: 1.4;
-}
-
-h4 {
-  font-size: 20px;
-  line-height: 1.5;
-}
-
-h5 {
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 28px;
 }
 
 /* Navigation font */
 .nav-link,
 nav a,
 header a {
-  font-family: "Montserrat", sans-serif !important;
+  font-family: "Inter", sans-serif !important;
   font-weight: 600;
   text-transform: uppercase;
+  font-size: 14px;
   letter-spacing: 0.05em;
+  color: #001B39;
 }
 
-/* Button font */
+/* Button font & Styles */
 .btn-primary,
 button,
 .button,
 a.btn-primary {
-  font-family: "Montserrat", sans-serif !important;
+  font-family: "Inter", sans-serif !important;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  border-radius: 3px !important;
+  /* Keating Rectangular Style */
 }
 
-/* Body text paragraphs */
-p,
-li,
-span:not(.heading-font),
-label,
-input,
-textarea,
-select {
-  font-family: "Montserrat", sans-serif !important;
-  font-weight: 400;
-}
-
-/* Strong/bold text */
-strong,
-b {
-  font-weight: 600;
-}
-
-/* Responsive typography */
-@media (max-width: 768px) {
-  h1 {
-    font-size: 36px;
-  }
-  h2 {
-    font-size: 32px;
-  }
-  h3 {
-    font-size: 22px;
-  }
-}
-
-/* Slider styles */
-.slide {
-  transition: opacity 1.2s ease-in-out;
-}
-.slide::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(34, 34, 34, 0.85) 0%,
-    rgba(34, 34, 34, 0.4) 50%,
-    transparent 100%
-  );
-}
-.slider-dot {
-  transition: all 0.3s ease;
-}
-.slider-dot.active {
-  background-color: white !important;
-  transform: scale(1.3);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-/* Header transition */
-#main-header {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-#main-header.scrolled {
-  backdrop-filter: blur(12px);
-}
-
-/* Navigation link hover underline */
-.nav-link {
-  position: relative;
-}
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: currentColor;
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-}
-.nav-link:hover::after {
-  width: 80%;
-}
-
-/* Button hover effects */
+/* Base Button Styles */
 .btn-primary {
-  position: relative;
-  overflow: hidden;
+  background-color: #0083C9;
+  color: white;
   transition: all 0.3s ease;
-}
-.btn-primary::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-.btn-primary:hover::before {
-  left: 100%;
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  border: 2px solid #0083C9;
 }
 
-/* Service card hover */
-.service-card {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.btn-primary:hover {
+  background-color: #006BA6;
+  border-color: #006BA6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 131, 201, 0.3);
 }
+
+.btn-secondary {
+  background-color: transparent;
+  color: #001B39;
+  border: 2px solid #ffffff;
+  /* Typically on image bg */
+  border-radius: 3px;
+  font-family: "Inter", sans-serif !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: white;
+  color: #001B39;
+  transform: translateY(-2px);
+}
+
+/* Service card hover (Updated for new solid style) */
+.service-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 4px;
+  /* Less rounded */
+}
+
 .service-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
+
 .service-card .icon-wrapper {
   transition: all 0.4s ease;
 }
+
 .service-card:hover .icon-wrapper {
-  transform: scale(1.1) rotate(-5deg);
-  background-color: rgba(46, 149, 165, 0.2);
+  /* Subtle effect */
+  transform: scale(1.05);
 }
 
 /* Scroll animations */
@@ -211,25 +133,32 @@ b {
   transform: translateY(30px);
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .fade-up.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
 .fade-up-delay-1 {
   transition-delay: 0.1s;
 }
+
 .fade-up-delay-2 {
   transition-delay: 0.2s;
 }
+
 .fade-up-delay-3 {
   transition-delay: 0.3s;
 }
+
 .fade-up-delay-4 {
   transition-delay: 0.4s;
 }
+
 .fade-up-delay-5 {
   transition-delay: 0.5s;
 }
+
 .fade-up-delay-6 {
   transition-delay: 0.6s;
 }
@@ -246,6 +175,7 @@ b {
 .testimonial-card {
   position: relative;
 }
+
 .testimonial-card::before {
   content: '"';
   position: absolute;
@@ -270,27 +200,25 @@ b {
 .hero-title {
   text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
+
 .hero-subtitle {
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Certification badges */
 .cert-badge {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%);
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
+
 .cert-badge:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.08) 100%);
   transform: translateY(-2px);
 }
 
@@ -303,13 +231,16 @@ b {
 .product-card {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .product-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
+
 .product-card img {
   transition: transform 0.5s ease;
 }
+
 .product-card:hover img {
   transform: scale(1.05);
 }
@@ -318,6 +249,7 @@ b {
 .breadcrumb a {
   transition: color 0.2s ease;
 }
+
 .breadcrumb a:hover {
   color: #2e95a5;
 }
@@ -328,6 +260,7 @@ b {
   align-items: flex-start;
   gap: 0.75rem;
 }
+
 .feature-check::before {
   content: "";
   flex-shrink: 0;
@@ -344,9 +277,11 @@ b {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
+
   .slide {
     transition: none;
   }
+
   .fade-up {
     opacity: 1;
     transform: none;
@@ -372,8 +307,13 @@ b {
 
 /* Shimmer Effect for Buttons */
 @keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 .btn-shimmer {
@@ -388,12 +328,10 @@ b {
   left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%);
   transform: skewX(-25deg);
   animation: shimmer 3s infinite;
 }
@@ -410,8 +348,10 @@ b {
 
 /* Parallax Background Class (JS handled, but base style here) */
 .parallax-bg {
-  transform: scale(1.1); /* Slight Zoom for parallax room */
-  transition: transform 0.1s linear; /* Smooth update */
+  transform: scale(1.1);
+  /* Slight Zoom for parallax room */
+  transition: transform 0.1s linear;
+  /* Smooth update */
   will-change: transform;
 }
 

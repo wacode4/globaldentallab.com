@@ -46,11 +46,11 @@
     }
     </script>
 
-    <!-- Google Fonts - Matching Keating Style (Load BEFORE Tailwind) -->
+    <!-- Google Fonts - Keating Style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
 
     <!-- Tailwind CSS -->
@@ -60,19 +60,20 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#2E95A5',
-                        'primary-dark': '#247A87',
-                        accent: '#B0986A',
-                        'accent-dark': '#9A8459',
-                        navy: '#222222',
-                        'navy-light': '#3a3a3a',
+                        primary: '#0083C9', /* Bright Blue like Keating */
+                        'primary-dark': '#006BA6',
+                        accent: '#E6B00F', /* Gold accent */
+                        navy: '#001B39', /* Deep Navy */
+                        'navy-light': '#0D2C52',
+                        'navy-transparent': 'rgba(0, 27, 57, 0.9)',
                     },
                     fontFamily: {
-                        'sans': ['Montserrat', 'sans-serif'],
-                        'body': ['Montserrat', 'sans-serif'],
-                        'heading': ['"Open Sans Condensed"', '"Open Sans"', 'sans-serif'],
-                        'montserrat': ['Montserrat', 'sans-serif'],
-                        'condensed': ['"Open Sans Condensed"', '"Open Sans"', 'sans-serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                        'heading': ['"Albert Sans"', 'sans-serif'],
+                        'body': ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'keating': '3px',
                     }
                 }
             }
@@ -457,7 +458,7 @@
             heroType: 'static',
             heroImage: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&q=80',
             heroTitle: 'A Decade of Excellence in<br>Dental Craftsmanship',
-            heroSubtitle: 'Combining artistic craftsmanship with cutting-edge technology',
+            heroSubtitle: 'Combining artistic craftsmanship with cutting-edge technology for superior results.',
             heroLabel: 'About Us',
             heroCTAs: [
                 { text: 'OUR SERVICES', href: 'services.html', style: 'white' },
