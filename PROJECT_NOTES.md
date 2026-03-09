@@ -4,6 +4,30 @@
 
 重新设计 Global Dental Lab (globaldentallab.com) 网站，参考 Keating Dental Lab (keatingdentallab.com) 的设计风格和页面模块。
 
+## 2026-03-09 Migration And Ops Update
+
+### Current Direction
+
+- 项目已从单纯品牌展示站，转向承接旧站内容结构的外包牙科技工所站点
+- 第一批迁移页面已上线测试环境：
+  - `index.html`
+  - `services.html`
+  - `downloads.html`
+  - `send-a-case.html`
+  - `certificates.html`
+- 新增若干占位或补链页面，避免新导航和分类页出现死链
+
+### Important Operational Lessons
+
+- 服务器 `git pull` 成功，不代表浏览器一定马上显示最新样式
+- 这次已确认 Cloudflare 或浏览器缓存会导致“看起来没更新”的假象
+- 共享 CSS/JS 现在已经加版本号参数，后续修改共享资源时要同步升级版本号
+
+### Reference Docs
+
+- 迁移清单：`MIGRATION_CHECKLIST.md`
+- 部署与缓存处理：`DEPLOYMENT.md`
+
 ## Client Information - Global Dental Lab
 
 ### Company Details
@@ -258,6 +282,16 @@
 ---
 
 ## Technical Notes
+
+## Deployment
+
+### Test Environment
+
+- Update test site:
+
+```bash
+ssh root@74.207.245.85 "cd /var/www/html/globaldentallab.com/test && git pull"
+```
 
 ### Tech Stack
 
