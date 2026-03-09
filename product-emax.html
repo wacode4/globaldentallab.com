@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPS e.max Lithium Disilicate - Global Dental Lab</title>
+    <meta name="description"
+        content="IPS e.max lithium disilicate restorations for high-aesthetic anterior and posterior cases at Global Dental Lab.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <script data-cfasync="false">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0083C9',
+                        'primary-dark': '#006BA6',
+                        accent: '#E6B00F',
+                        navy: '#001B39',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/shared-styles.css">
+</head>
+
+<body class="bg-white font-body" style="font-family: 'Montserrat', sans-serif; line-height: 2;">
+    <div id="header-container"></div>
+    <div id="hero-container"></div>
+    <main>
+        <div class="bg-gray-50 py-4 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="breadcrumb flex items-center gap-2 text-sm text-gray-600">
+                    <a href="index.html" class="hover:text-primary">Home</a>
+                    <span>/</span>
+                    <a href="services.html" class="hover:text-primary">Products</a>
+                    <span>/</span>
+                    <a href="category-ceramics.html" class="hover:text-primary">All Ceramics</a>
+                    <span>/</span>
+                    <span class="text-navy font-medium">IPS e.max Lithium Disilicate</span>
+                </nav>
+            </div>
+        </div>
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-16">
+                    <div class="fade-up">
+                        <div class="rounded-2xl overflow-hidden shadow-lg">
+                            <img src="images/content/dental-lab-1.jpg" alt="IPS e.max lithium disilicate" class="w-full h-auto">
+                        </div>
+                    </div>
+                    <div class="fade-up fade-up-delay-1">
+                        <span class="inline-block bg-accent/10 text-accent text-sm font-semibold px-4 py-1.5 rounded-full mb-4">Premium Ceramic</span>
+                        <h1 class="text-3xl md:text-4xl font-bold text-navy mb-4">IPS e.max Lithium Disilicate</h1>
+                        <p class="text-xl text-gray-600 mb-6">Aesthetic ceramic restorations with strong translucency and predictable digital production support.</p>
+                        <p class="text-gray-600 mb-8">Use this option where esthetics lead the decision and the case benefits from a more lifelike ceramic presentation than conventional fixed alternatives.</p>
+                        <div class="grid grid-cols-2 gap-4 mb-8">
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <h3 class="font-semibold text-navy mb-2">Best for</h3>
+                                <p class="text-sm text-gray-600">Anterior crowns, veneers, and smile-zone restorations.</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <h3 class="font-semibold text-navy mb-2">Workflow</h3>
+                                <p class="text-sm text-gray-600">Digital design paired with ceramic-focused finishing.</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <h3 class="font-semibold text-navy mb-2">Strength</h3>
+                                <p class="text-sm text-gray-600">Balanced for esthetics and routine fixed use.</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <h3 class="font-semibold text-navy mb-2">Submission</h3>
+                                <p class="text-sm text-gray-600">Works well with digital files or guided prep instructions.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="send-a-case.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-lg font-bold text-lg">Send Case</a>
+                            <a href="downloads.html" class="btn-primary inline-flex items-center justify-center border-2 border-primary text-primary px-8 py-4 rounded-lg font-bold text-lg">Preparation Guide</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-navy text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2026 Global Dental Laboratory. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="js/header-hero.js"></script>
+    <script>
+        GlobalDentalLab.init({
+            heroType: 'short',
+            heroImage: 'images/hero/services-hero.jpg',
+            heroTitle: 'IPS e.max<br>Restorations',
+            heroSubtitle: 'A stronger ceramic option for high-visibility restorative cases.',
+            heroLabel: 'Product Detail',
+            heroCTAs: [
+                { text: 'SEND A CASE', href: 'send-a-case.html', style: 'white' },
+                { text: 'CERAMICS', href: 'category-ceramics.html', style: 'primary' }
+            ],
+            showTrustBadges: false
+        });
+    </script>
+</body>
+
+</html>

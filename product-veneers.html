@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceramic Veneers - Global Dental Lab</title>
+    <meta name="description" content="Ceramic veneer solutions for smile design and high-aesthetic cases at Global Dental Lab.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/shared-styles.css">
+</head>
+
+<body class="bg-white font-body" style="font-family: 'Montserrat', sans-serif; line-height: 2;">
+    <div id="header-container"></div>
+    <div id="hero-container"></div>
+    <main>
+        <section class="py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
+                <img src="images/content/veneers.jpg" alt="Ceramic veneers" class="rounded-2xl shadow-xl w-full">
+                <div>
+                    <span class="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4">Smile Esthetics</span>
+                    <h1 class="text-3xl md:text-4xl font-bold text-navy mb-4">Ceramic Veneers</h1>
+                    <p class="text-xl text-gray-600 mb-6">Ultra-thin ceramic veneer workflows for smile makeovers and conservative esthetic restorative planning.</p>
+                    <p class="text-gray-600 mb-8">This product detail page fills the last broken ceramic link inside the existing category grid and gives veneer-focused cases a direct destination.</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="send-a-case.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-lg font-bold text-lg">Send Case</a>
+                        <a href="category-ceramics.html" class="btn-primary inline-flex items-center justify-center border-2 border-primary text-primary px-8 py-4 rounded-lg font-bold text-lg">Back To Ceramics</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-navy text-white py-16"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm"><p>&copy; 2026 Global Dental Laboratory. All rights reserved.</p></div></footer>
+    <script src="js/header-hero.js"></script>
+    <script>
+        GlobalDentalLab.init({
+            heroType: 'short',
+            heroImage: 'images/hero/services-hero.jpg',
+            heroTitle: 'Ceramic<br>Veneers',
+            heroSubtitle: 'Veneer-focused esthetic workflows for digitally guided smile cases.',
+            heroLabel: 'Product Detail',
+            heroCTAs: [
+                { text: 'SEND A CASE', href: 'send-a-case.html', style: 'white' },
+                { text: 'CERAMICS', href: 'category-ceramics.html', style: 'primary' }
+            ],
+            showTrustBadges: false
+        });
+    </script>
+</body>
+
+</html>

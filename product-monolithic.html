@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monolithic Zirconia - Global Dental Lab</title>
+    <meta name="description"
+        content="Monolithic zirconia restorations for high-strength posterior and durability-focused cases from Global Dental Lab.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <script data-cfasync="false">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0083C9',
+                        'primary-dark': '#006BA6',
+                        accent: '#E6B00F',
+                        navy: '#001B39',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/shared-styles.css">
+</head>
+
+<body class="bg-white font-body" style="font-family: 'Montserrat', sans-serif; line-height: 2;">
+    <div id="header-container"></div>
+    <div id="hero-container"></div>
+    <main>
+        <div class="bg-gray-50 py-4 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="breadcrumb flex items-center gap-2 text-sm text-gray-600">
+                    <a href="index.html" class="hover:text-primary">Home</a>
+                    <span>/</span>
+                    <a href="services.html" class="hover:text-primary">Products</a>
+                    <span>/</span>
+                    <a href="category-ceramics.html" class="hover:text-primary">All Ceramics</a>
+                    <span>/</span>
+                    <span class="text-navy font-medium">Monolithic Zirconia</span>
+                </nav>
+            </div>
+        </div>
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-16">
+                    <div class="fade-up">
+                        <div class="rounded-2xl overflow-hidden shadow-lg">
+                            <img src="images/content/dental-lab-3.jpg" alt="Monolithic zirconia" class="w-full h-auto">
+                        </div>
+                    </div>
+                    <div class="fade-up fade-up-delay-1">
+                        <span class="inline-block bg-gray-100 text-gray-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">High Strength</span>
+                        <h1 class="text-3xl md:text-4xl font-bold text-navy mb-4">Monolithic Zirconia</h1>
+                        <p class="text-xl text-gray-600 mb-6">A durability-first zirconia option for posterior and load-bearing applications.</p>
+                        <p class="text-gray-600 mb-8">This category sits well for clinics that need fewer complications, simplified material choice, and a predictable production route for higher-strength cases.</p>
+                        <div class="space-y-4 mb-8">
+                            <div class="rounded-xl bg-gray-50 p-5"><strong class="text-navy">Use case:</strong> <span class="text-gray-600">Posterior and strength-priority restorations.</span></div>
+                            <div class="rounded-xl bg-gray-50 p-5"><strong class="text-navy">Advantage:</strong> <span class="text-gray-600">Simplified ceramic workflow with strong fracture resistance.</span></div>
+                            <div class="rounded-xl bg-gray-50 p-5"><strong class="text-navy">Submission:</strong> <span class="text-gray-600">Digital scans or conventional impression intake both fit this line.</span></div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="send-a-case.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-lg font-bold text-lg">Submit Case</a>
+                            <a href="category-ceramics.html" class="btn-primary inline-flex items-center justify-center border-2 border-primary text-primary px-8 py-4 rounded-lg font-bold text-lg">Back To Ceramics</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-navy text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2026 Global Dental Laboratory. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="js/header-hero.js"></script>
+    <script>
+        GlobalDentalLab.init({
+            heroType: 'short',
+            heroImage: 'images/hero/services-hero.jpg',
+            heroTitle: 'Monolithic<br>Zirconia',
+            heroSubtitle: 'High-strength zirconia workflows for durability-driven restorative cases.',
+            heroLabel: 'Product Detail',
+            heroCTAs: [
+                { text: 'SEND A CASE', href: 'send-a-case.html', style: 'white' },
+                { text: 'CERAMICS', href: 'category-ceramics.html', style: 'primary' }
+            ],
+            showTrustBadges: false
+        });
+    </script>
+</body>
+
+</html>

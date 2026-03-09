@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Tour - Facility & Workflow | Global Dental Lab</title>
+    <meta name="description" content="Preview the Global Dental Lab production environment, workflow, and team operation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <script data-cfasync="false">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0083C9',
+                        'primary-dark': '#006BA6',
+                        accent: '#E6B00F',
+                        navy: '#001B39',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/shared-styles.css">
+</head>
+
+<body class="bg-white text-navy font-body" style="font-family: 'Montserrat', sans-serif; line-height: 2;">
+    <div id="header-container"></div>
+    <div id="hero-container"></div>
+    <main>
+        <section class="py-20 fade-up">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mb-12">
+                    <p class="text-primary font-medium mb-3 tracking-wide">LAB TOUR</p>
+                    <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">A Preview Of Production, QC, And Digital Workflow</h2>
+                    <p class="text-lg text-gray-600">This is a temporary gallery built from current project assets. It gives the new navigation a working destination while source-site factory imagery is prepared for migration.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <figure class="rounded-2xl overflow-hidden shadow-sm">
+                        <img src="images/content/dental-lab-1.jpg" alt="Dental lab workflow" class="w-full h-72 object-cover">
+                        <figcaption class="p-4 bg-gray-50 text-sm text-gray-600">Production bench workflow</figcaption>
+                    </figure>
+                    <figure class="rounded-2xl overflow-hidden shadow-sm">
+                        <img src="images/content/dental-lab-2.jpg" alt="Ceramic production" class="w-full h-72 object-cover">
+                        <figcaption class="p-4 bg-gray-50 text-sm text-gray-600">Ceramic and esthetic finishing</figcaption>
+                    </figure>
+                    <figure class="rounded-2xl overflow-hidden shadow-sm">
+                        <img src="images/content/dental-lab-3.jpg" alt="Restoration production" class="w-full h-72 object-cover">
+                        <figcaption class="p-4 bg-gray-50 text-sm text-gray-600">Restorative production detail</figcaption>
+                    </figure>
+                    <figure class="rounded-2xl overflow-hidden shadow-sm">
+                        <img src="images/content/quality-control.jpg" alt="Quality control" class="w-full h-72 object-cover">
+                        <figcaption class="p-4 bg-gray-50 text-sm text-gray-600">Quality control and final inspection</figcaption>
+                    </figure>
+                    <figure class="rounded-2xl overflow-hidden shadow-sm">
+                        <img src="images/content/digital-workflow.jpg" alt="Digital workflow" class="w-full h-72 object-cover">
+                        <figcaption class="p-4 bg-gray-50 text-sm text-gray-600">Digital workflow and CAD collaboration</figcaption>
+                    </figure>
+                    <figure class="rounded-2xl overflow-hidden shadow-sm">
+                        <img src="images/hero/about-hero.jpg" alt="Team environment" class="w-full h-72 object-cover">
+                        <figcaption class="p-4 bg-gray-50 text-sm text-gray-600">Team and facility overview</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-navy text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2026 Global Dental Laboratory. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="js/header-hero.js"></script>
+    <script>
+        GlobalDentalLab.init({
+            heroType: 'static',
+            heroImage: 'images/hero/about-hero.jpg',
+            heroTitle: 'Lab Tour &<br>Workflow',
+            heroSubtitle: 'A working gallery while source factory and team photography is migrated.',
+            heroLabel: 'In Progress',
+            heroCTAs: [
+                { text: 'CERTIFICATES', href: 'certificates.html', style: 'white' },
+                { text: 'CONTACT', href: 'contact.html', style: 'primary' }
+            ],
+            showTrustBadges: false
+        });
+    </script>
+</body>
+
+</html>

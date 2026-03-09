@@ -138,7 +138,7 @@ const GlobalDentalLab = {
               </div>
               <div class="hidden md:block">
                 <span class="text-lg font-bold text-white header-text whitespace-nowrap font-heading" style="font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;">Global Dental Lab</span>
-                <span class="block text-[10px] text-white/60 header-subtext whitespace-nowrap tracking-wide">Excellence in Dental Restorations</span>
+                <span class="block text-[10px] text-white/60 header-subtext whitespace-nowrap tracking-wide">Outsourcing Dental Lab Since 2007</span>
               </div>
             </a>
 
@@ -194,8 +194,8 @@ const GlobalDentalLab = {
                 </svg>
                 +852 9142 4923
               </a>
-              <a href="contact.html" class="flex items-center gap-2 px-5 py-2 bg-white text-navy rounded text-[13px] font-bold hover:bg-gray-100 transition-colors duration-200 cursor-pointer whitespace-nowrap uppercase header-cta">
-                Get Started
+              <a href="send-a-case.html" class="flex items-center gap-2 px-5 py-2 bg-white text-navy rounded text-[13px] font-bold hover:bg-gray-100 transition-colors duration-200 cursor-pointer whitespace-nowrap uppercase header-cta">
+                Send A Case
               </a>
             </div>
 
@@ -213,15 +213,21 @@ const GlobalDentalLab = {
           <div class="px-4 py-4 space-y-1">
             <a href="index.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Home</a>
             <div class="border-t border-gray-200 my-2"></div>
-            <p class="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Lab Services</p>
-            <a href="services.html#crowns" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Crown & Bridge</a>
-            <a href="services.html#ceramics" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">All Ceramics & Zirconia</a>
-            <a href="services.html#implants" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Restorations</a>
-            <a href="services.html#removable" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removable Prosthetics</a>
-            <a href="services.html#orthodontics" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontic Appliances</a>
+            <p class="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Products</p>
+            <a href="services.html#cad-veneers" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">CAD Veneers</a>
+            <a href="services.html#ceramics" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">All Ceramics</a>
+            <a href="services.html#implants" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Products</a>
+            <a href="services.html#guides" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Surgical Guides</a>
+            <a href="services.html#pfm" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">PFM & Snap-On Smile</a>
+            <a href="services.html#aligners" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clear Aligners</a>
+            <a href="services.html#removable" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removables</a>
+            <a href="services.html#orthodontics" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontics</a>
             <div class="border-t border-gray-200 my-2"></div>
-            <a href="about.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">About Us</a>
-            <a href="technology.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Technology</a>
+            <a href="materials.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Materials</a>
+            <a href="about.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">About</a>
+            <a href="certificates.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Certificates</a>
+            <a href="downloads.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Downloads</a>
+            <a href="send-a-case.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Send A Case</a>
             <a href="contact.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Contact</a>
             <div class="pt-4 border-t border-gray-200 mt-4">
               <a href="tel:+85291424923" class="flex items-center justify-center gap-2 text-navy py-3 cursor-pointer">
@@ -230,8 +236,8 @@ const GlobalDentalLab = {
                 </svg>
                 +852 9142 4923
               </a>
-              <a href="contact.html" class="block mt-3 bg-primary text-white text-center py-3 rounded font-semibold cursor-pointer">
-                Get Started
+              <a href="send-a-case.html" class="block mt-3 bg-primary text-white text-center py-3 rounded font-semibold cursor-pointer">
+                Send A Case
               </a>
               <!-- Mobile Language Selector -->
               <div class="mt-4 pt-4 border-t border-gray-200">
@@ -264,35 +270,49 @@ const GlobalDentalLab = {
   renderNavItems() {
     const navItems = [
       {
-        label: "Lab Services",
+        label: "Products",
         href: "services.html",
         hasDropdown: true,
         dropdownItems: [
-          { label: "Crown & Bridge", href: "services.html#crowns" },
-          { label: "All Ceramics & Zirconia", href: "services.html#ceramics" },
-          { label: "Implant Restorations", href: "services.html#implants" },
-          { label: "Removable Prosthetics", href: "services.html#removable" },
-          {
-            label: "Orthodontic Appliances",
-            href: "services.html#orthodontics",
-          },
-          { label: "Veneers & Inlays", href: "services.html#veneers" },
+          { label: "CAD Veneers", href: "services.html#cad-veneers" },
+          { label: "All Ceramics", href: "services.html#ceramics" },
+          { label: "Implant Products", href: "services.html#implants" },
+          { label: "Surgical Guides", href: "services.html#guides" },
+          { label: "PFM & Snap-On Smile", href: "services.html#pfm" },
+          { label: "Clear Aligners", href: "services.html#aligners" },
+          { label: "Removables", href: "services.html#removable" },
+          { label: "Orthodontics", href: "services.html#orthodontics" },
         ],
+      },
+      {
+        label: "Materials",
+        href: "materials.html",
+        hasDropdown: false,
       },
       {
         label: "About",
         href: "about.html",
         hasDropdown: true,
         dropdownItems: [
-          { label: "Our Story", href: "about.html" },
-          { label: "Our Team", href: "about.html#team" },
-          { label: "Technology", href: "technology.html" },
+          { label: "About Us", href: "about.html" },
+          { label: "Certificates", href: "certificates.html" },
+          { label: "Lab Tour", href: "lab-tour.html" },
         ],
       },
       {
-        label: "Technology",
-        href: "technology.html",
+        label: "Downloads",
+        href: "downloads.html",
         hasDropdown: false,
+      },
+      {
+        label: "Send A Case",
+        href: "send-a-case.html",
+        hasDropdown: true,
+        dropdownItems: [
+          { label: "Digital Case Submission", href: "send-a-case.html" },
+          { label: "Downloads", href: "downloads.html" },
+          { label: "Contact Intake Team", href: "contact.html" },
+        ],
       },
       {
         label: "Contact",
@@ -395,31 +415,34 @@ const GlobalDentalLab = {
         <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
              <div class="max-w-3xl fade-up">
                   <span class="inline-block py-1 px-3 border border-white/20 rounded-sm text-white/80 text-xs font-bold tracking-[0.2em] uppercase mb-6 backdrop-blur-sm">
-                      Premium Dental Restorations
+                      Outsourcing Dental Lab
                   </span>
                   <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg" style="font-family: 'Albert Sans', sans-serif;">
-                      The Most Trusted <br/>
-                      <span class="text-primary">Dental Lab</span> Partner
+                      Scalable Digital <br/>
+                      <span class="text-primary">Lab Support</span> For Clinics
                   </h1>
                   <p class="text-xl text-gray-200 mb-10 max-w-2xl leading-relaxed font-light drop-shadow-md">
-                      Combining <strong>artistic craftsmanship</strong> with <strong>digital precision</strong>. 
-                      Global Dental Lab delivers consistent, high-quality results for dentists locally and globally.
+                      Global Dental Lab combines digital workflow, fixed and removable restorations, implant expertise, and responsive case support for dentists who need a dependable outsourcing partner.
                   </p>
                   
                   <div class="flex flex-col sm:flex-row gap-5">
-                      <a href="contact.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
+                      <a href="send-a-case.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
                           Send a Case
                       </a>
-                      <a href="services.html" class="btn-secondary inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-white hover:bg-white hover:text-navy rounded-sm">
-                          Explore Services
+                      <a href="downloads.html" class="btn-secondary inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-white hover:bg-white hover:text-navy rounded-sm">
+                          Download RX Forms
                       </a>
                   </div>
 
                   <!-- Trust Badges -->
                   <div class="mt-16 flex items-center gap-8 opacity-90">
                       <div class="flex flex-col border-l-2 border-primary pl-4">
-                          <span class="text-3xl font-bold text-white leading-none">10+</span>
-                          <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Years Exp</span>
+                          <span class="text-3xl font-bold text-white leading-none">2007</span>
+                          <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Founded</span>
+                      </div>
+                      <div class="flex flex-col border-l-2 border-primary pl-4">
+                          <span class="text-3xl font-bold text-white leading-none">268+</span>
+                          <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Technicians</span>
                       </div>
                       <div class="flex flex-col border-l-2 border-primary pl-4">
                           <span class="text-3xl font-bold text-white leading-none">ISO</span>
@@ -486,8 +509,12 @@ const GlobalDentalLab = {
       ? `
       <div class="mt-16 flex items-center gap-8 opacity-90 fade-up fade-up-delay-3">
           <div class="flex flex-col border-l-2 border-primary pl-4">
-              <span class="text-3xl font-bold text-white leading-none">10+</span>
-              <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Years Exp</span>
+              <span class="text-3xl font-bold text-white leading-none">2007</span>
+              <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Founded</span>
+          </div>
+          <div class="flex flex-col border-l-2 border-primary pl-4">
+              <span class="text-3xl font-bold text-white leading-none">268+</span>
+              <span class="text-[10px] text-gray-300 uppercase tracking-wider mt-1">Technicians</span>
           </div>
           <div class="flex flex-col border-l-2 border-primary pl-4">
               <span class="text-3xl font-bold text-white leading-none">ISO</span>
