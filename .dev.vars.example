@@ -1,0 +1,4 @@
+# Copy to `.dev.vars` in a Functions-capable local or preview environment.
+# Do not commit real secrets.
+
+ADMIN_KEY=replace-with-a-real-admin-key

@@ -12,6 +12,12 @@ This document records the deployment workflow, cache behavior, and verification 
 - Contact/subscription backend in `functions/api/`
 - Git-based deployment flow
 
+## Runtime Config Notes
+
+- `ADMIN_KEY` should be provided by the Functions-capable runtime instead of relying on the built-in fallback.
+- A non-secret example is kept in `.dev.vars.example`.
+- Do not commit real runtime secrets into this repo.
+
 ## Main Deployment Flow
 
 1. Make local changes.

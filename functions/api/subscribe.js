@@ -1,14 +1,36 @@
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
-  const headers = {
+function buildHeaders() {
+  return {
     "Access-Control-Allow-Origin": "*",
+    "Cache-Control": "no-store",
     "Content-Type": "application/json",
   };
+}
+
+function normalizeText(value, maxLength) {
+  const stringValue = typeof value === "string" ? value.trim() : "";
+
+  if (!stringValue) {
+    return "";
+  }
+
+  return stringValue.slice(0, maxLength);
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const headers = buildHeaders();
 
   try {
     const data = await request.json();
-    const { email } = data;
+    const email = normalizeText(data.email, 160).toLowerCase();
+    const website = normalizeText(data.website, 255);
+
+    if (website) {
+      return new Response(
+        JSON.stringify({ success: true, message: "Thank you for subscribing!" }),
+        { status: 200, headers },
+      );
+    }
 
     if (!email) {
       return new Response(
@@ -17,7 +39,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return new Response(
@@ -26,7 +47,13 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Check if already subscribed
+    if (!env.DB) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Database is not configured" }),
+        { status: 500, headers },
+      );
+    }
+
     const existing = await env.DB.prepare(
       "SELECT id, status FROM subscriptions WHERE email = ?",
     )
@@ -42,25 +69,23 @@ export async function onRequestPost(context) {
           }),
           { status: 200, headers },
         );
-      } else {
-        // Reactivate subscription
-        await env.DB.prepare(
-          "UPDATE subscriptions SET status = ? WHERE email = ?",
-        )
-          .bind("active", email)
-          .run();
-
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: "Welcome back! Your subscription has been reactivated.",
-          }),
-          { status: 200, headers },
-        );
       }
+
+      await env.DB.prepare(
+        "UPDATE subscriptions SET status = ? WHERE email = ?",
+      )
+        .bind("active", email)
+        .run();
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Welcome back! Your subscription has been reactivated.",
+        }),
+        { status: 200, headers },
+      );
     }
 
-    // Insert new subscription
     await env.DB.prepare("INSERT INTO subscriptions (email) VALUES (?)")
       .bind(email)
       .run();
@@ -84,7 +109,7 @@ export async function onRequestPost(context) {
 export async function onRequestOptions() {
   return new Response(null, {
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      ...buildHeaders(),
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
