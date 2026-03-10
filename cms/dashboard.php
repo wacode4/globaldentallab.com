@@ -8,6 +8,8 @@ cms_require_login();
 $inquiryCount = (int) cms_db()->query('SELECT COUNT(*) FROM inquiries')->fetchColumn();
 $newCount = (int) cms_db()->query("SELECT COUNT(*) FROM inquiries WHERE status = 'new'")->fetchColumn();
 $settingsCount = (int) cms_db()->query('SELECT COUNT(*) FROM cms_settings')->fetchColumn();
+$pageCount = (int) cms_db()->query('SELECT COUNT(*) FROM pages')->fetchColumn();
+$moduleCount = (int) cms_db()->query('SELECT COUNT(*) FROM modules')->fetchColumn();
 $recentInquiries = cms_db()->query('SELECT id, full_name, email, service, created_at FROM inquiries ORDER BY created_at DESC LIMIT 8')->fetchAll();
 $flash = cms_flash();
 ?>
@@ -27,6 +29,8 @@ $flash = cms_flash();
                 <h1 class="text-4xl font-bold">Dashboard</h1>
             </div>
             <div class="flex gap-3">
+                <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/pages.php">Pages</a>
+                <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/modules.php">Modules</a>
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/settings.php">Content Settings</a>
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/inquiries.php">Inquiries</a>
                 <a class="rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800" href="/cms/logout.php">Log Out</a>
@@ -37,7 +41,7 @@ $flash = cms_flash();
             <div class="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-700"><?= cms_escape($flash) ?></div>
         <?php endif; ?>
 
-        <div class="grid gap-6 md:grid-cols-3 mb-10">
+        <div class="grid gap-6 md:grid-cols-5 mb-10">
             <div class="rounded-3xl bg-white p-6 shadow">
                 <p class="text-sm text-slate-500">Total Inquiries</p>
                 <p class="mt-3 text-4xl font-bold"><?= $inquiryCount ?></p>
@@ -49,6 +53,14 @@ $flash = cms_flash();
             <div class="rounded-3xl bg-white p-6 shadow">
                 <p class="text-sm text-slate-500">Managed Settings</p>
                 <p class="mt-3 text-4xl font-bold"><?= $settingsCount ?></p>
+            </div>
+            <div class="rounded-3xl bg-white p-6 shadow">
+                <p class="text-sm text-slate-500">Pages</p>
+                <p class="mt-3 text-4xl font-bold"><?= $pageCount ?></p>
+            </div>
+            <div class="rounded-3xl bg-white p-6 shadow">
+                <p class="text-sm text-slate-500">Modules</p>
+                <p class="mt-3 text-4xl font-bold"><?= $moduleCount ?></p>
             </div>
         </div>
 
