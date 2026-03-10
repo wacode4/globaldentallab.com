@@ -73,6 +73,30 @@ Fix:
 - verify the public domain with `curl -L`
 - check returned HTML for expected new title, copy, or asset version strings
 
+### 4. The test server does not execute `functions/api/`
+
+What happened:
+
+- static pages deployed correctly to `https://tt.globaldentallab.com/`
+- direct requests to `/api/contact` and `/api/admin/*` returned `404 Not Found`
+
+Root cause:
+
+- the current SSH deploy target is a static web root
+- it is useful for validating HTML, CSS, JS, and asset references
+- it does not run the Cloudflare Pages Functions in `functions/api/`
+
+Implication:
+
+- form and admin UI code can be shipped with the static site
+- runtime backend behavior still requires a separate Functions-capable environment to verify
+
+Rule:
+
+- use `tt.globaldentallab.com` to verify page markup and front-end wiring
+- do not treat `404` on `/api/*` there as proof the API code is broken
+- do not treat static-site success there as proof the API is deployed
+
 ### 3. `git pull` timing can race the push
 
 What happened:
