@@ -9,5 +9,5 @@ header('Cache-Control: no-store');
 
 echo json_encode([
     'success' => true,
-    'settings' => array_merge(cms_setting_defaults(), cms_setting_map()),
+    'settings' => cms_setting_map($_GET['lang'] ?? null),
 ], JSON_UNESCAPED_SLASHES);

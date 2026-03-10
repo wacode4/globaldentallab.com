@@ -77,6 +77,137 @@ $moduleTranslationStmt = $pdo->prepare(
         content_json = VALUES(content_json)'
 );
 
+function cms_seed_page_translations(string $name, string $navLabel, string $seoTitle, string $seoDescription): array
+{
+    return [
+        'en' => [$name, $navLabel, $seoTitle, $seoDescription],
+        'fr' => [$name, $navLabel, $seoTitle, $seoDescription],
+        'de' => [$name, $navLabel, $seoTitle, $seoDescription],
+    ];
+}
+
+function cms_seed_product_bundle(string $slug, array $config): array
+{
+    $page = [
+        'definition' => [$slug, 'product', 'marketing', 'published', (int) $config['sort_order'], 0],
+        'translations' => cms_seed_page_translations(
+            $config['name'],
+            $config['name'],
+            $config['seo_title'],
+            $config['seo_description']
+        ),
+    ];
+
+    $modules = [
+        $slug . '-hero' => [
+            'definition' => [$slug . '-hero', 'hero', 'primary', 'published', '{}'],
+            'translations' => [
+                'en' => [
+                    $config['name'],
+                    $config['hero_kicker'],
+                    $config['hero_subtitle'],
+                    '',
+                    cms_encode_json([
+                        'label' => $config['hero_label'],
+                        'title_html' => $config['hero_title_html'],
+                        'subtitle_html' => $config['hero_subtitle_html'],
+                        'buttons' => [
+                            ['text' => 'Ask About A Case', 'href' => '/en/contact', 'style' => 'primary'],
+                            ['text' => 'Back To Ceramics', 'href' => '/en/ceramics', 'style' => 'secondary'],
+                        ],
+                    ]),
+                ],
+            ],
+        ],
+        $slug . '-overview' => [
+            'definition' => [$slug . '-overview', 'media_split', 'default', 'published', cms_encode_json(['image_position' => 'left', 'section_class' => 'bg-white py-20'])],
+            'translations' => [
+                'en' => [
+                    $config['overview_title'],
+                    'Product Positioning',
+                    $config['overview_subtitle'],
+                    $config['overview_html'],
+                    cms_encode_json([
+                        'image' => $config['image'],
+                        'image_alt' => $config['image_alt'],
+                        'buttons' => [
+                            ['text' => 'Compare All Ceramics', 'href' => '/en/ceramics', 'style' => 'primary'],
+                        ],
+                    ]),
+                ],
+            ],
+        ],
+        $slug . '-indications' => [
+            'definition' => [$slug . '-indications', 'feature_list', 'default', 'published', cms_encode_json(['columns' => 3, 'section_class' => 'bg-slate-50 py-20'])],
+            'translations' => [
+                'en' => [
+                    'Typical Use Cases',
+                    'Indications',
+                    $config['indications_subtitle'],
+                    '',
+                    cms_encode_json(['items' => $config['indications_items']]),
+                ],
+            ],
+        ],
+        $slug . '-specs' => [
+            'definition' => [$slug . '-specs', 'stats_grid', 'default', 'published', '{}'],
+            'translations' => [
+                'en' => [
+                    'Decision Snapshot',
+                    'Material Profile',
+                    $config['stats_subtitle'],
+                    '',
+                    cms_encode_json(['items' => $config['stats_items']]),
+                ],
+            ],
+        ],
+        $slug . '-related' => [
+            'definition' => [$slug . '-related', 'card_grid', 'default', 'published', '{}'],
+            'translations' => [
+                'en' => [
+                    'Related Options',
+                    'Compare Nearby Paths',
+                    $config['related_subtitle'],
+                    '',
+                    cms_encode_json(['cards' => $config['related_cards']]),
+                ],
+            ],
+        ],
+        $slug . '-cta' => [
+            'definition' => [$slug . '-cta', 'cta_banner', 'default', 'published', '{}'],
+            'translations' => [
+                'en' => [
+                    $config['cta_title'],
+                    $config['cta_kicker'],
+                    $config['cta_subtitle'],
+                    '',
+                    cms_encode_json([
+                        'buttons' => [
+                            ['text' => 'Open Contact', 'href' => '/en/contact', 'style' => 'primary'],
+                            ['text' => 'Back To Services', 'href' => '/en/services', 'style' => 'secondary'],
+                        ],
+                    ]),
+                ],
+            ],
+        ],
+    ];
+
+    $assignments = [
+        [$slug, $slug . '-hero', 'main', 10, 1],
+        [$slug, $slug . '-overview', 'main', 20, 1],
+        [$slug, $slug . '-indications', 'main', 30, 1],
+        [$slug, $slug . '-specs', 'main', 40, 1],
+        [$slug, $slug . '-related', 'main', 50, 1],
+        [$slug, $slug . '-cta', 'main', 60, 1],
+    ];
+
+    return [
+        'page' => $page,
+        'modules' => $modules,
+        'assignments' => $assignments,
+    ];
+}
+
 $pages = [
     'home' => [
         'definition' => ['home', 'home', 'marketing', 'published', 10, 1],
@@ -135,6 +266,203 @@ $pages = [
         ],
     ],
 ];
+
+$productBundles = [
+    'emax' => cms_seed_product_bundle('emax', [
+        'name' => 'IPS e.max',
+        'sort_order' => 80,
+        'seo_title' => 'IPS e.max Lithium Disilicate',
+        'seo_description' => 'Lithium disilicate restorations for high-esthetic cases, veneer workflows, and adhesive restorative planning.',
+        'hero_label' => 'Lithium Disilicate',
+        'hero_kicker' => 'Product Detail Template',
+        'hero_subtitle' => 'A reusable product page model for adhesive ceramic workflows and high-esthetic planning.',
+        'hero_title_html' => 'IPS e.max<br>For Esthetic Cases With Detail Demand',
+        'hero_subtitle_html' => 'This dynamic template positions e.max around esthetics, conservative prep compatibility, and the communication discipline needed for refined anterior work.',
+        'overview_title' => 'Where This Product Fits Best',
+        'overview_subtitle' => 'A ceramic option centered on esthetics, adhesive protocols, and smile-zone refinement.',
+        'overview_html' => '<p>IPS e.max is typically used when translucency, incisal character, and conservative restorative planning are part of the treatment objective.</p><p>It is a strong fit for anterior work, veneers, inlays, and selected single-unit situations where the esthetic requirement is high and the indication is appropriate.</p>',
+        'image' => '/images/content/emax.jpg',
+        'image_alt' => 'IPS e.max restorative example',
+        'indications_subtitle' => 'This template gives every product page a consistent structure for fit, indications, and next-step planning.',
+        'indications_items' => [
+            ['title' => 'Anterior Esthetic Cases', 'text' => 'Useful when translucency, texture, and refined smile-zone control are primary concerns.'],
+            ['title' => 'Veneers And Conservative Restorations', 'text' => 'Well suited to adhesive workflows where preserving preparation strategy matters.'],
+            ['title' => 'Doctors Prioritizing Shade Integration', 'text' => 'A good route when photos, stump shade, and detailed esthetic communication are part of the case workflow.'],
+        ],
+        'stats_subtitle' => 'A standardized comparison block keeps product pages easier to scan and compare.',
+        'stats_items' => [
+            ['value' => 'High', 'label' => 'Esthetic Range', 'description' => 'Positioned for cases where translucency and polish matter.'],
+            ['value' => 'Adhesive', 'label' => 'Workflow', 'description' => 'Often aligned with bonding-driven restorative planning.'],
+            ['value' => 'Refined', 'label' => 'Case Type', 'description' => 'Best for cases that justify a more detailed esthetic process.'],
+        ],
+        'related_subtitle' => 'Doctors should be able to move laterally into adjacent ceramic options without leaving the template system.',
+        'related_cards' => [
+            ['title' => 'Ceramic Veneers', 'text' => 'A more smile-design-focused route when facial coverage and esthetic control are central.', 'href' => '/en/veneers', 'cta' => 'Open Product', 'image' => '/images/content/veneers.jpg'],
+            ['title' => 'Inlays And Onlays', 'text' => 'A more conservative indirect restoration path for selected posterior and partial-coverage cases.', 'href' => '/en/inlays-onlays', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+            ['title' => 'Zirconia Ultra', 'text' => 'Compare against zirconia when strength requirements start to outweigh purely esthetic priorities.', 'href' => '/en/zirconia-ultra', 'cta' => 'Compare Product', 'image' => '/images/content/zirconia.jpg'],
+            ['title' => 'Ceramics Category', 'text' => 'Return to the full ceramic category to compare workflow directions.', 'href' => '/en/ceramics', 'cta' => 'Open Category', 'image' => '/images/content/dental-lab-2.jpg'],
+        ],
+        'cta_title' => 'Move To Case Review',
+        'cta_kicker' => 'Need Help Confirming If e.max Is The Right Choice?',
+        'cta_subtitle' => 'Use the contact route when you want to validate indication, prep design, or shade communication requirements before production starts.',
+    ]),
+    'layered-zirconia' => cms_seed_product_bundle('layered-zirconia', [
+        'name' => 'Layered Zirconia',
+        'sort_order' => 90,
+        'seo_title' => 'Layered Zirconia',
+        'seo_description' => 'Layered zirconia restorations for smile-zone cases where zirconia strength and layered esthetics need to work together.',
+        'hero_label' => 'Esthetic Zirconia',
+        'hero_kicker' => 'Product Detail Template',
+        'hero_subtitle' => 'A product page model for cases where zirconia strength and layering detail need to coexist.',
+        'hero_title_html' => 'Layered Zirconia<br>For More Expressive Esthetic Work',
+        'hero_subtitle_html' => 'Layered zirconia fits cases that ask for more surface character and esthetic nuance than a simpler monolithic route usually provides.',
+        'overview_title' => 'Where This Product Fits Best',
+        'overview_subtitle' => 'A zirconia-based option for visible-zone cases where esthetic depth matters as much as material confidence.',
+        'overview_html' => '<p>Layered zirconia is most useful when the doctor wants the structural benefits of zirconia but also expects more detailed esthetic layering for smile-zone presentation.</p><p>It performs best when photos, provisional references, and communication around facial anatomy are shared early in the case flow.</p>',
+        'image' => '/images/content/dental-lab-3.jpg',
+        'image_alt' => 'Layered zirconia example',
+        'indications_subtitle' => 'The goal is to make “when should I use this?” obvious before the clinic reaches out for case review.',
+        'indications_items' => [
+            ['title' => 'Anterior Or Premolar Visibility', 'text' => 'Useful when the restoration sits in a zone where esthetic layering is likely to be noticed.'],
+            ['title' => 'Cases With Photo And Provisional References', 'text' => 'Best when the clinic can share richer esthetic reference material at intake.'],
+            ['title' => 'Doctors Wanting More Character Than Monolithic', 'text' => 'A middle path when basic zirconia efficiency is not enough for the visual result required.'],
+        ],
+        'stats_subtitle' => 'This summary block standardizes how we compare ceramic products inside the CMS.',
+        'stats_items' => [
+            ['value' => 'High', 'label' => 'Esthetic Detail', 'description' => 'Supports more expressive characterization than basic monolithic workflows.'],
+            ['value' => 'Zirconia', 'label' => 'Material Base', 'description' => 'Retains zirconia as the underlying restorative platform.'],
+            ['value' => 'Planned', 'label' => 'Communication Need', 'description' => 'Benefits from stronger pre-production alignment on esthetic expectations.'],
+        ],
+        'related_subtitle' => 'Related product links help this template behave like a real catalog instead of a dead-end detail page.',
+        'related_cards' => [
+            ['title' => 'Zirconia Ultra', 'text' => 'Compare against a more translucent zirconia route when the esthetic goal is similar.', 'href' => '/en/zirconia-ultra', 'cta' => 'Compare Product', 'image' => '/images/content/zirconia.jpg'],
+            ['title' => 'Monolithic Zirconia', 'text' => 'Shift to a more durability-driven route when simplicity and strength matter more than layered esthetics.', 'href' => '/en/monolithic-zirconia', 'cta' => 'Open Product', 'image' => '/images/content/dental-lab-2.jpg'],
+            ['title' => 'IPS e.max', 'text' => 'Review lithium disilicate when the case leans further toward adhesive esthetic planning.', 'href' => '/en/emax', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+            ['title' => 'Ceramics Category', 'text' => 'Return to the full ceramic category for broader comparison.', 'href' => '/en/ceramics', 'cta' => 'Open Category', 'image' => '/images/content/veneers.jpg'],
+        ],
+        'cta_title' => 'Need Help Aligning Esthetic Expectations?',
+        'cta_kicker' => 'Use The Lab Before You Commit The Material Path',
+        'cta_subtitle' => 'If the final result depends heavily on anatomy, layering character, or smile-zone presentation, use the contact route for case planning support.',
+    ]),
+    'monolithic-zirconia' => cms_seed_product_bundle('monolithic-zirconia', [
+        'name' => 'Monolithic Zirconia',
+        'sort_order' => 100,
+        'seo_title' => 'Monolithic Zirconia',
+        'seo_description' => 'Monolithic zirconia restorations for strength-driven workflows, posterior durability, and high-volume case consistency.',
+        'hero_label' => 'Durability-Focused Zirconia',
+        'hero_kicker' => 'Product Detail Template',
+        'hero_subtitle' => 'A product template centered on strength, consistency, and streamlined zirconia production.',
+        'hero_title_html' => 'Monolithic Zirconia<br>For Strength And Daily Predictability',
+        'hero_subtitle_html' => 'This route is built for cases where durability, production efficiency, and routine consistency are stronger priorities than layered esthetic nuance.',
+        'overview_title' => 'Where This Product Fits Best',
+        'overview_subtitle' => 'A zirconia route for load-bearing and routine restorative workflows where dependable strength leads the decision.',
+        'overview_html' => '<p>Monolithic zirconia is often chosen for posterior cases, routine crown-and-bridge workflows, and situations where wear resistance and practical predictability are central.</p><p>It is especially useful when clinics want a durable zirconia-centered workflow that scales cleanly across regular case volume.</p>',
+        'image' => '/images/content/dental-lab-2.jpg',
+        'image_alt' => 'Monolithic zirconia workflow',
+        'indications_subtitle' => 'The product page should make it clear when monolithic zirconia is the practical answer, not just a material option.',
+        'indications_items' => [
+            ['title' => 'Posterior Strength Cases', 'text' => 'A strong fit when load, contact stability, and durability shape the material decision.'],
+            ['title' => 'Routine High-Volume Restorative Flow', 'text' => 'Useful for clinics that want a repeatable zirconia workflow across daily case volume.'],
+            ['title' => 'Doctors Prioritizing Operational Simplicity', 'text' => 'A practical route when straightforward production and reliability outweigh esthetic layering needs.'],
+        ],
+        'stats_subtitle' => 'This block keeps product comparison consistent while the catalog expands.',
+        'stats_items' => [
+            ['value' => 'Strong', 'label' => 'Durability', 'description' => 'Positioned for strength-led restorative planning.'],
+            ['value' => 'Routine', 'label' => 'Workflow Fit', 'description' => 'Works well in repeatable day-to-day zirconia production.'],
+            ['value' => 'Practical', 'label' => 'Case Focus', 'description' => 'Optimized for clinical reliability rather than maximal esthetic expression.'],
+        ],
+        'related_subtitle' => 'Related routes help clinics compare zirconia options without leaving the product family.',
+        'related_cards' => [
+            ['title' => 'Layered Zirconia', 'text' => 'Move toward a more esthetic layered route when visual detail matters more.', 'href' => '/en/layered-zirconia', 'cta' => 'Compare Product', 'image' => '/images/content/dental-lab-3.jpg'],
+            ['title' => 'Zirconia Ultra', 'text' => 'Compare against a more translucent zirconia path for visible-zone work.', 'href' => '/en/zirconia-ultra', 'cta' => 'Compare Product', 'image' => '/images/content/zirconia.jpg'],
+            ['title' => 'Ceramics Category', 'text' => 'Return to the category overview to compare the full ceramic set.', 'href' => '/en/ceramics', 'cta' => 'Open Category', 'image' => '/images/content/veneers.jpg'],
+            ['title' => 'Contact The Lab', 'text' => 'Ask the lab to confirm whether the case should stay in a monolithic path.', 'href' => '/en/contact', 'cta' => 'Ask The Lab', 'image' => '/images/source-lab-tour/lab-staff.jpg'],
+        ],
+        'cta_title' => 'Want Help Confirming A Strength-Driven Workflow?',
+        'cta_kicker' => 'Use Intake To Check Indication Before Production',
+        'cta_subtitle' => 'If clearance, occlusion, load, or case longevity is driving the discussion, use the contact route so the lab can review the material choice with you.',
+    ]),
+    'veneers' => cms_seed_product_bundle('veneers', [
+        'name' => 'Ceramic Veneers',
+        'sort_order' => 110,
+        'seo_title' => 'Ceramic Veneers',
+        'seo_description' => 'Ceramic veneer restorations for smile design, anterior esthetics, and refined shade communication workflows.',
+        'hero_label' => 'Smile-Design Ceramics',
+        'hero_kicker' => 'Product Detail Template',
+        'hero_subtitle' => 'A product template for veneer cases that depend on esthetic communication as much as material choice.',
+        'hero_title_html' => 'Ceramic Veneers<br>For Smile-Zone Esthetic Control',
+        'hero_subtitle_html' => 'This page positions veneer workflows around smile design, facial coverage planning, and the higher communication standard that refined anterior cases require.',
+        'overview_title' => 'Where This Product Fits Best',
+        'overview_subtitle' => 'A veneer-focused ceramic route for highly esthetic anterior planning and conservative facial enhancement workflows.',
+        'overview_html' => '<p>Ceramic veneers are best suited to cases where smile-line visibility, surface character, and detailed shade communication are central to the treatment goal.</p><p>They work especially well when the case process includes photography, mock-up feedback, and a clearly defined esthetic brief.</p>',
+        'image' => '/images/content/veneers.jpg',
+        'image_alt' => 'Ceramic veneers example',
+        'indications_subtitle' => 'This product page should make esthetic-first case selection easier before a clinic reaches out.',
+        'indications_items' => [
+            ['title' => 'Smile Design Cases', 'text' => 'Best for treatments where anterior esthetics and facial presentation are the primary driver.'],
+            ['title' => 'Conservative Facial Coverage', 'text' => 'A strong option when the treatment plan aims to preserve a more conservative restorative approach.'],
+            ['title' => 'High-Communication Esthetic Work', 'text' => 'Fits clinics prepared to share photos, mock-up guidance, and detailed esthetic references.'],
+        ],
+        'stats_subtitle' => 'A standard summary block helps veneer pages stay comparable to the rest of the catalog.',
+        'stats_items' => [
+            ['value' => 'High', 'label' => 'Smile-Zone Focus', 'description' => 'Designed for visible esthetic zones and facial presentation.'],
+            ['value' => 'Detailed', 'label' => 'Communication Need', 'description' => 'Works best when shade and design notes are explicit.'],
+            ['value' => 'Refined', 'label' => 'Workflow Style', 'description' => 'Geared toward more deliberate esthetic planning, not commodity case flow.'],
+        ],
+        'related_subtitle' => 'This keeps veneer pages connected to adjacent esthetic options inside the same CMS architecture.',
+        'related_cards' => [
+            ['title' => 'IPS e.max', 'text' => 'Review e.max when the case needs a broader lithium disilicate restorative route.', 'href' => '/en/emax', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+            ['title' => 'Inlays And Onlays', 'text' => 'Compare against partial-coverage indirect restorations for more conservative posterior situations.', 'href' => '/en/inlays-onlays', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+            ['title' => 'Ceramics Category', 'text' => 'Return to the category overview to compare all ceramic directions.', 'href' => '/en/ceramics', 'cta' => 'Open Category', 'image' => '/images/content/zirconia.jpg'],
+            ['title' => 'Contact The Lab', 'text' => 'Use intake if the veneer case needs help on esthetic planning or submission prep.', 'href' => '/en/contact', 'cta' => 'Ask The Lab', 'image' => '/images/source-lab-tour/lab-staff.jpg'],
+        ],
+        'cta_title' => 'Need Help With Shade Or Esthetic Planning?',
+        'cta_kicker' => 'Bring The Lab In Before Veneer Production Starts',
+        'cta_subtitle' => 'If the case outcome depends on mock-up alignment, photo review, or shade communication, use the contact page for pre-production support.',
+    ]),
+    'inlays-onlays' => cms_seed_product_bundle('inlays-onlays', [
+        'name' => 'Ceramic Inlays & Onlays',
+        'sort_order' => 120,
+        'seo_title' => 'Ceramic Inlays And Onlays',
+        'seo_description' => 'Ceramic inlay and onlay restorations for indirect partial-coverage planning and conservative ceramic workflows.',
+        'hero_label' => 'Partial-Coverage Ceramics',
+        'hero_kicker' => 'Product Detail Template',
+        'hero_subtitle' => 'A reusable product page for conservative indirect restorations and adhesive ceramic planning.',
+        'hero_title_html' => 'Ceramic Inlays &amp; Onlays<br>For Conservative Indirect Restorations',
+        'hero_subtitle_html' => 'This template positions inlays and onlays around conservative preparation strategy, adhesive workflows, and practical case selection.',
+        'overview_title' => 'Where This Product Fits Best',
+        'overview_subtitle' => 'A ceramic route for indirect partial-coverage restorations where a full crown is not the intended solution.',
+        'overview_html' => '<p>Inlays and onlays fit cases where the clinic wants a conservative indirect restoration while still benefiting from ceramic esthetics and durable lab fabrication.</p><p>They are especially relevant when preparation design, bonding strategy, and remaining tooth structure are part of the treatment logic.</p>',
+        'image' => '/images/content/emax.jpg',
+        'image_alt' => 'Ceramic inlay and onlay example',
+        'indications_subtitle' => 'The template should clarify partial-coverage positioning without forcing doctors back into generic product lists.',
+        'indications_items' => [
+            ['title' => 'Conservative Indirect Restorations', 'text' => 'Useful when the treatment plan preserves more tooth structure than a full-coverage crown approach.'],
+            ['title' => 'Adhesive Ceramic Planning', 'text' => 'Fits cases where bonding workflow and prep design are part of the material decision.'],
+            ['title' => 'Doctors Avoiding Full-Crown Escalation', 'text' => 'Helpful when the clinical goal is a targeted restoration rather than a broader full-coverage route.'],
+        ],
+        'stats_subtitle' => 'A repeatable summary block helps partial-coverage products fit the same catalog structure.',
+        'stats_items' => [
+            ['value' => 'Conservative', 'label' => 'Prep Strategy', 'description' => 'Supports more tooth-preserving indirect restorative planning.'],
+            ['value' => 'Adhesive', 'label' => 'Workflow', 'description' => 'Typically aligned with bonding and careful prep design.'],
+            ['value' => 'Targeted', 'label' => 'Use Case', 'description' => 'Best for cases that do not warrant a full-coverage solution.'],
+        ],
+        'related_subtitle' => 'Related products keep partial-coverage cases connected to the broader ceramic decision tree.',
+        'related_cards' => [
+            ['title' => 'IPS e.max', 'text' => 'Review the broader lithium disilicate route for adjacent esthetic restorative cases.', 'href' => '/en/emax', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+            ['title' => 'Ceramic Veneers', 'text' => 'Compare against a more facial-esthetic route for smile-zone treatment planning.', 'href' => '/en/veneers', 'cta' => 'Open Product', 'image' => '/images/content/veneers.jpg'],
+            ['title' => 'Ceramics Category', 'text' => 'Return to the full ceramic family to compare workflow directions.', 'href' => '/en/ceramics', 'cta' => 'Open Category', 'image' => '/images/content/zirconia.jpg'],
+            ['title' => 'Contact The Lab', 'text' => 'Use inquiry intake if the prep design or indication needs a second look before production.', 'href' => '/en/contact', 'cta' => 'Ask The Lab', 'image' => '/images/source-lab-tour/lab-staff.jpg'],
+        ],
+        'cta_title' => 'Want Help Confirming A Conservative Ceramic Route?',
+        'cta_kicker' => 'Use The Lab To Pressure-Test The Plan',
+        'cta_subtitle' => 'If the choice between inlay, onlay, full-coverage, or another ceramic path is still open, use the contact route and we will help evaluate the case.',
+    ]),
+];
+
+foreach ($productBundles as $slug => $bundle) {
+    $pages[$slug] = $bundle['page'];
+}
 
 $pageIds = [];
 foreach ($pages as $slug => $page) {
@@ -228,14 +556,7 @@ $modules = [
     'contact-panel' => [
         'definition' => ['contact-panel', 'contact_panel', 'default', 'published', '{}'],
         'translations' => [
-            'en' => ['Inquiry And Intake', 'Server-Side Form', 'Messages submitted here write directly into the MySQL-backed CMS instead of depending on Cloudflare functions.', '', json_encode([
-                'items' => [
-                    ['label' => 'Phone', 'value' => '+852 9142 4923'],
-                    ['label' => 'Email', 'value' => 'info@globaldentallab.com'],
-                    ['label' => 'Hong Kong', 'value_html' => '1/F Tung Chung 41 Ma Wan New Village<br>Lantau Island, Hong Kong'],
-                    ['label' => 'Shenzhen', 'value_html' => '4/F, Building 1 HeTai Industrial Area<br>Shenzhen, China'],
-                ],
-            ], JSON_UNESCAPED_SLASHES)],
+            'en' => ['Inquiry And Intake', 'Server-Side Form', 'Messages submitted here write directly into the MySQL-backed CMS instead of depending on Cloudflare functions.', '', '{}'],
         ],
     ],
     'contact-cta' => [
@@ -468,9 +789,11 @@ $modules = [
             'en' => ['Ceramic Product Paths', 'Product Family', 'Each product route can now share the same data model while keeping its own content and positioning.', '', cms_encode_json([
                 'cards' => [
                     ['title' => 'Zirconia Ultra', 'text' => 'High-translucency zirconia for esthetic zones where strength still matters.', 'href' => '/en/zirconia-ultra', 'cta' => 'Open Product', 'image' => '/images/content/zirconia.jpg'],
-                    ['title' => 'e.max', 'text' => 'Lithium disilicate workflows for high esthetic demand and adhesive cases.', 'href' => '/product-emax.html', 'cta' => 'View Current Page', 'image' => '/images/content/veneers.jpg'],
-                    ['title' => 'Layered Zirconia', 'text' => 'An esthetic option when layering detail is part of the restorative goal.', 'href' => '/product-layered.html', 'cta' => 'View Current Page', 'image' => '/images/content/dental-lab-3.jpg'],
-                    ['title' => 'Monolithic Zirconia', 'text' => 'Durability-focused cases where streamlined manufacturing and strength are priorities.', 'href' => '/product-monolithic.html', 'cta' => 'View Current Page', 'image' => '/images/content/dental-lab-2.jpg'],
+                    ['title' => 'IPS e.max', 'text' => 'Lithium disilicate workflows for high esthetic demand and adhesive cases.', 'href' => '/en/emax', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+                    ['title' => 'Layered Zirconia', 'text' => 'An esthetic option when layering detail is part of the restorative goal.', 'href' => '/en/layered-zirconia', 'cta' => 'Open Product', 'image' => '/images/content/dental-lab-3.jpg'],
+                    ['title' => 'Monolithic Zirconia', 'text' => 'Durability-focused cases where streamlined manufacturing and strength are priorities.', 'href' => '/en/monolithic-zirconia', 'cta' => 'Open Product', 'image' => '/images/content/dental-lab-2.jpg'],
+                    ['title' => 'Ceramic Veneers', 'text' => 'Smile-zone ceramic workflows for refined esthetic control and facial coverage planning.', 'href' => '/en/veneers', 'cta' => 'Open Product', 'image' => '/images/content/veneers.jpg'],
+                    ['title' => 'Inlays & Onlays', 'text' => 'Partial-coverage ceramic restorations for conservative indirect treatment planning.', 'href' => '/en/inlays-onlays', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
                 ],
             ])],
         ],
@@ -572,8 +895,8 @@ $modules = [
             'en' => ['Related Options', 'Compare Nearby Paths', 'Product detail pages should also help doctors move sideways into adjacent options instead of dead-ending.', '', cms_encode_json([
                 'cards' => [
                     ['title' => 'Ceramics Category', 'text' => 'Return to the broader ceramic family to compare workflow directions.', 'href' => '/en/ceramics', 'cta' => 'Open Category', 'image' => '/images/content/dental-lab-2.jpg'],
-                    ['title' => 'e.max', 'text' => 'Explore the current static e.max page while that product is still pending migration.', 'href' => '/product-emax.html', 'cta' => 'Current Page', 'image' => '/images/content/veneers.jpg'],
-                    ['title' => 'Layered Zirconia', 'text' => 'Review the layered zirconia positioning on the current product page.', 'href' => '/product-layered.html', 'cta' => 'Current Page', 'image' => '/images/content/dental-lab-3.jpg'],
+                    ['title' => 'IPS e.max', 'text' => 'Compare against a more esthetic lithium disilicate route when adhesion and translucency matter more.', 'href' => '/en/emax', 'cta' => 'Open Product', 'image' => '/images/content/emax.jpg'],
+                    ['title' => 'Layered Zirconia', 'text' => 'Review the layered zirconia path when esthetic characterization needs more emphasis.', 'href' => '/en/layered-zirconia', 'cta' => 'Open Product', 'image' => '/images/content/dental-lab-3.jpg'],
                     ['title' => 'Contact The Lab', 'text' => 'Use inquiry intake when the case needs a recommendation instead of page browsing.', 'href' => '/en/contact', 'cta' => 'Ask The Lab', 'image' => '/images/source-lab-tour/lab-staff.jpg'],
                 ],
             ])],
@@ -591,6 +914,12 @@ $modules = [
         ],
     ],
 ];
+
+foreach ($productBundles as $bundle) {
+    foreach ($bundle['modules'] as $key => $module) {
+        $modules[$key] = $module;
+    }
+}
 
 $moduleIds = [];
 foreach ($modules as $key => $module) {
@@ -646,6 +975,12 @@ $pageModules = [
     ['zirconia-ultra', 'zirconia-related', 'main', 50, 1],
     ['zirconia-ultra', 'zirconia-cta', 'main', 60, 1],
 ];
+
+foreach ($productBundles as $bundle) {
+    foreach ($bundle['assignments'] as $assignment) {
+        $pageModules[] = $assignment;
+    }
+}
 
 $pageModuleStmt = $pdo->prepare(
     'INSERT INTO page_modules (page_id, module_id, region_name, sort_order, is_enabled) VALUES (?, ?, ?, ?, ?)'

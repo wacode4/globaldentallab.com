@@ -1,7 +1,9 @@
 (function () {
   async function loadSettings() {
     try {
-      const response = await fetch("/cms/api/settings.php", {
+      const language = document.documentElement.getAttribute("lang") || "";
+      const query = language ? `?lang=${encodeURIComponent(language)}` : "";
+      const response = await fetch(`/cms/api/settings.php${query}`, {
         headers: {
           Accept: "application/json",
         },

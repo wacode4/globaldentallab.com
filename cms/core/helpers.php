@@ -72,6 +72,95 @@ function cms_trimmed(?string $value): string
     return trim((string) $value);
 }
 
+function cms_setting_definitions(): array
+{
+    return [
+        'home_intro_title' => ['label' => 'Homepage Intro Title', 'type' => 'textarea', 'translatable' => false],
+        'home_intro_text' => ['label' => 'Homepage Intro Paragraph', 'type' => 'textarea', 'translatable' => false],
+        'home_scope_text' => ['label' => 'Homepage Product Scope Text', 'type' => 'textarea', 'translatable' => false],
+        'contact_form_intro' => ['label' => 'Contact Form Intro', 'type' => 'textarea', 'translatable' => false],
+        'contact_hub_intro' => ['label' => 'Contact Hub Intro', 'type' => 'textarea', 'translatable' => false],
+        'site_name' => ['label' => 'Site Name', 'type' => 'text', 'translatable' => true],
+        'site_tagline' => ['label' => 'Site Tagline', 'type' => 'textarea', 'translatable' => true],
+        'site_footer_blurb' => ['label' => 'Footer Brand Blurb', 'type' => 'textarea', 'translatable' => true],
+        'site_phone_display' => ['label' => 'Phone Display', 'type' => 'text', 'translatable' => false],
+        'site_phone_href' => ['label' => 'Phone Link', 'type' => 'text', 'translatable' => false],
+        'site_email_display' => ['label' => 'Email Display', 'type' => 'text', 'translatable' => false],
+        'site_email_href' => ['label' => 'Email Link', 'type' => 'text', 'translatable' => false],
+        'site_whatsapp_display' => ['label' => 'WhatsApp Display', 'type' => 'text', 'translatable' => false],
+        'site_whatsapp_href' => ['label' => 'WhatsApp Link', 'type' => 'text', 'translatable' => false],
+        'site_hk_address_html' => ['label' => 'Hong Kong Address HTML', 'type' => 'textarea', 'translatable' => true],
+        'site_sz_address_html' => ['label' => 'Shenzhen Address HTML', 'type' => 'textarea', 'translatable' => true],
+    ];
+}
+
+function cms_setting_defaults(): array
+{
+    return [
+        'home_intro_title' => 'A Full-Service Outsourcing Lab With Digital Depth',
+        'home_intro_text' => 'Global Dental Lab was built for clinics that want the flexibility of an outsourcing partner without losing control over fit, communication, esthetics, or turnaround.',
+        'home_scope_text' => 'The homepage surfaces the full product range so doctors can identify the right workflow quickly and move to the next step with less back-and-forth.',
+        'contact_form_intro' => 'Use this form for new account questions, case planning support, turnaround discussions, or anything that does not fit one of the direct submission routes below.',
+        'contact_hub_intro' => 'Use this page as the intake hub for first-contact questions, submission support, shipping coordination, and onboarding help.',
+        'site_name' => 'Global Dental Lab',
+        'site_tagline' => 'Template-driven multilingual site architecture running on PHP + MySQL.',
+        'site_footer_blurb' => 'Template-driven multilingual site architecture running on PHP + MySQL.',
+        'site_phone_display' => '+852 9142 4923',
+        'site_phone_href' => 'tel:+85291424923',
+        'site_email_display' => 'info@globaldentallab.com',
+        'site_email_href' => 'mailto:info@globaldentallab.com',
+        'site_whatsapp_display' => '+852 9142 4923',
+        'site_whatsapp_href' => 'https://wa.me/85291424923',
+        'site_hk_address_html' => '1/F Tung Chung 41 Ma Wan New Village<br>Lantau Island, Hong Kong',
+        'site_sz_address_html' => '4/F, Building 1 HeTai Industrial Area<br>Shenzhen, China',
+    ];
+}
+
+function cms_setting_map(?string $languageCode = null): array
+{
+    $settings = cms_setting_defaults();
+
+    foreach (cms_db()->query('SELECT setting_key, setting_value FROM cms_settings')->fetchAll() as $row) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+
+    if ($languageCode === null || $languageCode === '') {
+        return $settings;
+    }
+
+    $stmt = cms_db()->prepare(
+        'SELECT st.setting_key, st.setting_value
+         FROM site_setting_translations st
+         INNER JOIN languages l ON l.id = st.language_id
+         WHERE l.code = ?'
+    );
+    $stmt->execute([strtolower($languageCode)]);
+
+    foreach ($stmt->fetchAll() as $row) {
+        if ($row['setting_value'] !== '') {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+    }
+
+    return $settings;
+}
+
+function cms_setting_translation_map(): array
+{
+    $rows = cms_db()->query(
+        'SELECT st.setting_key, st.setting_value, l.code AS language_code
+         FROM site_setting_translations st
+         INNER JOIN languages l ON l.id = st.language_id'
+    )->fetchAll();
+
+    $map = [];
+    foreach ($rows as $row) {
+        $map[$row['language_code']][$row['setting_key']] = $row['setting_value'];
+    }
+
+    return $map;
+}
+
 function cms_localized_href(?string $href, string $languageCode): string
 {
     $href = trim((string) $href);

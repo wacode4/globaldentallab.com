@@ -1,4 +1,16 @@
-<?php $content = $module['content']; $items = $content['items'] ?? []; ?>
+<?php
+$content = $module['content'];
+$items = $content['items'] ?? [];
+if ($items === []) {
+    $siteSettings = cms_setting_map($module['language_code'] ?? null);
+    $items = [
+        ['label' => 'Phone', 'value' => $siteSettings['site_phone_display'] ?? ''],
+        ['label' => 'Email', 'value' => $siteSettings['site_email_display'] ?? ''],
+        ['label' => 'Hong Kong', 'value_html' => $siteSettings['site_hk_address_html'] ?? ''],
+        ['label' => 'Shenzhen', 'value_html' => $siteSettings['site_sz_address_html'] ?? ''],
+    ];
+}
+?>
 <section class="bg-white py-20">
     <div class="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div>

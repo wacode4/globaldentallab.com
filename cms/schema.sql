@@ -39,6 +39,16 @@ CREATE TABLE IF NOT EXISTS languages (
     sort_order INT NOT NULL DEFAULT 100
 );
 
+CREATE TABLE IF NOT EXISTS site_setting_translations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(120) NOT NULL,
+    language_id INT UNSIGNED NOT NULL,
+    setting_value MEDIUMTEXT NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_site_setting_language (setting_key, language_id),
+    CONSTRAINT fk_site_setting_translations_language FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS pages (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     slug VARCHAR(120) NOT NULL UNIQUE,

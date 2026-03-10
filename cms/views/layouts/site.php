@@ -23,10 +23,11 @@
     </script>
     <link rel="stylesheet" href="/css/shared-styles.css?v=20260309-2">
 </head>
+<?php $siteSettings = cms_setting_map($page['language']['code']); ?>
 <body class="bg-white text-navy" style="font-family: 'Montserrat', sans-serif; line-height: 1.8;">
     <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-            <a class="text-xl font-bold text-navy" href="/<?= cms_escape($page['language']['code']) ?>/">Global Dental Lab</a>
+            <a class="text-xl font-bold text-navy" href="/<?= cms_escape($page['language']['code']) ?>/"><?= cms_escape($siteSettings['site_name']) ?></a>
             <nav class="hidden gap-6 md:flex">
                 <?php foreach ($page['navigation'] as $item): ?>
                     <?php $href = $item['slug'] === 'home' ? '/' . $page['language']['code'] . '/' : '/' . $page['language']['code'] . '/' . $item['slug']; ?>
@@ -51,8 +52,8 @@
     <footer class="mt-16 bg-navy py-14 text-white">
         <div class="mx-auto grid max-w-7xl gap-8 px-6 md:grid-cols-4">
             <div>
-                <h3 class="mb-3 text-xl font-bold">Global Dental Lab</h3>
-                <p class="text-sm text-slate-300">Template-driven multilingual site architecture running on PHP + MySQL.</p>
+                <h3 class="mb-3 text-xl font-bold"><?= cms_escape($siteSettings['site_name']) ?></h3>
+                <p class="text-sm text-slate-300"><?= cms_escape($siteSettings['site_footer_blurb']) ?></p>
             </div>
             <div>
                 <h4 class="mb-3 font-semibold">Dynamic Pages</h4>
@@ -74,9 +75,10 @@
             <div>
                 <h4 class="mb-3 font-semibold">Contact</h4>
                 <ul class="space-y-2 text-sm text-slate-300">
-                    <li>+852 9142 4923</li>
-                    <li>info@globaldentallab.com</li>
-                    <li>Hong Kong &amp; Shenzhen</li>
+                    <li><a class="hover:text-white" href="<?= cms_escape($siteSettings['site_phone_href']) ?>"><?= cms_escape($siteSettings['site_phone_display']) ?></a></li>
+                    <li><a class="hover:text-white" href="<?= cms_escape($siteSettings['site_email_href']) ?>"><?= cms_escape($siteSettings['site_email_display']) ?></a></li>
+                    <li><?= $siteSettings['site_hk_address_html'] ?></li>
+                    <li><?= $siteSettings['site_sz_address_html'] ?></li>
                 </ul>
             </div>
         </div>
