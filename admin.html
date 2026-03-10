@@ -27,10 +27,11 @@
             <div class="space-y-4">
                 <input type="password" id="authKey" placeholder="Enter access key"
                     class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary">
-                <button onclick="login()"
+                <button id="loginButton" onclick="login()"
                     class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90">
                     Login
                 </button>
+                <p class="text-xs text-gray-500 text-center">Stored only for this browser session and sent in request headers.</p>
                 <p id="loginError" class="text-red-500 text-center hidden">Invalid key</p>
             </div>
         </div>
@@ -122,89 +123,180 @@
     </div>
 
     <script data-cfasync="false">
+        const ADMIN_KEY_STORAGE = 'gdl-admin-key';
         let authKey = '';
 
-        function login() {
-            authKey = document.getElementById('authKey').value;
-            fetch(`/api/admin/stats?key=${authKey}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.error) {
-                        document.getElementById('loginError').classList.remove('hidden');
-                    } else {
-                        document.getElementById('loginScreen').classList.add('hidden');
-                        document.getElementById('dashboard').classList.remove('hidden');
-                        loadData();
-                    }
-                });
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function setLoginError(message) {
+            const loginError = document.getElementById('loginError');
+            loginError.textContent = message;
+            loginError.classList.remove('hidden');
+        }
+
+        function clearLoginError() {
+            document.getElementById('loginError').classList.add('hidden');
+        }
+
+        async function apiFetch(path) {
+            const response = await fetch(path, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Admin-Key': authKey
+                }
+            });
+
+            if (response.status === 401) {
+                throw new Error('unauthorized');
+            }
+
+            if (!response.ok) {
+                throw new Error('request_failed');
+            }
+
+            return response.json();
+        }
+
+        async function login() {
+            const input = document.getElementById('authKey');
+            const loginButton = document.getElementById('loginButton');
+            authKey = input.value.trim();
+            clearLoginError();
+
+            if (!authKey) {
+                setLoginError('Enter an access key.');
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginButton.textContent = 'Checking...';
+
+            try {
+                await apiFetch('/api/admin/stats');
+                sessionStorage.setItem(ADMIN_KEY_STORAGE, authKey);
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                await loadData();
+            } catch (error) {
+                authKey = '';
+                sessionStorage.removeItem(ADMIN_KEY_STORAGE);
+                setLoginError(error.message === 'unauthorized' ? 'Invalid or expired access key.' : 'Unable to reach admin API.');
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+            }
         }
 
         function logout() {
             authKey = '';
+            sessionStorage.removeItem(ADMIN_KEY_STORAGE);
             document.getElementById('authKey').value = '';
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
+            clearLoginError();
         }
 
-        function loadData() {
-            // Load stats
-            fetch(`/api/admin/stats?key=${authKey}`)
-                .then(r => r.json())
-                .then(data => {
-                    document.getElementById('statTotal').textContent = data.totalInquiries;
-                    document.getElementById('statNew').textContent = data.newInquiries;
-                    document.getElementById('statSubs').textContent = data.activeSubscriptions;
-                });
+        function renderInquiries(data) {
+            const tbody = document.getElementById('inquiriesBody');
 
-            // Load inquiries
-            fetch(`/api/admin/inquiries?key=${authKey}`)
-                .then(r => r.json())
-                .then(data => {
-                    const tbody = document.getElementById('inquiriesBody');
-                    if (data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-500">No inquiries yet</td></tr>';
-                        return;
-                    }
-                    tbody.innerHTML = data.map(row => `
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4 text-sm">${row.id}</td>
-                            <td class="py-3 px-4 text-sm font-medium">${row.first_name} ${row.last_name}</td>
-                            <td class="py-3 px-4 text-sm"><a href="mailto:${row.email}" class="text-primary hover:underline">${row.email}</a></td>
-                            <td class="py-3 px-4 text-sm">${row.phone || '-'}</td>
-                            <td class="py-3 px-4 text-sm">${row.service || '-'}</td>
-                            <td class="py-3 px-4 text-sm max-w-xs truncate" title="${row.message}">${row.message}</td>
-                            <td class="py-3 px-4 text-sm text-gray-500">${new Date(row.created_at).toLocaleString()}</td>
-                            <td class="py-3 px-4 text-sm">
-                                <span class="px-2 py-1 rounded text-xs font-medium ${row.status === 'new' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
-                                    ${row.status}
-                                </span>
-                            </td>
-                        </tr>
-                    `).join('');
-                });
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-500">No inquiries yet</td></tr>';
+                return;
+            }
 
-            // Load subscriptions
-            fetch(`/api/admin/subscriptions?key=${authKey}`)
-                .then(r => r.json())
-                .then(data => {
-                    const tbody = document.getElementById('subscriptionsBody');
-                    if (data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-gray-500">No subscriptions yet</td></tr>';
-                        return;
-                    }
-                    tbody.innerHTML = data.map(row => `
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4 text-sm">${row.id}</td>
-                            <td class="py-3 px-4 text-sm"><a href="mailto:${row.email}" class="text-primary hover:underline">${row.email}</a></td>
-                            <td class="py-3 px-4 text-sm text-gray-500">${new Date(row.created_at).toLocaleString()}</td>
-                            <td class="py-3 px-4 text-sm">
-                                <span class="px-2 py-1 rounded text-xs font-medium ${row.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
-                                    ${row.status}
-                                </span>
-                            </td>
-                        </tr>
-                    `).join('');
-                });
+            tbody.innerHTML = data.map(row => {
+                const name = `${escapeHtml(row.first_name || '')} ${escapeHtml(row.last_name || '')}`.trim();
+                const email = escapeHtml(row.email || '');
+                const phone = escapeHtml(row.phone || '-');
+                const service = escapeHtml(row.service || '-');
+                const message = escapeHtml(row.message || '');
+                const createdAt = row.created_at ? new Date(row.created_at).toLocaleString() : '-';
+                const status = escapeHtml(row.status || 'new');
+                const statusClasses = row.status === 'new'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-gray-100 text-gray-600';
+
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm">${row.id}</td>
+                        <td class="py-3 px-4 text-sm font-medium">${name || '-'}</td>
+                        <td class="py-3 px-4 text-sm"><a href="mailto:${email}" class="text-primary hover:underline">${email || '-'}</a></td>
+                        <td class="py-3 px-4 text-sm">${phone}</td>
+                        <td class="py-3 px-4 text-sm">${service}</td>
+                        <td class="py-3 px-4 text-sm max-w-xs truncate" title="${message}">${message || '-'}</td>
+                        <td class="py-3 px-4 text-sm text-gray-500">${escapeHtml(createdAt)}</td>
+                        <td class="py-3 px-4 text-sm">
+                            <span class="px-2 py-1 rounded text-xs font-medium ${statusClasses}">
+                                ${status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderSubscriptions(data) {
+            const tbody = document.getElementById('subscriptionsBody');
+
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-gray-500">No subscriptions yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(row => {
+                const email = escapeHtml(row.email || '');
+                const createdAt = row.created_at ? new Date(row.created_at).toLocaleString() : '-';
+                const status = escapeHtml(row.status || 'inactive');
+                const statusClasses = row.status === 'active'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-gray-100 text-gray-600';
+
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm">${row.id}</td>
+                        <td class="py-3 px-4 text-sm"><a href="mailto:${email}" class="text-primary hover:underline">${email || '-'}</a></td>
+                        <td class="py-3 px-4 text-sm text-gray-500">${escapeHtml(createdAt)}</td>
+                        <td class="py-3 px-4 text-sm">
+                            <span class="px-2 py-1 rounded text-xs font-medium ${statusClasses}">
+                                ${status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadData() {
+            try {
+                const [stats, inquiries, subscriptions] = await Promise.all([
+                    apiFetch('/api/admin/stats'),
+                    apiFetch('/api/admin/inquiries'),
+                    apiFetch('/api/admin/subscriptions')
+                ]);
+
+                document.getElementById('statTotal').textContent = stats.totalInquiries ?? 0;
+                document.getElementById('statNew').textContent = stats.newInquiries ?? 0;
+                document.getElementById('statSubs').textContent = stats.activeSubscriptions ?? 0;
+
+                renderInquiries(inquiries);
+                renderSubscriptions(subscriptions);
+            } catch (error) {
+                if (error.message === 'unauthorized') {
+                    logout();
+                    setLoginError('Session expired. Please log in again.');
+                    return;
+                }
+
+                document.getElementById('inquiriesBody').innerHTML = '<tr><td colspan="8" class="py-8 text-center text-red-500">Unable to load inquiries.</td></tr>';
+                document.getElementById('subscriptionsBody').innerHTML = '<tr><td colspan="4" class="py-8 text-center text-red-500">Unable to load subscriptions.</td></tr>';
+            }
         }
 
         function showTab(tab) {
@@ -223,6 +315,24 @@
         // Enter key to login
         document.getElementById('authKey').addEventListener('keypress', e => {
             if (e.key === 'Enter') login();
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const storedKey = sessionStorage.getItem(ADMIN_KEY_STORAGE);
+            if (!storedKey) {
+                return;
+            }
+
+            authKey = storedKey;
+            document.getElementById('authKey').value = storedKey;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            try {
+                await loadData();
+            } catch (error) {
+                logout();
+            }
         });
     </script>
 </body>

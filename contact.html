@@ -89,6 +89,10 @@
                         <p class="text-gray-600 mb-8">Use this form for new account questions, case planning support, turnaround discussions, or anything that does not fit one of the direct submission routes below.</p>
                         <form id="contactForm" class="space-y-6">
                             <div id="formMessage" class="hidden p-4 rounded-lg text-center font-medium"></div>
+                            <div class="hidden" aria-hidden="true">
+                                <label for="website">Website</label>
+                                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                            </div>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="firstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
@@ -338,51 +342,67 @@
     <script src="js/header-hero.js?v=20260309-2"></script>
 
     <script>
+        function showFormMessage(type, text) {
+            const messageDiv = document.getElementById('formMessage');
+            messageDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            messageDiv.classList.add(type === 'success' ? 'bg-green-100' : 'bg-red-100');
+            messageDiv.classList.add(type === 'success' ? 'text-green-700' : 'text-red-700');
+            messageDiv.textContent = text;
+        }
+
+        function normalizeField(value) {
+            return typeof value === 'string' ? value.trim() : '';
+        }
+
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const form = e.target;
             const submitBtn = form.querySelector('button[type="submit"]');
-            const messageDiv = document.getElementById('formMessage');
             const originalBtnText = submitBtn.textContent;
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Sending...';
-            messageDiv.classList.add('hidden');
+            document.getElementById('formMessage').classList.add('hidden');
 
             const formData = {
-                firstName: form.firstName.value,
-                lastName: form.lastName.value,
-                email: form.email.value,
-                phone: form.phone.value,
-                clinic: form.clinic.value,
-                service: form.service.value,
-                message: form.message.value
+                firstName: normalizeField(form.firstName.value),
+                lastName: normalizeField(form.lastName.value),
+                email: normalizeField(form.email.value),
+                phone: normalizeField(form.phone.value),
+                clinic: normalizeField(form.clinic.value),
+                service: normalizeField(form.service.value),
+                message: normalizeField(form.message.value),
+                website: normalizeField(form.website.value)
             };
+
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+                showFormMessage('error', 'Please complete all required fields.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+                return;
+            }
 
             try {
                 const response = await fetch('/api/contact', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify(formData)
                 });
 
                 const result = await response.json();
 
-                messageDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
-
                 if (result.success) {
-                    messageDiv.classList.add('bg-green-100', 'text-green-700');
-                    messageDiv.textContent = result.message;
+                    showFormMessage('success', result.message);
                     form.reset();
                 } else {
-                    messageDiv.classList.add('bg-red-100', 'text-red-700');
-                    messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
+                    showFormMessage('error', result.error || 'Something went wrong. Please try again.');
                 }
             } catch (error) {
-                messageDiv.classList.remove('hidden');
-                messageDiv.classList.add('bg-red-100', 'text-red-700');
-                messageDiv.textContent = 'Network error. Please check your connection.';
+                showFormMessage('error', 'Network error. Please check your connection.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalBtnText;

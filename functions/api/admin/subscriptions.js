@@ -1,15 +1,29 @@
-export async function onRequestGet(context) {
-  const { request, env } = context;
-
-  const headers = {
+function buildHeaders() {
+  return {
     "Access-Control-Allow-Origin": "*",
+    "Cache-Control": "no-store",
     "Content-Type": "application/json",
   };
+}
 
-  // Simple auth check
+function getAdminKey(request, env) {
   const url = new URL(request.url);
-  const key = url.searchParams.get("key");
-  if (key !== "gdl2026") {
+  const headerKey = request.headers.get("x-admin-key");
+  const queryKey = url.searchParams.get("key");
+  const configuredKey = (env.ADMIN_KEY || "gdl2026").trim();
+
+  return {
+    configuredKey,
+    providedKey: (headerKey || queryKey || "").trim(),
+  };
+}
+
+export async function onRequestGet(context) {
+  const { request, env } = context;
+  const headers = buildHeaders();
+  const { configuredKey, providedKey } = getAdminKey(request, env);
+
+  if (!providedKey || providedKey !== configuredKey) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers,
@@ -18,7 +32,7 @@ export async function onRequestGet(context) {
 
   try {
     const results = await env.DB.prepare(
-      "SELECT * FROM subscriptions ORDER BY created_at DESC",
+      "SELECT id, email, created_at, status FROM subscriptions ORDER BY created_at DESC",
     ).all();
 
     return new Response(JSON.stringify(results.results), {
@@ -31,4 +45,14 @@ export async function onRequestGet(context) {
       headers,
     });
   }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    headers: {
+      ...buildHeaders(),
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, X-Admin-Key",
+    },
+  });
 }

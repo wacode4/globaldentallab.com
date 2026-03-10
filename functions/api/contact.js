@@ -1,17 +1,47 @@
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
-  // CORS headers
-  const headers = {
+function buildHeaders() {
+  return {
     "Access-Control-Allow-Origin": "*",
+    "Cache-Control": "no-store",
     "Content-Type": "application/json",
   };
+}
+
+function normalizeText(value, maxLength) {
+  const stringValue = typeof value === "string" ? value.trim() : "";
+
+  if (!stringValue) {
+    return "";
+  }
+
+  return stringValue.slice(0, maxLength);
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const headers = buildHeaders();
 
   try {
     const data = await request.json();
+    const firstName = normalizeText(data.firstName, 80);
+    const lastName = normalizeText(data.lastName, 80);
+    const email = normalizeText(data.email, 160).toLowerCase();
+    const phone = normalizeText(data.phone, 40);
+    const clinic = normalizeText(data.clinic, 120);
+    const service = normalizeText(data.service, 60);
+    const message = normalizeText(data.message, 5000);
+    const website = normalizeText(data.website, 255);
 
-    // Validate required fields
-    const { firstName, lastName, email, message } = data;
+    // Quietly swallow obvious bot submissions without creating a record.
+    if (website) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Thank you for your inquiry. We will contact you soon.",
+        }),
+        { status: 200, headers },
+      );
+    }
+
     if (!firstName || !lastName || !email || !message) {
       return new Response(
         JSON.stringify({ success: false, error: "Missing required fields" }),
@@ -19,7 +49,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return new Response(
@@ -28,20 +57,26 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Insert into database
+    if (!env.DB) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Database is not configured" }),
+        { status: 500, headers },
+      );
+    }
+
     const result = await env.DB.prepare(
       `
-            INSERT INTO inquiries (first_name, last_name, email, phone, clinic, service, message)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `,
+        INSERT INTO inquiries (first_name, last_name, email, phone, clinic, service, message)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
     )
       .bind(
         firstName,
         lastName,
         email,
-        data.phone || null,
-        data.clinic || null,
-        data.service || null,
+        phone || null,
+        clinic || null,
+        service || null,
         message,
       )
       .run();
@@ -66,11 +101,10 @@ export async function onRequestPost(context) {
   }
 }
 
-// Handle CORS preflight
 export async function onRequestOptions() {
   return new Response(null, {
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      ...buildHeaders(),
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
