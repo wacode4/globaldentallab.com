@@ -11,7 +11,7 @@
         <?php if (!empty($content['buttons']) && is_array($content['buttons'])): ?>
             <div class="mt-8 flex flex-wrap gap-4">
                 <?php foreach ($content['buttons'] as $button): ?>
-                    <a class="rounded-xl <?= ($button['style'] ?? 'primary') === 'secondary' ? 'border border-white/30 bg-white/10 text-white' : 'bg-accent text-navy' ?> px-6 py-3 font-bold" href="<?= cms_escape($button['href'] ?? '#') ?>">
+                    <a class="rounded-xl <?= ($button['style'] ?? 'primary') === 'secondary' ? 'border border-white/30 bg-white/10 text-white' : 'bg-accent text-navy' ?> px-6 py-3 font-bold" href="<?= cms_escape(cms_localized_href($button['href'] ?? '#', $module['language_code'] ?? 'en')) ?>">
                         <?= cms_escape($button['text'] ?? 'Open') ?>
                     </a>
                 <?php endforeach; ?>

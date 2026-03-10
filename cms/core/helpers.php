@@ -71,3 +71,29 @@ function cms_trimmed(?string $value): string
 {
     return trim((string) $value);
 }
+
+function cms_localized_href(?string $href, string $languageCode): string
+{
+    $href = trim((string) $href);
+    if ($href === '') {
+        return '#';
+    }
+
+    if ($href[0] !== '/') {
+        return $href;
+    }
+
+    if (
+        preg_match('#^/(cms|images|css|js|uploads)(/|$)#', $href) === 1 ||
+        preg_match('#\\.[a-z0-9]{2,5}$#i', $href) === 1 ||
+        str_starts_with($href, '//')
+    ) {
+        return $href;
+    }
+
+    if (preg_match('#^/[a-z]{2}(?=/|$)#', $href) === 1) {
+        return (string) preg_replace('#^/[a-z]{2}(?=/|$)#', '/' . $languageCode, $href, 1);
+    }
+
+    return '/' . $languageCode . $href;
+}

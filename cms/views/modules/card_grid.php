@@ -13,7 +13,7 @@
                     <div class="p-6">
                         <h3 class="mb-3 text-xl font-bold text-navy"><?= cms_escape($card['title'] ?? '') ?></h3>
                         <p class="text-sm text-slate-600"><?= cms_escape($card['text'] ?? '') ?></p>
-                        <?php if (!empty($card['href'])): ?><a class="mt-4 inline-block font-semibold text-primary" href="<?= cms_escape($card['href']) ?>"><?= cms_escape($card['cta'] ?? 'Open') ?></a><?php endif; ?>
+                        <?php if (!empty($card['href'])): ?><a class="mt-4 inline-block font-semibold text-primary" href="<?= cms_escape(cms_localized_href($card['href'], $module['language_code'] ?? 'en')) ?>"><?= cms_escape($card['cta'] ?? 'Open') ?></a><?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>

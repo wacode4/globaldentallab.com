@@ -341,6 +341,7 @@ function cms_find_public_page(string $languageCode, string $slug): ?array
     foreach ($modulesStmt->fetchAll() as $module) {
         $module['settings'] = cms_decode_json($module['settings_json'], []);
         $module['content'] = cms_decode_json($module['content_json'], []);
+        $module['language_code'] = $language['code'];
         $modules[] = $module;
     }
 
