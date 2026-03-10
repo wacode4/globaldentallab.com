@@ -482,6 +482,60 @@ foreach ($pages as $slug => $page) {
     }
 }
 
+$menuStmt = $pdo->prepare(
+    'INSERT INTO menus (menu_key, name)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE
+        name = VALUES(name),
+        updated_at = CURRENT_TIMESTAMP'
+);
+
+$menuDefinitions = [
+    'primary' => [
+        'name' => 'Primary Navigation',
+        'items' => [
+            ['page_slug' => 'home', 'sort_order' => 10],
+            ['page_slug' => 'about', 'sort_order' => 20],
+            ['page_slug' => 'technology', 'sort_order' => 30],
+            ['page_slug' => 'services', 'sort_order' => 40],
+            ['page_slug' => 'contact', 'sort_order' => 50],
+        ],
+    ],
+    'footer' => [
+        'name' => 'Footer Navigation',
+        'items' => [
+            ['page_slug' => 'about', 'sort_order' => 10],
+            ['page_slug' => 'technology', 'sort_order' => 20],
+            ['page_slug' => 'services', 'sort_order' => 30],
+            ['page_slug' => 'ceramics', 'sort_order' => 40],
+            ['page_slug' => 'contact', 'sort_order' => 50],
+        ],
+    ],
+];
+
+$menuItemInsertStmt = $pdo->prepare(
+    'INSERT INTO menu_items (menu_id, page_id, custom_label, custom_url, sort_order, target, is_enabled)
+     VALUES (?, ?, ?, ?, ?, ?, ?)'
+);
+
+foreach ($menuDefinitions as $menuKey => $definition) {
+    $menuStmt->execute([$menuKey, $definition['name']]);
+    $menuId = (int) $pdo->query("SELECT id FROM menus WHERE menu_key = " . $pdo->quote($menuKey))->fetchColumn();
+    $pdo->prepare('DELETE FROM menu_items WHERE menu_id = ?')->execute([$menuId]);
+
+    foreach ($definition['items'] as $item) {
+        $menuItemInsertStmt->execute([
+            $menuId,
+            $pageIds[$item['page_slug']] ?? null,
+            $item['custom_label'] ?? '',
+            $item['custom_url'] ?? '',
+            (int) ($item['sort_order'] ?? 100),
+            $item['target'] ?? '_self',
+            1,
+        ]);
+    }
+}
+
 $modules = [
     'home-hero' => [
         'definition' => ['home-hero', 'hero', 'primary', 'published', '{}'],

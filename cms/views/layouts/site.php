@@ -30,8 +30,7 @@
             <a class="text-xl font-bold text-navy" href="/<?= cms_escape($page['language']['code']) ?>/"><?= cms_escape($siteSettings['site_name']) ?></a>
             <nav class="hidden gap-6 md:flex">
                 <?php foreach ($page['navigation'] as $item): ?>
-                    <?php $href = $item['slug'] === 'home' ? '/' . $page['language']['code'] . '/' : '/' . $page['language']['code'] . '/' . $item['slug']; ?>
-                    <a class="text-sm font-semibold text-slate-600 hover:text-primary" href="<?= cms_escape($href) ?>">
+                    <a class="text-sm font-semibold text-slate-600 hover:text-primary" href="<?= cms_escape($item['href'] ?? '#') ?>" target="<?= cms_escape($item['target'] ?? '_self') ?>">
                         <?= cms_escape($item['nav_label'] ?: $item['page_name']) ?>
                     </a>
                 <?php endforeach; ?>
@@ -58,9 +57,8 @@
             <div>
                 <h4 class="mb-3 font-semibold">Dynamic Pages</h4>
                 <ul class="space-y-2 text-sm text-slate-300">
-                    <?php foreach ($page['navigation'] as $item): ?>
-                        <?php $href = $item['slug'] === 'home' ? '/' . $page['language']['code'] . '/' : '/' . $page['language']['code'] . '/' . $item['slug']; ?>
-                        <li><a href="<?= cms_escape($href) ?>" class="hover:text-white"><?= cms_escape($item['nav_label'] ?: $item['page_name']) ?></a></li>
+                    <?php foreach (($page['footer_navigation'] ?: $page['navigation']) as $item): ?>
+                        <li><a href="<?= cms_escape($item['href'] ?? '#') ?>" class="hover:text-white" target="<?= cms_escape($item['target'] ?? '_self') ?>"><?= cms_escape($item['nav_label'] ?: $item['page_name']) ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </div>

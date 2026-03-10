@@ -137,6 +137,97 @@ function cms_admin_module(?int $moduleId): ?array
     return $module;
 }
 
+function cms_admin_menus(): array
+{
+    $stmt = cms_db()->query(
+        'SELECT m.*, COUNT(mi.id) AS item_count
+         FROM menus m
+         LEFT JOIN menu_items mi ON mi.menu_id = m.id
+         GROUP BY m.id
+         ORDER BY m.id ASC'
+    );
+
+    return $stmt->fetchAll();
+}
+
+function cms_admin_menu(?int $menuId): ?array
+{
+    if (!$menuId) {
+        return null;
+    }
+
+    $stmt = cms_db()->prepare('SELECT * FROM menus WHERE id = ? LIMIT 1');
+    $stmt->execute([$menuId]);
+    $menu = $stmt->fetch();
+    if (!$menu) {
+        return null;
+    }
+
+    $itemsStmt = cms_db()->prepare(
+        'SELECT mi.*, p.slug
+         FROM menu_items mi
+         LEFT JOIN pages p ON p.id = mi.page_id
+         WHERE mi.menu_id = ?
+         ORDER BY mi.sort_order ASC, mi.id ASC'
+    );
+    $itemsStmt->execute([$menuId]);
+    $menu['items'] = $itemsStmt->fetchAll();
+
+    return $menu;
+}
+
+function cms_upsert_menu(array $menuData, array $items): int
+{
+    $pdo = cms_db();
+    $pdo->beginTransaction();
+
+    try {
+        $menuId = !empty($menuData['id']) ? (int) $menuData['id'] : null;
+        $menuKey = cms_normalize_slug($menuData['menu_key'] ?? '');
+        $name = cms_trimmed($menuData['name'] ?? '');
+
+        if ($menuId) {
+            $stmt = $pdo->prepare('UPDATE menus SET menu_key = ?, name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
+            $stmt->execute([$menuKey, $name, $menuId]);
+        } else {
+            $stmt = $pdo->prepare('INSERT INTO menus (menu_key, name) VALUES (?, ?)');
+            $stmt->execute([$menuKey, $name]);
+            $menuId = (int) $pdo->lastInsertId();
+        }
+
+        $pdo->prepare('DELETE FROM menu_items WHERE menu_id = ?')->execute([$menuId]);
+        $itemStmt = $pdo->prepare(
+            'INSERT INTO menu_items (menu_id, page_id, custom_label, custom_url, sort_order, target, is_enabled)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+
+        foreach ($items as $item) {
+            $pageId = (int) ($item['page_id'] ?? 0);
+            $customLabel = cms_trimmed($item['custom_label'] ?? '');
+            $customUrl = cms_trimmed($item['custom_url'] ?? '');
+            if ($pageId <= 0 && $customUrl === '') {
+                continue;
+            }
+
+            $itemStmt->execute([
+                $menuId,
+                $pageId > 0 ? $pageId : null,
+                $customLabel,
+                $customUrl,
+                (int) ($item['sort_order'] ?? 100),
+                cms_trimmed($item['target'] ?? '_self'),
+                !empty($item['is_enabled']) ? 1 : 0,
+            ]);
+        }
+
+        $pdo->commit();
+        return $menuId;
+    } catch (Throwable $error) {
+        $pdo->rollBack();
+        throw $error;
+    }
+}
+
 function cms_upsert_page(array $pageData, array $translations, array $assignments): int
 {
     $pdo = cms_db();
@@ -278,6 +369,11 @@ function cms_upsert_module(array $moduleData, array $translations): int
 
 function cms_public_navigation(string $languageCode): array
 {
+    $menuItems = cms_public_menu('primary', $languageCode);
+    if ($menuItems !== []) {
+        return $menuItems;
+    }
+
     $language = cms_resolve_language($languageCode);
     $defaultLanguage = cms_default_language();
 
@@ -293,6 +389,47 @@ function cms_public_navigation(string $languageCode): array
     );
     $stmt->execute([(int) $language['id'], (int) $defaultLanguage['id']]);
     return $stmt->fetchAll();
+}
+
+function cms_public_menu(string $menuKey, string $languageCode): array
+{
+    $language = cms_resolve_language($languageCode);
+    $defaultLanguage = cms_default_language();
+
+    $stmt = cms_db()->prepare(
+        'SELECT mi.*, p.slug, p.page_type,
+                COALESCE(NULLIF(pt_lang.page_name, ""), pt_default.page_name, mi.custom_label) AS page_name,
+                COALESCE(NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.page_name, ""), pt_default.nav_label, pt_default.page_name, mi.custom_label) AS nav_label
+         FROM menus m
+         INNER JOIN menu_items mi ON mi.menu_id = m.id
+         LEFT JOIN pages p ON p.id = mi.page_id
+         LEFT JOIN page_translations pt_lang ON pt_lang.page_id = p.id AND pt_lang.language_id = ?
+         LEFT JOIN page_translations pt_default ON pt_default.page_id = p.id AND pt_default.language_id = ?
+         WHERE m.menu_key = ? AND mi.is_enabled = 1
+         ORDER BY mi.sort_order ASC, mi.id ASC'
+    );
+    $stmt->execute([(int) $language['id'], (int) $defaultLanguage['id'], $menuKey]);
+
+    $items = [];
+    foreach ($stmt->fetchAll() as $row) {
+        if (!empty($row['page_id']) && !empty($row['slug'])) {
+            $href = $row['slug'] === 'home' ? '/' . $language['code'] . '/' : '/' . $language['code'] . '/' . $row['slug'];
+        } else {
+            $href = cms_localized_href($row['custom_url'] ?? '#', $language['code']);
+        }
+
+        $items[] = [
+            'page_id' => $row['page_id'],
+            'slug' => $row['slug'] ?? '',
+            'page_type' => $row['page_type'] ?? '',
+            'page_name' => $row['page_name'] ?? '',
+            'nav_label' => $row['nav_label'] ?? '',
+            'href' => $href,
+            'target' => $row['target'] ?? '_self',
+        ];
+    }
+
+    return $items;
 }
 
 function cms_find_public_page(string $languageCode, string $slug): ?array
@@ -348,6 +485,7 @@ function cms_find_public_page(string $languageCode, string $slug): ?array
     $page['language'] = $language;
     $page['languages'] = cms_languages();
     $page['navigation'] = cms_public_navigation($language['code']);
+    $page['footer_navigation'] = cms_public_menu('footer', $language['code']);
     $page['modules'] = $modules;
     $page['slug'] = $normalizedSlug;
 

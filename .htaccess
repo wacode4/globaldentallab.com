@@ -1,5 +1,17 @@
 RewriteEngine On
 
+RewriteRule ^about\.html$ /en/about [R=302,L]
+RewriteRule ^technology\.html$ /en/technology [R=302,L]
+RewriteRule ^services\.html$ /en/services [R=302,L]
+RewriteRule ^contact\.html$ /en/contact [R=302,L]
+RewriteRule ^category-ceramics\.html$ /en/ceramics [R=302,L]
+RewriteRule ^product-zirconia-ultra\.html$ /en/zirconia-ultra [R=302,L]
+RewriteRule ^product-emax\.html$ /en/emax [R=302,L]
+RewriteRule ^product-layered\.html$ /en/layered-zirconia [R=302,L]
+RewriteRule ^product-monolithic\.html$ /en/monolithic-zirconia [R=302,L]
+RewriteRule ^product-veneers\.html$ /en/veneers [R=302,L]
+RewriteRule ^product-inlays\.html$ /en/inlays-onlays [R=302,L]
+
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
