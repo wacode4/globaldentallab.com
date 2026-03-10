@@ -86,7 +86,7 @@
                 <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-16">
                     <div>
                         <h2 class="text-2xl font-bold text-navy mb-6">Inquiry & Case Intake Form</h2>
-                        <p class="text-gray-600 mb-8">Use this form for new account questions, case planning support, turnaround discussions, or anything that does not fit one of the direct submission routes below.</p>
+                        <p class="text-gray-600 mb-8" data-cms-text="contact_form_intro">Use this form for new account questions, case planning support, turnaround discussions, or anything that does not fit one of the direct submission routes below.</p>
                         <form id="contactForm" class="space-y-6">
                             <div id="formMessage" class="hidden p-4 rounded-lg text-center font-medium"></div>
                             <div class="hidden" aria-hidden="true">
@@ -163,10 +163,10 @@
 
                     <div>
                         <h2 class="text-2xl font-bold text-navy mb-6">Fastest Ways To Reach The Lab</h2>
-                        <p class="text-gray-600 mb-8">Use this page as the intake hub for first-contact questions, submission support, shipping coordination, and onboarding help.</p>
+                        <p class="text-gray-600 mb-8" data-cms-text="contact_hub_intro">Use this page as the intake hub for first-contact questions, submission support, shipping coordination, and onboarding help.</p>
 
                         <div class="space-y-6 mb-10">
-                            <a href="tel:+85291424923"
+                            <a href="tel:+85291424923" data-cms-href="site_phone_href"
                                 class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer group">
                                 <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
                                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,11 +175,11 @@
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-500">Phone</p>
-                                    <p class="font-semibold text-navy">+852 9142 4923</p>
+                                    <p class="font-semibold text-navy" data-cms-text="site_phone_display">+852 9142 4923</p>
                                 </div>
                             </a>
 
-                            <a href="https://wa.me/85291424923" target="_blank" rel="noopener noreferrer"
+                            <a href="https://wa.me/85291424923" data-cms-href="site_whatsapp_href" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer group">
                                 <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors duration-200">
                                     <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
@@ -188,11 +188,11 @@
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-500">WhatsApp</p>
-                                    <p class="font-semibold text-navy">+852 9142 4923</p>
+                                    <p class="font-semibold text-navy" data-cms-text="site_whatsapp_display">+852 9142 4923</p>
                                 </div>
                             </a>
 
-                            <a href="mailto:info@globaldentallab.com"
+                            <a href="mailto:info@globaldentallab.com" data-cms-href="site_email_href"
                                 class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer group">
                                 <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
                                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +201,7 @@
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-500">Email</p>
-                                    <p class="font-semibold text-navy">info@globaldentallab.com</p>
+                                    <p class="font-semibold text-navy" data-cms-text="site_email_display">info@globaldentallab.com</p>
                                 </div>
                             </a>
                         </div>
@@ -229,7 +229,7 @@
                                     </svg>
                                     <h4 class="font-semibold text-navy">Hong Kong Office</h4>
                                 </div>
-                                <p class="text-gray-600 ml-8">1/F Tung Chung 41 Ma Wan New Village<br>Lantau Island, Hong Kong</p>
+                                <p class="text-gray-600 ml-8" data-cms-html="site_hk_address_html">1/F Tung Chung 41 Ma Wan New Village<br>Lantau Island, Hong Kong</p>
                             </div>
 
                             <div class="p-6 bg-gray-50 rounded-xl">
@@ -239,7 +239,7 @@
                                     </svg>
                                     <h4 class="font-semibold text-navy">Shenzhen Production Facility</h4>
                                 </div>
-                                <p class="text-gray-600 ml-8">4/F, Building 1 HeTai Industrial Area<br>Shenzhen, China</p>
+                                <p class="text-gray-600 ml-8" data-cms-html="site_sz_address_html">4/F, Building 1 HeTai Industrial Area<br>Shenzhen, China</p>
                             </div>
                         </div>
 
@@ -327,8 +327,8 @@
                 <div>
                     <h4 class="font-semibold mb-4">Contact</h4>
                     <ul class="space-y-2 text-gray-400">
-                        <li>+852 9142 4923</li>
-                        <li>info@globaldentallab.com</li>
+                        <li data-cms-text="site_phone_display">+852 9142 4923</li>
+                        <li data-cms-text="site_email_display">info@globaldentallab.com</li>
                         <li>Hong Kong & Shenzhen</li>
                     </ul>
                 </div>
@@ -340,6 +340,7 @@
     </footer>
 
     <script src="js/header-hero.js?v=20260309-2"></script>
+    <script src="js/cms-runtime.js?v=20260310-1"></script>
 
     <script>
         function showFormMessage(type, text) {
@@ -384,7 +385,7 @@
             }
 
             try {
-                const response = await fetch('/api/contact', {
+                const response = await fetch('/cms/api/contact-submit.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
