@@ -81,7 +81,7 @@ $module = $module ?? [
                     <div>
                         <label class="mb-2 block text-sm font-medium">Module Type</label>
                         <select class="w-full rounded-xl border border-slate-300 px-4 py-3" name="module_type">
-                            <?php foreach (['hero', 'rich_text', 'stats_grid', 'card_grid', 'contact_panel', 'cta_banner'] as $type): ?>
+                            <?php foreach (['hero', 'rich_text', 'stats_grid', 'card_grid', 'feature_list', 'media_split', 'contact_panel', 'cta_banner'] as $type): ?>
                                 <option value="<?= $type ?>" <?= $module['module_type'] === $type ? 'selected' : '' ?>><?= $type ?></option>
                             <?php endforeach; ?>
                         </select>

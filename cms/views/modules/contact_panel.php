@@ -5,7 +5,7 @@
             <?php if ($module['kicker']): ?><p class="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-primary"><?= cms_escape($module['kicker']) ?></p><?php endif; ?>
             <?php if ($module['title']): ?><h2 class="mb-4 text-4xl font-extrabold text-navy"><?= cms_escape($module['title']) ?></h2><?php endif; ?>
             <?php if ($module['subtitle']): ?><p class="mb-8 text-lg text-slate-600"><?= cms_escape($module['subtitle']) ?></p><?php endif; ?>
-            <form id="cmsContactForm" class="space-y-5 rounded-3xl border border-slate-200 bg-slate-50 p-6">
+            <form id="contact-form" class="space-y-5 rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <div id="cmsContactMessage" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></div>
                 <div class="grid gap-5 md:grid-cols-2">
                     <input class="rounded-xl border border-slate-300 px-4 py-3" name="firstName" placeholder="First Name" required>
@@ -32,7 +32,7 @@
         </div>
     </div>
     <script>
-        document.getElementById('cmsContactForm')?.addEventListener('submit', async function (event) {
+        document.getElementById('contact-form')?.addEventListener('submit', async function (event) {
             event.preventDefault();
             const form = event.currentTarget;
             const messageBox = document.getElementById('cmsContactMessage');

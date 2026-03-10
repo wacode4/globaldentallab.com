@@ -283,8 +283,8 @@ function cms_public_navigation(string $languageCode): array
 
     $stmt = cms_db()->prepare(
         'SELECT p.slug, p.page_type,
-                COALESCE(pt_lang.page_name, pt_default.page_name) AS page_name,
-                COALESCE(pt_lang.nav_label, pt_default.nav_label) AS nav_label
+                COALESCE(NULLIF(pt_lang.page_name, ""), pt_default.page_name) AS page_name,
+                COALESCE(NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.page_name, ""), pt_default.nav_label, pt_default.page_name) AS nav_label
          FROM pages p
          LEFT JOIN page_translations pt_lang ON pt_lang.page_id = p.id AND pt_lang.language_id = ?
          LEFT JOIN page_translations pt_default ON pt_default.page_id = p.id AND pt_default.language_id = ?
@@ -303,10 +303,10 @@ function cms_find_public_page(string $languageCode, string $slug): ?array
 
     $stmt = cms_db()->prepare(
         'SELECT p.*,
-                COALESCE(pt_lang.page_name, pt_default.page_name) AS page_name,
-                COALESCE(pt_lang.nav_label, pt_default.nav_label) AS nav_label,
-                COALESCE(pt_lang.seo_title, pt_default.seo_title) AS seo_title,
-                COALESCE(pt_lang.seo_description, pt_default.seo_description) AS seo_description
+                COALESCE(NULLIF(pt_lang.page_name, ""), pt_default.page_name) AS page_name,
+                COALESCE(NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.page_name, ""), pt_default.nav_label, pt_default.page_name) AS nav_label,
+                COALESCE(NULLIF(pt_lang.seo_title, ""), pt_default.seo_title) AS seo_title,
+                COALESCE(NULLIF(pt_lang.seo_description, ""), pt_default.seo_description) AS seo_description
          FROM pages p
          LEFT JOIN page_translations pt_lang ON pt_lang.page_id = p.id AND pt_lang.language_id = ?
          LEFT JOIN page_translations pt_default ON pt_default.page_id = p.id AND pt_default.language_id = ?
@@ -323,11 +323,11 @@ function cms_find_public_page(string $languageCode, string $slug): ?array
     $modulesStmt = cms_db()->prepare(
         'SELECT pm.region_name, pm.sort_order, pm.is_enabled,
                 m.module_key, m.module_type, m.variant, m.settings_json,
-                COALESCE(mt_lang.title, mt_default.title) AS title,
-                COALESCE(mt_lang.kicker, mt_default.kicker) AS kicker,
-                COALESCE(mt_lang.subtitle, mt_default.subtitle) AS subtitle,
-                COALESCE(mt_lang.content_html, mt_default.content_html) AS content_html,
-                COALESCE(mt_lang.content_json, mt_default.content_json) AS content_json
+                COALESCE(NULLIF(mt_lang.title, ""), mt_default.title) AS title,
+                COALESCE(NULLIF(mt_lang.kicker, ""), mt_default.kicker) AS kicker,
+                COALESCE(NULLIF(mt_lang.subtitle, ""), mt_default.subtitle) AS subtitle,
+                COALESCE(NULLIF(mt_lang.content_html, ""), mt_default.content_html) AS content_html,
+                COALESCE(NULLIF(mt_lang.content_json, ""), mt_default.content_json) AS content_json
          FROM page_modules pm
          INNER JOIN modules m ON m.id = pm.module_id
          LEFT JOIN module_translations mt_lang ON mt_lang.module_id = m.id AND mt_lang.language_id = ?
