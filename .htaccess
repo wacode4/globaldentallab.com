@@ -11,6 +11,10 @@ RewriteRule ^product-layered\.html$ /en/layered-zirconia [R=302,L]
 RewriteRule ^product-monolithic\.html$ /en/monolithic-zirconia [R=302,L]
 RewriteRule ^product-veneers\.html$ /en/veneers [R=302,L]
 RewriteRule ^product-inlays\.html$ /en/inlays-onlays [R=302,L]
+RewriteRule ^downloads\.html$ /en/downloads [R=302,L]
+RewriteRule ^materials\.html$ /en/materials [R=302,L]
+RewriteRule ^certificates\.html$ /en/certificates [R=302,L]
+RewriteRule ^lab-tour\.html$ /en/lab-tour [R=302,L]
 
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

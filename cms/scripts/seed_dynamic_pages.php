@@ -265,6 +265,42 @@ $pages = [
             'de' => ['Zirconia Ultra', 'Zirconia Ultra', 'Zirconia Ultra Restorations', 'Product detail page for high-translucency zirconia cases and indications.'],
         ],
     ],
+    'downloads' => [
+        'definition' => ['downloads', 'resource', 'marketing', 'published', 130, 0],
+        'translations' => cms_seed_page_translations(
+            'Downloads',
+            'Downloads',
+            'Downloads - RX Forms, Catalogs & Guides',
+            'Download RX forms, catalogs, preparation guides, and implant references from Global Dental Lab.'
+        ),
+    ],
+    'materials' => [
+        'definition' => ['materials', 'resource', 'marketing', 'published', 140, 0],
+        'translations' => cms_seed_page_translations(
+            'Materials',
+            'Materials',
+            'Materials & Compatible Systems',
+            'Review ceramics, acrylics, attachment systems, and compatibility references used by Global Dental Lab.'
+        ),
+    ],
+    'certificates' => [
+        'definition' => ['certificates', 'trust', 'marketing', 'published', 150, 0],
+        'translations' => cms_seed_page_translations(
+            'Certificates',
+            'Certificates',
+            'Certificates - FDA, CE & ISO',
+            'Review Global Dental Lab quality and compliance certificates, including FDA, CE, and ISO-related documentation.'
+        ),
+    ],
+    'lab-tour' => [
+        'definition' => ['lab-tour', 'trust', 'marketing', 'published', 160, 0],
+        'translations' => cms_seed_page_translations(
+            'Lab Tour',
+            'Lab Tour',
+            'Lab Tour - Facility, Workflow & Quality Control',
+            'See the production environment, digital workflow, ceramic finishing, and quality control process behind Global Dental Lab cases.'
+        ),
+    ],
 ];
 
 $productBundles = [
@@ -508,7 +544,11 @@ $menuDefinitions = [
             ['page_slug' => 'technology', 'sort_order' => 20],
             ['page_slug' => 'services', 'sort_order' => 30],
             ['page_slug' => 'ceramics', 'sort_order' => 40],
-            ['page_slug' => 'contact', 'sort_order' => 50],
+            ['page_slug' => 'materials', 'sort_order' => 50],
+            ['page_slug' => 'downloads', 'sort_order' => 60],
+            ['page_slug' => 'certificates', 'sort_order' => 70],
+            ['page_slug' => 'lab-tour', 'sort_order' => 80],
+            ['page_slug' => 'contact', 'sort_order' => 90],
         ],
     ],
 ];
@@ -516,6 +556,10 @@ $menuDefinitions = [
 $menuItemInsertStmt = $pdo->prepare(
     'INSERT INTO menu_items (menu_id, page_id, custom_label, custom_url, sort_order, target, is_enabled)
      VALUES (?, ?, ?, ?, ?, ?, ?)'
+);
+$menuItemTranslationInsertStmt = $pdo->prepare(
+    'INSERT INTO menu_item_translations (menu_item_id, language_id, custom_label)
+     VALUES (?, ?, ?)'
 );
 
 foreach ($menuDefinitions as $menuKey => $definition) {
@@ -533,6 +577,20 @@ foreach ($menuDefinitions as $menuKey => $definition) {
             $item['target'] ?? '_self',
             1,
         ]);
+
+        $menuItemId = (int) $pdo->lastInsertId();
+        foreach (($item['translations'] ?? []) as $code => $translatedLabel) {
+            $translatedLabel = trim((string) $translatedLabel);
+            if ($translatedLabel === '' || !isset($languageIds[$code])) {
+                continue;
+            }
+
+            $menuItemTranslationInsertStmt->execute([
+                $menuItemId,
+                $languageIds[$code],
+                $translatedLabel,
+            ]);
+        }
     }
 }
 
@@ -967,6 +1025,317 @@ $modules = [
             ])],
         ],
     ],
+    'downloads-hero' => [
+        'definition' => ['downloads-hero', 'hero', 'primary', 'published', '{}'],
+        'translations' => [
+            'en' => ['Downloads', 'Resource Center', 'Catalogs, RX forms, preparation guides, and manufacturer references for faster case intake.', '', cms_encode_json([
+                'label' => 'Resource Center',
+                'title_html' => 'Downloads &amp;<br>Case Forms',
+                'subtitle_html' => 'Catalogs, RX forms, preparation guides, and manufacturer references for faster case intake.',
+                'buttons' => [
+                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Contact Us', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'downloads-intro' => [
+        'definition' => ['downloads-intro', 'media_split', 'default', 'published', cms_encode_json(['image_position' => 'right', 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['Everything Your Team Needs Before Submission', 'Case Resources', 'This page brings together the core files clinics, production coordinators, and chairside teams need before submitting a case.', '<p>Use the right RX form first, then pair it with scans, photos, or physical impressions so the case arrives with less back-and-forth.</p><p>This resource page is designed to support intake clarity, not just file storage, so the linked materials stay aligned with practical submission workflow.</p>', cms_encode_json([
+                'image' => '/images/content/digital-workflow.jpg',
+                'image_alt' => 'Digital intake and planning workflow',
+                'buttons' => [
+                    ['text' => 'Go To Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Need Help Choosing?', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'downloads-files' => [
+        'definition' => ['downloads-files', 'rich_text', 'default', 'published', cms_encode_json(['section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['Catalogs, Forms, And Practical Guides', 'Download Library', 'Open the file that matches the case type or planning question before submission.', <<<'HTML'
+<div class="grid gap-8 lg:grid-cols-2 not-prose">
+    <div class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
+        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Catalogs</p>
+        <h3 class="mt-3 text-2xl font-bold text-navy">Catalogs &amp; Product Reference</h3>
+        <div class="mt-6 space-y-4">
+            <a href="/downloads/catalog-1.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Catalog 1</span><span>Download</span>
+            </a>
+            <a href="/downloads/catalog-2.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Catalog 2</span><span>Download</span>
+            </a>
+            <a href="/downloads/all-ceramic-chairside-prep-guide.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Full Ceramic Restoration Chart &amp; Preparation Guide</span><span>Download</span>
+            </a>
+        </div>
+    </div>
+    <div class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
+        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">RX Forms</p>
+        <h3 class="mt-3 text-2xl font-bold text-navy">Prescription Forms</h3>
+        <div class="mt-6 space-y-4">
+            <a href="/downloads/lab-rx-denture.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Lab RX Denture</span><span>Download</span>
+            </a>
+            <a href="/downloads/lab-rx-pfm.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Lab RX PFM</span><span>Download</span>
+            </a>
+            <a href="/downloads/lab-rx-pfm-denture-combined.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Lab RX PFM &amp; Denture Combined</span><span>Download</span>
+            </a>
+            <a href="/downloads/noble-crown-reference.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">
+                <span>Noble Crown Reference</span><span>Download</span>
+            </a>
+        </div>
+    </div>
+</div>
+HTML, '{}'],
+        ],
+    ],
+    'downloads-links' => [
+        'definition' => ['downloads-links', 'rich_text', 'default', 'published', cms_encode_json(['section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['Implant & Manufacturer Reference Links', 'Useful References', 'Quick outbound links for restorative compatibility checks and vendor familiarity.', <<<'HTML'
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 not-prose">
+    <a href="http://www.nobelbiocare.com/en/products-solutions/default.aspx" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Nobel Biocare</a>
+    <a href="http://www.zimmerdental.com/Home/zimmerDental.aspx" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Zimmer</a>
+    <a href="http://biomet3i.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">BIOMET 3i</a>
+    <a href="http://www.dentsply.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Dentsply</a>
+    <a href="http://www.mis-implants.com/Products/Implants.aspx" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">MIS Implants</a>
+    <a href="http://www.implantdirect.com/us/default.asp" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Implant Direct</a>
+    <a href="http://www.astratechdental.us/Main.aspx/Item/775955/navt/72677/navl/90870/nava/90873" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Atlantis</a>
+    <a href="http://www.camlogimplants.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Camlog</a>
+    <a href="http://www.astratechdental.us/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Astra Tech</a>
+    <a href="http://www.ocobiomedical.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">OCO Biomedical</a>
+    <a href="http://www.straumann.us/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Straumann</a>
+    <a href="http://www.imtec.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Imtec</a>
+    <a href="http://www.biohorizons.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">BioHorizons</a>
+    <a href="http://www.bicon.com/" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Bicon</a>
+    <a href="http://www.innovalife.com/index/innovalife" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">Innova Corporation</a>
+</div>
+HTML, '{}'],
+        ],
+    ],
+    'downloads-cta' => [
+        'definition' => ['downloads-cta', 'cta_banner', 'default', 'published', '{}'],
+        'translations' => [
+            'en' => ['Use The Right File Before Intake', 'Download The Form, Then Submit The Case', 'Pick the matching RX form, prep the scans or shipment, and move straight into intake with fewer clarification loops.', '', cms_encode_json([
+                'buttons' => [
+                    ['text' => 'Go To Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Need Help Choosing?', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'materials-hero' => [
+        'definition' => ['materials-hero', 'hero', 'primary', 'published', '{}'],
+        'translations' => [
+            'en' => ['Materials', 'Materials & Compatibility', 'A practical overview of restorative materials, removable options, and supported compatibility references.', '', cms_encode_json([
+                'label' => 'Materials & Compatibility',
+                'title_html' => 'Materials &amp;<br>Compatible Systems',
+                'subtitle_html' => 'A practical overview of restorative materials, removable options, and supported compatibility references.',
+                'buttons' => [
+                    ['text' => 'See Downloads', 'href' => '/en/downloads', 'style' => 'primary'],
+                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'materials-intro' => [
+        'definition' => ['materials-intro', 'media_split', 'default', 'published', cms_encode_json(['image_position' => 'right', 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['A Clearer Reference Point For Materials, Attachments, And Case Planning', 'Working Reference', 'Use this page as a practical summary of the material and compatibility references that matter most during outsourcing.', '<p>The goal is not to list every SKU. It is to group materials into decision-ready categories so doctors, planners, and coordinators can align the case faster.</p><p>This page works best alongside RX forms, scans, shade notes, and any implant or attachment detail your clinic already has before submission.</p>', cms_encode_json([
+                'image' => '/images/source-materials/materials-content.png',
+                'image_alt' => 'Compatibility reference chart for materials',
+                'buttons' => [
+                    ['text' => 'Open Downloads', 'href' => '/en/downloads', 'style' => 'primary'],
+                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'materials-brands' => [
+        'definition' => ['materials-brands', 'rich_text', 'default', 'published', cms_encode_json(['section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['Material Families Your Team Is Likely To Recognize', 'Brand Familiarity', 'Doctors and coordinators often map a page faster when familiar logos and material families stay visible.', <<<'HTML'
+<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5 not-prose">
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/ips-emax.png" alt="IPS e.max logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">IPS e.max</h3><p class="mt-2 text-sm text-slate-600">Pressed and layered esthetic ceramic workflows.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/vita-vm9.png" alt="VITA VM9 logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">VITA VM9</h3><p class="mt-2 text-sm text-slate-600">Ceramic layering support for high-esthetic cases.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/wieland.png" alt="Wieland logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">Wieland</h3><p class="mt-2 text-sm text-slate-600">Zirconia-oriented workflows and restorative planning.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/aidite.jpg" alt="Aidite logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">Aidite</h3><p class="mt-2 text-sm text-slate-600">Digital ceramic production and milling-adjacent systems.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/shofu.png" alt="Shofu logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">Shofu</h3><p class="mt-2 text-sm text-slate-600">Finishing and esthetic material familiarity for lab teams.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/bredent.png" alt="bredent logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">bredent</h3><p class="mt-2 text-sm text-slate-600">Bars, attachment concepts, and removable support options.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/ceka.jpg" alt="CEKA logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">CEKA</h3><p class="mt-2 text-sm text-slate-600">Attachment systems referenced for precision removable cases.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/dentsply.jpg" alt="Dentsply logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">Dentsply</h3><p class="mt-2 text-sm text-slate-600">Recognized implant and denture-related material references.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/valplast.png" alt="Valplast logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">Valplast</h3><p class="mt-2 text-sm text-slate-600">Flexible removable indications and acrylic alternatives.</p></div>
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 text-center"><img src="/images/source-materials/tcs.jpg" alt="TCS logo" class="mx-auto h-12 object-contain"><h3 class="mt-4 text-lg font-bold text-navy">TCS</h3><p class="mt-2 text-sm text-slate-600">Thermoplastic removable pathways for selective indications.</p></div>
+</div>
+HTML, '{}'],
+        ],
+    ],
+    'materials-guide' => [
+        'definition' => ['materials-guide', 'feature_list', 'default', 'published', cms_encode_json(['columns' => 3, 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['How We Frame Material Choice Inside Case Communication', 'Decision Categories', 'The page should make planning conversations faster by grouping materials into decision-ready buckets.', '', cms_encode_json([
+                'items' => [
+                    ['title' => 'Fixed And Esthetic', 'text' => 'PFM, zirconia, layered ceramics, and anterior workflows supported by digital design or conventional submission.'],
+                    ['title' => 'Attachments And Bars', 'text' => 'Attachment-oriented removable cases benefit from early communication around bars, locks, and component direction.'],
+                    ['title' => 'Removable And Acrylic', 'text' => 'Flexible and acrylic denture cases usually need the clearest indication notes, bite detail, and finishing expectations.'],
+                ],
+            ])],
+        ],
+    ],
+    'materials-charts' => [
+        'definition' => ['materials-charts', 'rich_text', 'default', 'published', cms_encode_json(['section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['Reference Charts For Compatibility Review', 'Visual Reference', 'Use these charts when your team needs a practical reminder of material families and compatibility groupings.', <<<'HTML'
+<div class="grid gap-6 md:grid-cols-3 not-prose">
+    <figure class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <img src="/images/source-materials/materials-chart-1.png" alt="Material chart for porcelain fused to metal references" class="h-80 w-full object-cover object-top">
+        <figcaption class="p-4 text-sm text-slate-600">Fixed restorative references including PFM, ceramic, and attachment-related groupings.</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <img src="/images/source-materials/materials-chart-2.png" alt="Material chart for restorative compatibility references" class="h-80 w-full object-cover object-top">
+        <figcaption class="p-4 text-sm text-slate-600">Additional compatibility tables for reviewing restorative material groupings and planning references.</figcaption>
+    </figure>
+    <figure class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <img src="/images/source-materials/materials-chart-3.png" alt="Material chart for acrylic and attachment compatibility" class="h-80 w-full object-cover object-top">
+        <figcaption class="p-4 text-sm text-slate-600">Useful when reviewing acrylic, denture base, and precision attachment references.</figcaption>
+    </figure>
+</div>
+HTML, '{}'],
+        ],
+    ],
+    'materials-cta' => [
+        'definition' => ['materials-cta', 'cta_banner', 'default', 'published', '{}'],
+        'translations' => [
+            'en' => ['Turn Compatibility Questions Into Cleaner Submissions', 'Next Step', 'If the restorative direction is clear, use this page as a pre-submission check. If not, send the scans, photos, and treatment goal first and let the lab help align the material route.', '', cms_encode_json([
+                'buttons' => [
+                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Ask About Compatibility', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'certificates-hero' => [
+        'definition' => ['certificates-hero', 'hero', 'primary', 'published', '{}'],
+        'translations' => [
+            'en' => ['Certificates', 'Trust Center', 'A clear trust page for clinics that need documentation before onboarding or scaling volume.', '', cms_encode_json([
+                'label' => 'Trust Center',
+                'title_html' => 'Certificates &amp;<br>Compliance',
+                'subtitle_html' => 'A clear trust page for clinics that need documentation before onboarding or scaling volume.',
+                'buttons' => [
+                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Contact Us', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'certificates-intro' => [
+        'definition' => ['certificates-intro', 'media_split', 'default', 'published', cms_encode_json(['image_position' => 'left', 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['Certificate Visibility For Doctors, Buyers, And Procurement Teams', 'Quality & Compliance', 'This page brings together the core certificate view clinics, distributors, and procurement teams usually request before trial cases or onboarding.', '<p>Use this page when a clinic or procurement contact needs an immediate proof set before trial cases, tender review, or vendor onboarding.</p><p>It is designed to work alongside the lab tour, downloads, and direct intake so trust-building assets stay organized instead of being scattered across one-off requests.</p>', cms_encode_json([
+                'image' => '/images/source-certificates/certificate-board.jpg',
+                'image_alt' => 'Global Dental Lab certificate board',
+                'buttons' => [
+                    ['text' => 'Request Specific Document', 'href' => '/en/contact', 'style' => 'primary'],
+                    ['text' => 'View Lab Tour', 'href' => '/en/lab-tour', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'certificates-benefits' => [
+        'definition' => ['certificates-benefits', 'feature_list', 'default', 'published', cms_encode_json(['columns' => 4, 'section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['Where This Page Helps Most', 'Trust Signals', 'A short certificate page should still explain how procurement teams and clinics actually use it.', '', cms_encode_json([
+                'items' => [
+                    ['eyebrow' => 'Quality', 'title' => 'ISO 13485 Alignment', 'text' => 'Quality-system language and documentation support trust before the clinic places larger volume.'],
+                    ['eyebrow' => 'Compliance', 'title' => 'CE And Export-Facing Proof', 'text' => 'Useful when buyers or clinical leadership want a faster view of compliance-related documentation.'],
+                    ['eyebrow' => 'Procurement', 'title' => 'Vendor Qualification', 'text' => 'Supports onboarding, group-practice review, and outsourced production approval workflows.'],
+                    ['eyebrow' => 'Sales Support', 'title' => 'Trial Case Confidence', 'text' => 'Pairs well with lab tour and downloads when the relationship is still at evaluation stage.'],
+                ],
+            ])],
+        ],
+    ],
+    'certificates-cta' => [
+        'definition' => ['certificates-cta', 'cta_banner', 'default', 'published', '{}'],
+        'translations' => [
+            'en' => ['Need A Specific Document Set?', 'Turn Trust Review Into The Next Step', 'If a doctor, buyer, or distributor needs a more specific compliance or quality document, use the contact route and request the exact proof set.', '', cms_encode_json([
+                'buttons' => [
+                    ['text' => 'Request Documents', 'href' => '/en/contact', 'style' => 'primary'],
+                    ['text' => 'View Lab Tour', 'href' => '/en/lab-tour', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'lab-tour-hero' => [
+        'definition' => ['lab-tour-hero', 'hero', 'primary', 'published', '{}'],
+        'translations' => [
+            'en' => ['Lab Tour', 'Trust Center', 'A clearer look at the facility, team handoffs, digital production, and final inspection mindset behind every case.', '', cms_encode_json([
+                'label' => 'Trust Center',
+                'title_html' => 'Lab Tour &amp;<br>Workflow',
+                'subtitle_html' => 'A clearer look at the facility, team handoffs, digital production, and final inspection mindset behind every case.',
+                'buttons' => [
+                    ['text' => 'View Certificates', 'href' => '/en/certificates', 'style' => 'primary'],
+                    ['text' => 'Contact Us', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'lab-tour-intro' => [
+        'definition' => ['lab-tour-intro', 'media_split', 'default', 'published', cms_encode_json(['image_position' => 'right', 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['A Production Floor Built Around Digital Handoff, Finishing Discipline, And Final Inspection', 'Facility View', 'This tour gives clinics a clearer look at what happens inside the lab, how cases move between teams, and where quality control sits in the workflow.', '<ul><li>Digital files and prescription details move into planning before production begins.</li><li>CAD/CAM, ceramic work, finishing, and inspection remain visible parts of the story.</li><li>This page is especially useful for clinics evaluating a new outsourcing partner before trial cases.</li></ul>', cms_encode_json([
+                'image' => '/images/source-lab-tour/production-team.jpg',
+                'image_alt' => 'Production team and working environment at Global Dental Lab',
+                'buttons' => [
+                    ['text' => 'View Certificates', 'href' => '/en/certificates', 'style' => 'primary'],
+                    ['text' => 'Book A Conversation', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'lab-tour-checkpoints' => [
+        'definition' => ['lab-tour-checkpoints', 'feature_list', 'default', 'published', cms_encode_json(['columns' => 4, 'section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['The Checkpoints Clinics Usually Want To See Before Scaling Volume', 'What This Tour Shows', 'This section maps the workflow stages doctors and coordinators usually ask about before sending larger case volume.', '', cms_encode_json([
+                'items' => [
+                    ['eyebrow' => '01', 'title' => 'Digital Intake', 'text' => 'Incoming scans, photos, and RX notes are organized before design and manufacturing begin.'],
+                    ['eyebrow' => '02', 'title' => 'CAD/CAM Production', 'text' => 'Machine-based workflows support repeatability for outsourced restorative work.'],
+                    ['eyebrow' => '03', 'title' => 'Ceramic & Finishing', 'text' => 'Esthetic refinement, shade work, contouring, and hand-finished details remain visible parts of the process.'],
+                    ['eyebrow' => '04', 'title' => 'Quality Control', 'text' => 'Final inspection and release checks help protect consistency before dispatch and delivery.'],
+                ],
+            ])],
+        ],
+    ],
+    'lab-tour-gallery' => [
+        'definition' => ['lab-tour-gallery', 'card_grid', 'default', 'published', '{}'],
+        'translations' => [
+            'en' => ['Department Flow And Facility Views', 'Visual Gallery', 'A mix of department views helps clinics understand how cases move through the lab without visiting in person.', '', cms_encode_json([
+                'cards' => [
+                    ['title' => 'Machine-Side Production', 'text' => 'Repeatable digital workflows supported by milling and machine-area coordination.', 'image' => '/images/source-lab-tour/lab-tour-01.jpg'],
+                    ['title' => 'Technician Workspace', 'text' => 'Production benches and active case handling zones used across daily workflow.', 'image' => '/images/source-lab-tour/lab-tour-03.jpg'],
+                    ['title' => 'Facility Interior', 'text' => 'A broader view of work zones and department layout inside the lab.', 'image' => '/images/source-lab-tour/lab-tour-07.jpg'],
+                    ['title' => 'Restorative Department', 'text' => 'A case-handling area where restorative work is coordinated through production.', 'image' => '/images/source-lab-tour/lab-tour-08.jpg'],
+                    ['title' => 'Finishing And QC', 'text' => 'Finishing and release-oriented zones tied to final inspection steps.', 'image' => '/images/source-lab-tour/lab-tour-09.jpg'],
+                    ['title' => 'Supporting Equipment', 'text' => 'Equipment that helps stabilize turnaround and workflow consistency.', 'image' => '/images/source-lab-tour/lab-tour-10.jpg'],
+                ],
+            ])],
+        ],
+    ],
+    'lab-tour-cta' => [
+        'definition' => ['lab-tour-cta', 'cta_banner', 'default', 'published', '{}'],
+        'translations' => [
+            'en' => ['You Do Not Need An In-Person Visit To Understand How The Lab Works', 'Remote Trust', 'For many clinics this is the first confidence-building step before sample cases. Pair it with certificates, downloads, and a direct case review conversation so the relationship starts with clearer expectations.', '', cms_encode_json([
+                'buttons' => [
+                    ['text' => 'Send A Trial Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Check Documents', 'href' => '/en/certificates', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
 ];
 
 foreach ($productBundles as $bundle) {
@@ -1028,6 +1397,26 @@ $pageModules = [
     ['zirconia-ultra', 'zirconia-specs', 'main', 40, 1],
     ['zirconia-ultra', 'zirconia-related', 'main', 50, 1],
     ['zirconia-ultra', 'zirconia-cta', 'main', 60, 1],
+    ['downloads', 'downloads-hero', 'main', 10, 1],
+    ['downloads', 'downloads-intro', 'main', 20, 1],
+    ['downloads', 'downloads-files', 'main', 30, 1],
+    ['downloads', 'downloads-links', 'main', 40, 1],
+    ['downloads', 'downloads-cta', 'main', 50, 1],
+    ['materials', 'materials-hero', 'main', 10, 1],
+    ['materials', 'materials-intro', 'main', 20, 1],
+    ['materials', 'materials-brands', 'main', 30, 1],
+    ['materials', 'materials-guide', 'main', 40, 1],
+    ['materials', 'materials-charts', 'main', 50, 1],
+    ['materials', 'materials-cta', 'main', 60, 1],
+    ['certificates', 'certificates-hero', 'main', 10, 1],
+    ['certificates', 'certificates-intro', 'main', 20, 1],
+    ['certificates', 'certificates-benefits', 'main', 30, 1],
+    ['certificates', 'certificates-cta', 'main', 40, 1],
+    ['lab-tour', 'lab-tour-hero', 'main', 10, 1],
+    ['lab-tour', 'lab-tour-intro', 'main', 20, 1],
+    ['lab-tour', 'lab-tour-checkpoints', 'main', 30, 1],
+    ['lab-tour', 'lab-tour-gallery', 'main', 40, 1],
+    ['lab-tour', 'lab-tour-cta', 'main', 50, 1],
 ];
 
 foreach ($productBundles as $bundle) {

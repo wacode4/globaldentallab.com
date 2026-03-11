@@ -173,6 +173,24 @@ function cms_admin_menu(?int $menuId): ?array
     $itemsStmt->execute([$menuId]);
     $menu['items'] = $itemsStmt->fetchAll();
 
+    $translationStmt = cms_db()->prepare(
+        'SELECT mit.menu_item_id, mit.custom_label, l.code AS language_code
+         FROM menu_item_translations mit
+         INNER JOIN languages l ON l.id = mit.language_id
+         WHERE mit.menu_item_id = ?'
+    );
+
+    foreach ($menu['items'] as &$item) {
+        $item['translations'] = [];
+        $translationStmt->execute([(int) $item['id']]);
+        foreach ($translationStmt->fetchAll() as $row) {
+            $item['translations'][$row['language_code']] = [
+                'custom_label' => $row['custom_label'] ?? '',
+            ];
+        }
+    }
+    unset($item);
+
     return $menu;
 }
 
@@ -195,10 +213,16 @@ function cms_upsert_menu(array $menuData, array $items): int
             $menuId = (int) $pdo->lastInsertId();
         }
 
+        $languages = cms_languages();
+
         $pdo->prepare('DELETE FROM menu_items WHERE menu_id = ?')->execute([$menuId]);
         $itemStmt = $pdo->prepare(
             'INSERT INTO menu_items (menu_id, page_id, custom_label, custom_url, sort_order, target, is_enabled)
              VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+        $translationStmt = $pdo->prepare(
+            'INSERT INTO menu_item_translations (menu_item_id, language_id, custom_label)
+             VALUES (?, ?, ?)'
         );
 
         foreach ($items as $item) {
@@ -218,6 +242,22 @@ function cms_upsert_menu(array $menuData, array $items): int
                 cms_trimmed($item['target'] ?? '_self'),
                 !empty($item['is_enabled']) ? 1 : 0,
             ]);
+
+            $menuItemId = (int) $pdo->lastInsertId();
+            $translationRows = is_array($item['translations'] ?? null) ? $item['translations'] : [];
+            foreach ($languages as $language) {
+                $languageCode = $language['code'];
+                $translatedLabel = cms_trimmed($translationRows[$languageCode]['custom_label'] ?? '');
+                if ($translatedLabel === '') {
+                    continue;
+                }
+
+                $translationStmt->execute([
+                    $menuItemId,
+                    (int) $language['id'],
+                    $translatedLabel,
+                ]);
+            }
         }
 
         $pdo->commit();
@@ -398,17 +438,19 @@ function cms_public_menu(string $menuKey, string $languageCode): array
 
     $stmt = cms_db()->prepare(
         'SELECT mi.*, p.slug, p.page_type,
-                COALESCE(NULLIF(pt_lang.page_name, ""), pt_default.page_name, mi.custom_label) AS page_name,
-                COALESCE(NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.page_name, ""), pt_default.nav_label, pt_default.page_name, mi.custom_label) AS nav_label
+                COALESCE(NULLIF(mit_lang.custom_label, ""), NULLIF(mit_default.custom_label, ""), mi.custom_label, NULLIF(pt_lang.page_name, ""), pt_default.page_name) AS page_name,
+                COALESCE(NULLIF(mit_lang.custom_label, ""), NULLIF(mit_default.custom_label, ""), mi.custom_label, NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.page_name, ""), pt_default.nav_label, pt_default.page_name) AS nav_label
          FROM menus m
          INNER JOIN menu_items mi ON mi.menu_id = m.id
          LEFT JOIN pages p ON p.id = mi.page_id
          LEFT JOIN page_translations pt_lang ON pt_lang.page_id = p.id AND pt_lang.language_id = ?
          LEFT JOIN page_translations pt_default ON pt_default.page_id = p.id AND pt_default.language_id = ?
+         LEFT JOIN menu_item_translations mit_lang ON mit_lang.menu_item_id = mi.id AND mit_lang.language_id = ?
+         LEFT JOIN menu_item_translations mit_default ON mit_default.menu_item_id = mi.id AND mit_default.language_id = ?
          WHERE m.menu_key = ? AND mi.is_enabled = 1
          ORDER BY mi.sort_order ASC, mi.id ASC'
     );
-    $stmt->execute([(int) $language['id'], (int) $defaultLanguage['id'], $menuKey]);
+    $stmt->execute([(int) $language['id'], (int) $defaultLanguage['id'], (int) $language['id'], (int) $defaultLanguage['id'], $menuKey]);
 
     $items = [];
     foreach ($stmt->fetchAll() as $row) {

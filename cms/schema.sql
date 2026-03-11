@@ -84,6 +84,17 @@ CREATE TABLE IF NOT EXISTS menu_items (
     KEY idx_menu_items_menu_sort (menu_id, sort_order)
 );
 
+CREATE TABLE IF NOT EXISTS menu_item_translations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    menu_item_id INT UNSIGNED NOT NULL,
+    language_id INT UNSIGNED NOT NULL,
+    custom_label VARCHAR(150) NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_menu_item_language (menu_item_id, language_id),
+    CONSTRAINT fk_menu_item_translations_item FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE,
+    CONSTRAINT fk_menu_item_translations_language FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS page_translations (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     page_id INT UNSIGNED NOT NULL,

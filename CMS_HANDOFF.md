@@ -39,6 +39,7 @@ Main CMS tables already in use:
 - `page_modules`
 - `menus`
 - `menu_items`
+- `menu_item_translations`
 - `cms_settings`
 - `site_setting_translations`
 - `inquiries`
@@ -68,6 +69,10 @@ Dynamic public pages currently seeded and live:
 - `monolithic-zirconia`
 - `veneers`
 - `inlays-onlays`
+- `downloads`
+- `materials`
+- `certificates`
+- `lab-tour`
 
 Current module library includes:
 
@@ -135,6 +140,10 @@ These old static URLs now redirect to dynamic routes:
 - `product-monolithic.html`
 - `product-veneers.html`
 - `product-inlays.html`
+- `downloads.html`
+- `materials.html`
+- `certificates.html`
+- `lab-tour.html`
 
 Current redirect target language is `/en/...`.
 
@@ -158,6 +167,10 @@ Useful verification targets:
 - `/en/services`
 - `/en/ceramics`
 - `/en/emax`
+- `/en/downloads`
+- `/en/materials`
+- `/en/certificates`
+- `/en/lab-tour`
 - `/cms/pages.php`
 - `/cms/modules.php`
 - `/cms/menus.php`
@@ -167,7 +180,7 @@ Useful verification targets:
 
 - Production is still separate and has not been cut over.
 - Legacy static files still exist in the repo; migrated ones are redirected at the web server layer.
-- Menu custom labels are not yet language-specific; page-linked items localize through page translations.
+- Menu custom labels can now be overridden per language through `menu_item_translations`; legacy `menu_items.custom_label` still works as a fallback.
 - Static root `/` is still not force-redirected to `/en/`.
 - The repo intentionally does not store runtime secrets or admin passwords.
 - `PROJECT_NOTES.md` has user-owned edits and should not be modified casually.
@@ -176,8 +189,7 @@ Useful verification targets:
 
 Highest-value next tasks:
 
-- Add language-specific custom labels for menu items.
-- Migrate remaining category/support pages such as materials, downloads, certificates, and lab-tour into the same page/module system.
+- Migrate remaining high-value static pages such as `send-a-case.html` and any still-static landing pages into the same page/module system.
 - Decide whether `/` should eventually redirect to `/en/` on the test site.
 - Plan the production cutover only after enough static routes are covered by dynamic replacements.
 

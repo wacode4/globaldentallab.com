@@ -6,12 +6,21 @@ require __DIR__ . '/bootstrap.php';
 cms_require_login();
 
 $availablePages = cms_admin_pages();
+$languages = cms_languages();
 $menuId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $menu = cms_admin_menu($menuId);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $items = [];
     foreach (($_POST['items'] ?? []) as $item) {
+        $translations = [];
+        foreach ($languages as $language) {
+            $code = $language['code'];
+            $translations[$code] = [
+                'custom_label' => $item['translations'][$code]['custom_label'] ?? '',
+            ];
+        }
+
         $items[] = [
             'page_id' => $item['page_id'] ?? '',
             'custom_label' => $item['custom_label'] ?? '',
@@ -19,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'sort_order' => $item['sort_order'] ?? 100,
             'target' => $item['target'] ?? '_self',
             'is_enabled' => !empty($item['is_enabled']),
+            'translations' => $translations,
         ];
     }
 
@@ -45,7 +55,12 @@ $items = $menu['items'] ?: [[
     'sort_order' => 100,
     'target' => '_self',
     'is_enabled' => 1,
+    'translations' => [],
 ]];
+$translationGridClass = match (count($languages)) {
+    2 => 'md:grid-cols-2',
+    default => count($languages) >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-1',
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,22 +109,33 @@ $items = $menu['items'] ?: [[
                 </div>
                 <div class="space-y-4" id="menu-item-rows">
                     <?php foreach ($items as $index => $item): ?>
-                        <div class="grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-6">
-                            <select class="rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][page_id]">
-                                <option value="">Custom URL</option>
-                                <?php foreach ($availablePages as $page): ?>
-                                    <option value="<?= (int) $page['id'] ?>" <?= (int) ($item['page_id'] ?? 0) === (int) $page['id'] ? 'selected' : '' ?>>
-                                        <?= cms_escape($page['page_name'] ?: $page['slug']) ?> (<?= cms_escape($page['slug']) ?>)
-                                    </option>
+                        <div class="space-y-4 rounded-2xl border border-slate-200 p-4">
+                            <div class="grid gap-4 md:grid-cols-6">
+                                <select class="rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][page_id]">
+                                    <option value="">Custom URL</option>
+                                    <?php foreach ($availablePages as $page): ?>
+                                        <option value="<?= (int) $page['id'] ?>" <?= (int) ($item['page_id'] ?? 0) === (int) $page['id'] ? 'selected' : '' ?>>
+                                            <?= cms_escape($page['page_name'] ?: $page['slug']) ?> (<?= cms_escape($page['slug']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][custom_label]" value="<?= cms_escape($item['custom_label'] ?? '') ?>" placeholder="Fallback label">
+                                <input class="rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="items[<?= $index ?>][custom_url]" value="<?= cms_escape($item['custom_url'] ?? '') ?>" placeholder="/path or https://...">
+                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][sort_order]" type="number" value="<?= (int) ($item['sort_order'] ?? 100) ?>" placeholder="Sort">
+                                <label class="inline-flex items-center gap-3 rounded-xl border border-slate-300 px-4 py-3">
+                                    <input type="checkbox" name="items[<?= $index ?>][is_enabled]" value="1" <?= !empty($item['is_enabled']) ? 'checked' : '' ?>>
+                                    <span>Enabled</span>
+                                </label>
+                            </div>
+                            <div class="grid gap-4 <?= $translationGridClass ?>">
+                                <?php foreach ($languages as $language): ?>
+                                    <?php $translation = $item['translations'][$language['code']] ?? []; ?>
+                                    <div>
+                                        <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"><?= cms_escape(strtoupper($language['code'])) ?> Label</label>
+                                        <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][translations][<?= cms_escape($language['code']) ?>][custom_label]" value="<?= cms_escape($translation['custom_label'] ?? '') ?>" placeholder="Optional override">
+                                    </div>
                                 <?php endforeach; ?>
-                            </select>
-                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][custom_label]" value="<?= cms_escape($item['custom_label'] ?? '') ?>" placeholder="Custom label">
-                            <input class="rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="items[<?= $index ?>][custom_url]" value="<?= cms_escape($item['custom_url'] ?? '') ?>" placeholder="/path or https://...">
-                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[<?= $index ?>][sort_order]" type="number" value="<?= (int) ($item['sort_order'] ?? 100) ?>" placeholder="Sort">
-                            <label class="inline-flex items-center gap-3 rounded-xl border border-slate-300 px-4 py-3">
-                                <input type="checkbox" name="items[<?= $index ?>][is_enabled]" value="1" <?= !empty($item['is_enabled']) ? 'checked' : '' ?>>
-                                <span>Enabled</span>
-                            </label>
+                            </div>
                             <input type="hidden" name="items[<?= $index ?>][target]" value="<?= cms_escape($item['target'] ?? '_self') ?>">
                         </div>
                     <?php endforeach; ?>
@@ -121,17 +147,29 @@ $items = $menu['items'] ?: [[
     </div>
     <script>
         const availablePages = <?= json_encode(array_map(static fn ($page) => ['id' => (int) $page['id'], 'label' => ($page['page_name'] ?: $page['slug']) . ' (' . $page['slug'] . ')'], $availablePages), JSON_UNESCAPED_SLASHES) ?>;
+        const languages = <?= json_encode(array_map(static fn ($language) => ['code' => $language['code'], 'label' => strtoupper($language['code'])], $languages), JSON_UNESCAPED_SLASHES) ?>;
         let itemIndex = <?= count($items) ?>;
         document.getElementById('add-menu-item').addEventListener('click', () => {
             const wrapper = document.createElement('div');
-            wrapper.className = 'grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-6';
+            wrapper.className = 'space-y-4 rounded-2xl border border-slate-200 p-4';
             const options = ['<option value="">Custom URL</option>'].concat(availablePages.map(page => `<option value="${page.id}">${page.label}</option>`)).join('');
+            const translationInputs = languages.map(language => `
+                <div>
+                    <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">${language.label} Label</label>
+                    <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][translations][${language.code}][custom_label]" placeholder="Optional override">
+                </div>
+            `).join('');
             wrapper.innerHTML = `
-                <select class="rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][page_id]">${options}</select>
-                <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][custom_label]" placeholder="Custom label">
-                <input class="rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="items[${itemIndex}][custom_url]" placeholder="/path or https://...">
-                <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][sort_order]" type="number" value="100" placeholder="Sort">
-                <label class="inline-flex items-center gap-3 rounded-xl border border-slate-300 px-4 py-3"><input type="checkbox" name="items[${itemIndex}][is_enabled]" value="1" checked><span>Enabled</span></label>
+                <div class="grid gap-4 md:grid-cols-6">
+                    <select class="rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][page_id]">${options}</select>
+                    <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][custom_label]" placeholder="Fallback label">
+                    <input class="rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="items[${itemIndex}][custom_url]" placeholder="/path or https://...">
+                    <input class="rounded-xl border border-slate-300 px-4 py-3" name="items[${itemIndex}][sort_order]" type="number" value="100" placeholder="Sort">
+                    <label class="inline-flex items-center gap-3 rounded-xl border border-slate-300 px-4 py-3"><input type="checkbox" name="items[${itemIndex}][is_enabled]" value="1" checked><span>Enabled</span></label>
+                </div>
+                <div class="grid gap-4 <?= $translationGridClass ?>">
+                    ${translationInputs}
+                </div>
                 <input type="hidden" name="items[${itemIndex}][target]" value="_self">
             `;
             document.getElementById('menu-item-rows').appendChild(wrapper);

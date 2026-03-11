@@ -29,6 +29,8 @@ For current CMS migration status and architecture handoff, also read `CMS_HANDOF
 4. SSH to the server and run `git pull` in the test site directory.
 5. Verify the live HTML response, not just the browser view.
 
+If `cms/schema.sql` changes, re-apply the schema before verification so new CMS tables are available.
+
 ## Current Shared Asset Cache Busting
 
 To reduce Cloudflare and browser cache issues, all shared CSS and JS references now use explicit version query strings:
@@ -138,6 +140,10 @@ Verify:
 - `curl -L https://tt.globaldentallab.com/en/services | sed -n '1,160p'`
 - `curl -L https://tt.globaldentallab.com/en/ceramics | sed -n '1,200p'`
 - `curl -L https://tt.globaldentallab.com/en/emax | sed -n '1,200p'`
+- `curl -L https://tt.globaldentallab.com/en/downloads | sed -n '1,200p'`
+- `curl -L https://tt.globaldentallab.com/en/materials | sed -n '1,200p'`
+- `curl -L https://tt.globaldentallab.com/en/certificates | sed -n '1,200p'`
+- `curl -L https://tt.globaldentallab.com/en/lab-tour | sed -n '1,200p'`
 - confirm the expected title, copy, redirects, or menu links
 
 Browser verification:
@@ -146,8 +152,11 @@ Browser verification:
 - test at least:
   - `/`
   - `/services.html`
-  - `/send-a-case.html`
   - `/downloads.html`
+  - `/materials.html`
+  - `/certificates.html`
+  - `/lab-tour.html`
+  - `/send-a-case.html`
 
 ## Current Known Good Deploy Commits
 
