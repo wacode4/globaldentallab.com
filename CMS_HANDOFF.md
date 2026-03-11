@@ -10,6 +10,26 @@ This file records the current PHP + MySQL CMS architecture, what has already bee
 - Test server checkout: `/var/www/html/globaldentallab.com/test`
 - Production has not been switched to this CMS yet.
 
+## Latest Progress: 2026-03-11
+
+Today completed:
+
+- Added `menu_item_translations` and updated menu queries/editor so custom menu labels can now be overridden per language.
+- Migrated `downloads`, `materials`, `certificates`, and `lab-tour` into the PHP CMS page/module system.
+- Added legacy redirects for `downloads.html`, `materials.html`, `certificates.html`, and `lab-tour.html`.
+- Deployed test server commit `336d378` and verified:
+  - `/en/downloads`
+  - `/en/materials`
+  - `/en/certificates`
+  - `/en/lab-tour`
+  - the four old `.html` URLs now `302` to `/en/...`
+
+Fast resume point for tomorrow:
+
+- Start from `cms/scripts/seed_dynamic_pages.php` and follow the same pattern used for the four newly migrated resource/trust pages.
+- The highest-value next migration target is `send-a-case.html`.
+- After that, sweep remaining static internal links and legacy JS/header navigation that still point to old `.html` resource URLs.
+
 ## Current Architecture
 
 - PHP front controller: `site.php`
@@ -189,7 +209,9 @@ Useful verification targets:
 
 Highest-value next tasks:
 
-- Migrate remaining high-value static pages such as `send-a-case.html` and any still-static landing pages into the same page/module system.
+- Migrate `send-a-case.html` into the same page/module system.
+- Sweep remaining static internal links and legacy header/footer JS that still point to `downloads.html`, `materials.html`, `certificates.html`, and `lab-tour.html`.
+- Migrate any other still-static landing pages that should join the CMS path after `send-a-case`.
 - Decide whether `/` should eventually redirect to `/en/` on the test site.
 - Plan the production cutover only after enough static routes are covered by dynamic replacements.
 

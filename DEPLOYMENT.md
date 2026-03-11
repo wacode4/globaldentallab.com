@@ -160,10 +160,27 @@ Browser verification:
 
 ## Current Known Good Deploy Commits
 
+- `336d378` `Migrate resource and trust pages into CMS`
 - `818af62` `Build multilingual page and module architecture`
 - `f351529` `Localize dynamic module links by language`
 - `c93e598` `Add translatable site settings and seed product pages`
 - `7ba8237` `Add CMS menu management and legacy redirects`
+
+### 2026-03-11 verification note
+
+- `336d378` was deployed to `tt.globaldentallab.com`
+- schema was re-applied
+- seed script was re-run successfully
+- verified `200` on:
+  - `/en/downloads`
+  - `/en/materials`
+  - `/en/certificates`
+  - `/en/lab-tour`
+- verified `302` on:
+  - `/downloads.html`
+  - `/materials.html`
+  - `/certificates.html`
+  - `/lab-tour.html`
 
 ## Maintenance Guidance
 
