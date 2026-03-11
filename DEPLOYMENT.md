@@ -4,13 +4,16 @@
 
 This document records the deployment workflow, cache behavior, and verification steps for this project so future updates can be shipped and checked quickly.
 
+For current CMS migration status and architecture handoff, also read `CMS_HANDOFF.md`.
+
 ## Stack Summary
 
-- Static HTML site
+- Legacy static HTML pages still exist in the repo.
+- Active test architecture is now PHP + MySQL CMS driven by `site.php`.
+- Dynamic public routes use `/en/<slug>` style URLs.
 - Shared CSS: `css/shared-styles.css`
-- Shared JS: `js/header-hero.js`
-- Contact/subscription backend in `functions/api/`
-- Git-based deployment flow
+- Some legacy front-end behavior still uses `js/cms-runtime.js`.
+- Git-based deployment flow with server-side `git pull`
 
 ## Runtime Config Notes
 
@@ -79,7 +82,7 @@ Fix:
 - verify the public domain with `curl -L`
 - check returned HTML for expected new title, copy, or asset version strings
 
-### 4. The test server does not execute `functions/api/`
+### 4. The old `functions/api/` path is not the active backend on the test server
 
 What happened:
 
@@ -94,8 +97,9 @@ Root cause:
 
 Implication:
 
-- form and admin UI code can be shipped with the static site
-- runtime backend behavior still requires a separate Functions-capable environment to verify
+- `functions/api/` is no longer the preferred runtime path for current CMS work
+- current contact/admin/content management behavior on test now runs through PHP endpoints under `/cms/`
+- do not spend time debugging Cloudflare Functions for the current server-managed CMS path unless production requirements change
 
 Rule:
 
@@ -131,8 +135,10 @@ Deploy:
 Verify:
 
 - `curl -I https://tt.globaldentallab.com/`
-- `curl -L https://tt.globaldentallab.com/ | sed -n '1,120p'`
-- confirm the expected title, copy, and asset version strings
+- `curl -L https://tt.globaldentallab.com/en/services | sed -n '1,160p'`
+- `curl -L https://tt.globaldentallab.com/en/ceramics | sed -n '1,200p'`
+- `curl -L https://tt.globaldentallab.com/en/emax | sed -n '1,200p'`
+- confirm the expected title, copy, redirects, or menu links
 
 Browser verification:
 
@@ -145,8 +151,10 @@ Browser verification:
 
 ## Current Known Good Deploy Commits
 
-- `9fed7fd` `Rebuild site structure for migrated lab content`
-- `296feb1` `Add cache-busting version to shared assets`
+- `818af62` `Build multilingual page and module architecture`
+- `f351529` `Localize dynamic module links by language`
+- `c93e598` `Add translatable site settings and seed product pages`
+- `7ba8237` `Add CMS menu management and legacy redirects`
 
 ## Maintenance Guidance
 
