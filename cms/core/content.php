@@ -811,3 +811,132 @@ function cms_public_catalog(string $languageCode): array
 
     return $catalog;
 }
+
+function cms_catalog_page_context_base(string $languageCode, string $slug): array
+{
+    $language = cms_resolve_language($languageCode);
+    $catalog = cms_public_catalog($language['code']);
+
+    return [
+        'language' => $language,
+        'languages' => cms_languages(),
+        'navigation' => cms_public_navigation($language['code']),
+        'site_settings' => cms_setting_map($language['code']),
+        'slug' => cms_normalize_slug($slug),
+        'catalog' => $catalog,
+        'footer_categories' => array_slice($catalog, 0, 4),
+    ];
+}
+
+function cms_public_catalog_services_page(string $languageCode): array
+{
+    $page = cms_catalog_page_context_base($languageCode, 'services');
+
+    $page['meta'] = [
+        'title' => 'Dental Lab Products - Ceramics, Implants, Aligners & More | Global Dental Lab',
+        'description' => 'Explore Global Dental Lab products including CAD veneers, all-ceramics, implant restorations, surgical guides, PFM, clear aligners, removables, and orthodontics.',
+        'type' => 'website',
+        'canonical' => cms_localized_href('/services', $page['language']['code']),
+        'image' => '/images/og-image.jpg',
+    ];
+    $page['hero'] = [
+        'heroType' => 'static',
+        'heroImage' => '/images/hero/services-hero.jpg',
+        'heroTitle' => 'A Broader Product Mix<br>For Outsourcing Clinics',
+        'heroSubtitle' => 'CAD veneers, all-ceramics, implants, surgical guides, PFM, clear aligners, removables, and orthodontic appliances.',
+        'heroLabel' => 'Products',
+        'heroCTAs' => [
+            ['text' => 'SEND A CASE', 'href' => cms_localized_href('/send-a-case', $page['language']['code']), 'style' => 'white'],
+            ['text' => 'DOWNLOAD FORMS', 'href' => cms_localized_href('/downloads', $page['language']['code']), 'style' => 'primary'],
+        ],
+        'showTrustBadges' => true,
+        'activePage' => 'services',
+    ];
+
+    return $page;
+}
+
+function cms_public_catalog_category_page(string $languageCode, string $slug): ?array
+{
+    $page = cms_catalog_page_context_base($languageCode, $slug);
+    $normalizedSlug = cms_normalize_slug($slug);
+
+    foreach ($page['catalog'] as $category) {
+        $pageSlug = cms_normalize_slug((string) ($category['page_slug'] ?? ''));
+        if ($normalizedSlug !== $pageSlug && $normalizedSlug !== cms_normalize_slug((string) ($category['slug'] ?? ''))) {
+            continue;
+        }
+
+        $page['category'] = $category;
+        $page['meta'] = [
+            'title' => ($category['seo_title'] ?: $category['name']) . ' - Global Dental Lab',
+            'description' => $category['seo_description'] ?: $category['summary'],
+            'type' => 'website',
+            'canonical' => $category['href'] ?: cms_localized_href('/' . $normalizedSlug, $page['language']['code']),
+            'image' => $category['image_path'] ?: '/images/og-image.jpg',
+        ];
+        $page['hero'] = [
+            'heroType' => 'static',
+            'heroImage' => '/images/hero/services-hero.jpg',
+            'heroTitle' => (string) ($category['name'] ?: 'Product Category'),
+            'heroSubtitle' => (string) ($category['summary'] ?: 'Browse category-level workflows and products.'),
+            'heroLabel' => 'Product Category',
+            'heroCTAs' => [
+                ['text' => 'SEND A CASE', 'href' => cms_localized_href('/send-a-case', $page['language']['code']), 'style' => 'white'],
+                ['text' => 'CONTACT THE LAB', 'href' => cms_localized_href('/contact', $page['language']['code']), 'style' => 'primary'],
+            ],
+            'showTrustBadges' => false,
+            'activePage' => 'services',
+        ];
+
+        return $page;
+    }
+
+    return null;
+}
+
+function cms_public_catalog_product_page(string $languageCode, string $slug): ?array
+{
+    $page = cms_catalog_page_context_base($languageCode, $slug);
+    $normalizedSlug = cms_normalize_slug($slug);
+
+    foreach ($page['catalog'] as $category) {
+        foreach ($category['products'] as $product) {
+            $pageSlug = cms_normalize_slug((string) ($product['page_slug'] ?? ''));
+            if ($normalizedSlug !== $pageSlug && $normalizedSlug !== cms_normalize_slug((string) ($product['slug'] ?? ''))) {
+                continue;
+            }
+
+            $page['category'] = $category;
+            $page['product'] = $product;
+            $page['related_products'] = array_values(array_filter(
+                $category['products'],
+                static fn (array $candidate): bool => (int) $candidate['id'] !== (int) $product['id']
+            ));
+            $page['meta'] = [
+                'title' => ($product['seo_title'] ?: $product['name']) . ' - Global Dental Lab',
+                'description' => $product['seo_description'] ?: $product['short_description'],
+                'type' => 'product',
+                'canonical' => $product['href'] ?: cms_localized_href('/' . $normalizedSlug, $page['language']['code']),
+                'image' => $product['image_path'] ?: ($category['image_path'] ?: '/images/og-image.jpg'),
+            ];
+            $page['hero'] = [
+                'heroType' => 'static',
+                'heroImage' => '/images/hero/services-hero.jpg',
+                'heroTitle' => (string) ($product['name'] ?: 'Product Detail'),
+                'heroSubtitle' => (string) ($product['short_description'] ?: 'A product workflow page managed from the catalog.'),
+                'heroLabel' => 'Product Detail',
+                'heroCTAs' => [
+                    ['text' => 'SEND A CASE', 'href' => cms_localized_href('/send-a-case', $page['language']['code']), 'style' => 'white'],
+                    ['text' => 'PREPARATION GUIDE', 'href' => cms_localized_href('/downloads', $page['language']['code']), 'style' => 'primary'],
+                ],
+                'showTrustBadges' => false,
+                'activePage' => 'services',
+            ];
+
+            return $page;
+        }
+    }
+
+    return null;
+}
