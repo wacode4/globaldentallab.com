@@ -186,3 +186,91 @@ function cms_localized_href(?string $href, string $languageCode): string
 
     return '/' . $languageCode . $href;
 }
+
+function cms_legacy_page_map(): array
+{
+    return [
+        'home' => 'index.html',
+        'about' => 'about.html',
+        'technology' => 'technology.html',
+        'services' => 'services.html',
+        'contact' => 'contact.html',
+        'ceramics' => 'category-ceramics.html',
+        'zirconia-ultra' => 'product-zirconia-ultra.html',
+        'emax' => 'product-emax.html',
+        'layered-zirconia' => 'product-layered.html',
+        'monolithic-zirconia' => 'product-monolithic.html',
+        'veneers' => 'product-veneers.html',
+        'inlays-onlays' => 'product-inlays.html',
+        'downloads' => 'downloads.html',
+        'send-a-case' => 'send-a-case.html',
+        'materials' => 'materials.html',
+        'certificates' => 'certificates.html',
+        'lab-tour' => 'lab-tour.html',
+    ];
+}
+
+function cms_render_legacy_public_page(string $slug, string $languageCode): ?string
+{
+    if (strtolower($languageCode) !== 'en') {
+        return null;
+    }
+
+    $map = cms_legacy_page_map();
+    if (!isset($map[$slug])) {
+        return null;
+    }
+
+    $path = dirname(CMS_BASE_PATH) . '/' . $map[$slug];
+    if (!is_file($path)) {
+        return null;
+    }
+
+    $html = (string) file_get_contents($path);
+    if ($html === '') {
+        return null;
+    }
+
+    return cms_transform_legacy_public_html($html, $languageCode);
+}
+
+function cms_transform_legacy_public_html(string $html, string $languageCode): string
+{
+    $routeMap = [
+        'index.html' => '/' . $languageCode . '/',
+        'about.html' => cms_localized_href('/about', $languageCode),
+        'technology.html' => cms_localized_href('/technology', $languageCode),
+        'services.html' => cms_localized_href('/services', $languageCode),
+        'contact.html' => cms_localized_href('/contact', $languageCode),
+        'category-ceramics.html' => cms_localized_href('/ceramics', $languageCode),
+        'product-zirconia-ultra.html' => cms_localized_href('/zirconia-ultra', $languageCode),
+        'product-emax.html' => cms_localized_href('/emax', $languageCode),
+        'product-layered.html' => cms_localized_href('/layered-zirconia', $languageCode),
+        'product-monolithic.html' => cms_localized_href('/monolithic-zirconia', $languageCode),
+        'product-veneers.html' => cms_localized_href('/veneers', $languageCode),
+        'product-inlays.html' => cms_localized_href('/inlays-onlays', $languageCode),
+        'downloads.html' => cms_localized_href('/downloads', $languageCode),
+        'send-a-case.html' => cms_localized_href('/send-a-case', $languageCode),
+        'materials.html' => cms_localized_href('/materials', $languageCode),
+        'certificates.html' => cms_localized_href('/certificates', $languageCode),
+        'lab-tour.html' => cms_localized_href('/lab-tour', $languageCode),
+    ];
+
+    foreach ($routeMap as $source => $target) {
+        $html = str_replace($source, $target, $html);
+    }
+
+    $html = (string) preg_replace(
+        '#(?<=["\'(=])(?!(?:https?:)?//|/)(images|css|js|downloads)/#',
+        '/$1/',
+        $html
+    );
+
+    $html = (string) preg_replace(
+        '#/js/header-hero\.js\?v=[0-9-]+#',
+        '/js/header-hero.js?v=20260313-1',
+        $html
+    );
+
+    return $html;
+}

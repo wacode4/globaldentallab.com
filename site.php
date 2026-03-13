@@ -32,8 +32,8 @@ if (!$page) {
     exit;
 }
 
-if (($page['slug'] ?? '') === 'contact') {
-    echo cms_render_view('pages/contact_static', ['page' => $page], null);
+if ($legacyHtml = cms_render_legacy_public_page((string) ($page['slug'] ?? ''), (string) ($page['language']['code'] ?? ''))) {
+    echo $legacyHtml;
     exit;
 }
 
