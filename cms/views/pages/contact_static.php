@@ -1,0 +1,419 @@
+<?php
+$siteSettings = cms_setting_map($page['language']['code'] ?? null);
+$languageCode = $page['language']['code'] ?? 'en';
+$pageTitle = $page['seo_title'] ?: 'Contact & Case Intake';
+$pageDescription = $page['seo_description'] ?: 'Contact Global Dental Lab for case intake, digital submission support, shipping guidance, and outsourcing dental laboratory services.';
+$sendCaseHref = cms_localized_href('/send-a-case', $languageCode);
+$downloadsHref = cms_localized_href('/downloads', $languageCode);
+$servicesHref = cms_localized_href('/services', $languageCode);
+$aboutHref = cms_localized_href('/about', $languageCode);
+$technologyHref = cms_localized_href('/technology', $languageCode);
+$certificatesHref = cms_localized_href('/certificates', $languageCode);
+?>
+<!DOCTYPE html>
+<html lang="<?= cms_escape($languageCode) ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= cms_escape($pageTitle) ?> | Global Dental Lab</title>
+    <meta name="description" content="<?= cms_escape($pageDescription) ?>">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= cms_escape('/' . $languageCode . '/contact') ?>">
+    <meta property="og:title" content="<?= cms_escape($pageTitle) ?> | Global Dental Lab">
+    <meta property="og:description" content="<?= cms_escape($pageDescription) ?>">
+    <meta property="og:image" content="/images/og-image.jpg">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<?= cms_escape('/' . $languageCode . '/contact') ?>">
+    <meta property="twitter:title" content="<?= cms_escape($pageTitle) ?> | Global Dental Lab">
+    <meta property="twitter:description" content="<?= cms_escape($pageDescription) ?>">
+    <meta property="twitter:image" content="/images/og-image.jpg">
+
+    <link rel="canonical" href="<?= cms_escape('/' . $languageCode . '/contact') ?>">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "mainEntity": {
+        "@type": "DentalLaboratory",
+        "name": "Global Dental Laboratory",
+        "telephone": "+85291424923",
+        "email": "info@globaldentallab.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1/F Tung Chung 41 Ma Wan New Village, Lantau Island",
+          "addressLocality": "Hong Kong",
+          "addressCountry": "HK"
+        }
+      }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <script data-cfasync="false">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0083C9',
+                        'primary-dark': '#006BA6',
+                        accent: '#E6B00F',
+                        'accent-dark': '#c99300',
+                        navy: '#001B39',
+                        'navy-light': '#0D2C52',
+                        'navy-transparent': 'rgba(0, 27, 57, 0.9)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['"Albert Sans"', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        keating: '3px',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/css/shared-styles.css?v=20260309-2">
+</head>
+
+<body class="bg-white text-navy font-body" style="font-family: 'Montserrat', sans-serif; line-height: 2;">
+    <div id="header-container"></div>
+    <div id="hero-container"></div>
+
+    <main>
+        <section class="py-20 fade-up">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-16">
+                    <div>
+                        <h2 class="text-2xl font-bold text-navy mb-6">Inquiry & Case Intake Form</h2>
+                        <p class="text-gray-600 mb-8" data-cms-text="contact_form_intro"><?= cms_escape($siteSettings['contact_form_intro']) ?></p>
+                        <form id="contactForm" class="space-y-6">
+                            <div id="formMessage" class="hidden p-4 rounded-lg text-center font-medium"></div>
+                            <div class="hidden" aria-hidden="true">
+                                <label for="website">Website</label>
+                                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="firstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
+                                    <input type="text" id="firstName" name="firstName" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200" placeholder="John">
+                                </div>
+                                <div>
+                                    <label for="lastName" class="block text-sm font-medium text-navy mb-2">Last Name *</label>
+                                    <input type="text" id="lastName" name="lastName" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200" placeholder="Smith">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-navy mb-2">Email Address *</label>
+                                <input type="email" id="email" name="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200" placeholder="john@dentalclinic.com">
+                            </div>
+
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-navy mb-2">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200" placeholder="+852 XXXX XXXX">
+                            </div>
+
+                            <div>
+                                <label for="clinic" class="block text-sm font-medium text-navy mb-2">Clinic / Practice Name</label>
+                                <input type="text" id="clinic" name="clinic" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200" placeholder="Your Dental Clinic">
+                            </div>
+
+                            <div>
+                                <label for="service" class="block text-sm font-medium text-navy mb-2">Service Interest</label>
+                                <select id="service" name="service" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200 cursor-pointer">
+                                    <option value="">Select a service</option>
+                                    <option value="cad-veneers">CAD Veneers</option>
+                                    <option value="ceramics">All Ceramics</option>
+                                    <option value="implants">Implant Products</option>
+                                    <option value="surgical-guides">Implant Surgical Guides</option>
+                                    <option value="pfm">PFM & Snap-On Smile</option>
+                                    <option value="aligners">Clear Aligners</option>
+                                    <option value="removable">Removables</option>
+                                    <option value="orthodontics">Orthodontics</option>
+                                    <option value="shipping">Shipping / New Account Setup</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-navy mb-2">Message *</label>
+                                <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors duration-200 resize-none" placeholder="Tell us about your case type, scanner platform, shipping questions, or onboarding needs..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary w-full bg-primary hover:bg-primary-dark text-white py-4 rounded-lg font-semibold text-lg transition-colors duration-200 cursor-pointer">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-navy mb-6">Fastest Ways To Reach The Lab</h2>
+                        <p class="text-gray-600 mb-8" data-cms-text="contact_hub_intro"><?= cms_escape($siteSettings['contact_hub_intro']) ?></p>
+
+                        <div class="space-y-6 mb-10">
+                            <a href="<?= cms_escape($siteSettings['site_phone_href']) ?>" data-cms-href="site_phone_href" class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer group">
+                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Phone</p>
+                                    <p class="font-semibold text-navy" data-cms-text="site_phone_display"><?= cms_escape($siteSettings['site_phone_display']) ?></p>
+                                </div>
+                            </a>
+
+                            <a href="<?= cms_escape($siteSettings['site_whatsapp_href']) ?>" data-cms-href="site_whatsapp_href" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer group">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors duration-200">
+                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">WhatsApp</p>
+                                    <p class="font-semibold text-navy" data-cms-text="site_whatsapp_display"><?= cms_escape($siteSettings['site_whatsapp_display']) ?></p>
+                                </div>
+                            </a>
+
+                            <a href="<?= cms_escape($siteSettings['site_email_href']) ?>" data-cms-href="site_email_href" class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer group">
+                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Email</p>
+                                    <p class="font-semibold text-navy" data-cms-text="site_email_display"><?= cms_escape($siteSettings['site_email_display']) ?></p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4 mb-10">
+                            <a href="<?= cms_escape($sendCaseHref) ?>" class="rounded-2xl bg-navy p-6 text-white hover:bg-navy-light transition-colors">
+                                <p class="text-xs uppercase tracking-[0.2em] text-white/60 mb-3">Best For</p>
+                                <h3 class="text-xl font-bold mb-2">Digital Case Submission</h3>
+                                <p class="text-white/80 text-sm">Platform connections, scanner workflows, and cloud delivery routes.</p>
+                            </a>
+                            <a href="<?= cms_escape($downloadsHref) ?>" class="rounded-2xl bg-gray-50 p-6 border border-gray-200 hover:border-primary transition-colors">
+                                <p class="text-xs uppercase tracking-[0.2em] text-primary mb-3">Best For</p>
+                                <h3 class="text-xl font-bold text-navy mb-2">RX Forms & Guides</h3>
+                                <p class="text-gray-600 text-sm">Preparation guides, PFM forms, denture forms, and product catalogs.</p>
+                            </a>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-navy mb-4">Shipping Addresses</h3>
+                        <div class="space-y-6">
+                            <div class="p-6 bg-gray-50 rounded-xl">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <h4 class="font-semibold text-navy">Hong Kong Office</h4>
+                                </div>
+                                <p class="text-gray-600 ml-8" data-cms-html="site_hk_address_html"><?= $siteSettings['site_hk_address_html'] ?></p>
+                            </div>
+
+                            <div class="p-6 bg-gray-50 rounded-xl">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    <h4 class="font-semibold text-navy">Shenzhen Production Facility</h4>
+                                </div>
+                                <p class="text-gray-600 ml-8" data-cms-html="site_sz_address_html"><?= $siteSettings['site_sz_address_html'] ?></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-6 bg-primary/5 rounded-xl border border-primary/10">
+                            <h4 class="font-semibold text-navy mb-3">Business Hours</h4>
+                            <div class="space-y-2 text-gray-600">
+                                <div class="flex justify-between"><span>Monday - Friday</span><span class="font-medium">9:00 AM - 6:00 PM</span></div>
+                                <div class="flex justify-between"><span>Saturday</span><span class="font-medium">9:00 AM - 1:00 PM</span></div>
+                                <div class="flex justify-between"><span>Sunday</span><span class="font-medium">Closed</span></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-4">Times shown in Hong Kong Time (HKT)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-gray-50 fade-up">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <p class="text-primary font-medium mb-3 tracking-wide">COMMON QUESTIONS</p>
+                    <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Before You Send The First Case</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-sm service-card">
+                        <h3 class="font-semibold text-navy mb-2">Can you accept digital impressions?</h3>
+                        <p class="text-gray-600">Yes. The current workflow supports major platforms including TRIOS, Medit, iTero, Carestream, Dentsply Sirona, Shining3D, and cloud-delivered files.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-sm service-card">
+                        <h3 class="font-semibold text-navy mb-2">Can I still ship physical impressions?</h3>
+                        <p class="text-gray-600">Yes. Traditional case intake remains part of the operating model. Use the shipping addresses above and pair the shipment with the correct RX form.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-sm service-card">
+                        <h3 class="font-semibold text-navy mb-2">Where do I get RX forms?</h3>
+                        <p class="text-gray-600">Use the downloads page for catalogs, preparation guides, denture RX forms, and PFM forms.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-sm service-card">
+                        <h3 class="font-semibold text-navy mb-2">What if my scanner platform is not listed?</h3>
+                        <p class="text-gray-600">Use the contact form, phone, or WhatsApp and the intake team will route you to the correct submission method.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-gradient-to-br from-navy via-navy to-navy-light relative overflow-hidden">
+            <div class="absolute inset-0 pattern-overlay"></div>
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready To Start The Relationship Properly?</h2>
+                <p class="text-xl text-white/90 mb-8">Use the right intake route from the beginning: digital submission for platform-connected cases, downloads for RX forms, or direct contact for onboarding and shipping.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="<?= cms_escape($sendCaseHref) ?>" class="btn-primary inline-flex items-center justify-center bg-accent hover:bg-accent-dark text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-200 cursor-pointer">Send A Case</a>
+                    <a href="<?= cms_escape($downloadsHref) ?>" class="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-200 border border-white/30 cursor-pointer">Open Downloads</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-navy text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-10">
+                <div>
+                    <h3 class="text-xl font-bold mb-4"><?= cms_escape($siteSettings['site_name']) ?></h3>
+                    <p class="text-gray-400">Inquiry handling, digital intake support, and shipping guidance for outsourced restorative production.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Best Next Step</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="<?= cms_escape($sendCaseHref) ?>" class="hover:text-white">Send A Case</a></li>
+                        <li><a href="<?= cms_escape($downloadsHref) ?>" class="hover:text-white">Downloads</a></li>
+                        <li><a href="<?= cms_escape($servicesHref) ?>" class="hover:text-white">Products</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Trust</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="<?= cms_escape($aboutHref) ?>" class="hover:text-white">About</a></li>
+                        <li><a href="<?= cms_escape($technologyHref) ?>" class="hover:text-white">Technology</a></li>
+                        <li><a href="<?= cms_escape($certificatesHref) ?>" class="hover:text-white">Certificates</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li data-cms-text="site_phone_display"><?= cms_escape($siteSettings['site_phone_display']) ?></li>
+                        <li data-cms-text="site_email_display"><?= cms_escape($siteSettings['site_email_display']) ?></li>
+                        <li>Hong Kong & Shenzhen</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2026 Global Dental Laboratory. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/js/header-hero.js?v=20260312-1"></script>
+    <script data-cfasync="false" src="/js/cms-runtime.js?v=20260310-1"></script>
+
+    <script data-cfasync="false">
+        function showFormMessage(type, text) {
+            const messageDiv = document.getElementById('formMessage');
+            messageDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            messageDiv.classList.add(type === 'success' ? 'bg-green-100' : 'bg-red-100');
+            messageDiv.classList.add(type === 'success' ? 'text-green-700' : 'text-red-700');
+            messageDiv.textContent = text;
+        }
+
+        function normalizeField(value) {
+            return typeof value === 'string' ? value.trim() : '';
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.textContent;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            document.getElementById('formMessage').classList.add('hidden');
+
+            const formData = {
+                firstName: normalizeField(form.firstName.value),
+                lastName: normalizeField(form.lastName.value),
+                email: normalizeField(form.email.value),
+                phone: normalizeField(form.phone.value),
+                clinic: normalizeField(form.clinic.value),
+                service: normalizeField(form.service.value),
+                message: normalizeField(form.message.value),
+                website: normalizeField(form.website.value)
+            };
+
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+                showFormMessage('error', 'Please complete all required fields.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+                return;
+            }
+
+            try {
+                const response = await fetch('/cms/api/contact-submit.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showFormMessage('success', result.message);
+                    form.reset();
+                } else {
+                    showFormMessage('error', result.error || 'Something went wrong. Please try again.');
+                }
+            } catch (error) {
+                showFormMessage('error', 'Network error. Please check your connection.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            }
+        });
+    </script>
+    <script data-cfasync="false">
+        GlobalDentalLab.init({
+            heroType: 'static',
+            heroImage: '/images/hero/contact-hero.jpg',
+            heroTitle: 'Contact The Lab<br>Or Start Intake',
+            heroSubtitle: 'Use the inquiry form for onboarding and support, or go straight to digital submission and downloads.',
+            heroLabel: 'Contact & Intake',
+            heroCTAs: [
+                { text: 'SEND A CASE', href: '<?= cms_escape($sendCaseHref) ?>', style: 'white' },
+                { text: 'DOWNLOAD FORMS', href: '<?= cms_escape($downloadsHref) ?>', style: 'primary' }
+            ],
+            showTrustBadges: false,
+            activePage: 'contact'
+        });
+    </script>
+</body>
+</html>

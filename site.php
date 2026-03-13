@@ -32,4 +32,9 @@ if (!$page) {
     exit;
 }
 
+if (($page['slug'] ?? '') === 'contact') {
+    echo cms_render_view('pages/contact_static', ['page' => $page], null);
+    exit;
+}
+
 echo cms_render_view('pages/public', ['page' => $page], 'site');

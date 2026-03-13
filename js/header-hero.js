@@ -58,6 +58,81 @@ const GlobalDentalLab = {
     currentPage: "home", // home, services, about, technology, contact, product, category
   },
 
+  routeMap: {
+    "index.html": "/",
+    "about.html": "/about",
+    "technology.html": "/technology",
+    "services.html": "/services",
+    "contact.html": "/contact",
+    "downloads.html": "/downloads",
+    "send-a-case.html": "/send-a-case",
+    "materials.html": "/materials",
+    "certificates.html": "/certificates",
+    "lab-tour.html": "/lab-tour",
+    "category-ceramics.html": "/ceramics",
+    "product-zirconia-ultra.html": "/zirconia-ultra",
+    "product-emax.html": "/emax",
+    "product-layered.html": "/layered-zirconia",
+    "product-monolithic.html": "/monolithic-zirconia",
+    "product-veneers.html": "/veneers",
+    "product-inlays.html": "/inlays-onlays",
+  },
+
+  getCurrentLanguage() {
+    const match = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/);
+    return match ? match[1] : "en";
+  },
+
+  getLocalizedHref(href) {
+    if (
+      !href ||
+      href.startsWith("#") ||
+      href.startsWith("mailto:") ||
+      href.startsWith("tel:") ||
+      href.startsWith("http://") ||
+      href.startsWith("https://") ||
+      href.startsWith("//")
+    ) {
+      return href;
+    }
+
+    const [rawPath, hash] = href.split("#");
+    let normalizedPath = rawPath;
+
+    if (this.routeMap[rawPath]) {
+      normalizedPath = this.routeMap[rawPath];
+    } else if (rawPath.startsWith("/")) {
+      normalizedPath = rawPath;
+    } else if (rawPath.endsWith(".html")) {
+      normalizedPath = "/" + rawPath.replace(/\.html$/, "");
+    } else if (rawPath === "") {
+      normalizedPath = "/";
+    }
+
+    if (
+      normalizedPath.startsWith("/cms") ||
+      normalizedPath.startsWith("/images") ||
+      normalizedPath.startsWith("/css") ||
+      normalizedPath.startsWith("/js") ||
+      /^\/[a-z]{2}(?:\/|$)/.test(normalizedPath)
+    ) {
+      return normalizedPath + (hash ? `#${hash}` : "");
+    }
+
+    const localizedPath =
+      normalizedPath === "/"
+        ? `/${this.getCurrentLanguage()}/`
+        : `/${this.getCurrentLanguage()}${normalizedPath}`;
+
+    return localizedPath + (hash ? `#${hash}` : "");
+  },
+
+  getLanguageHref(languageCode) {
+    const match = window.location.pathname.match(/^\/[a-z]{2}(\/.*)?$/);
+    const suffix = match ? match[1] || "/" : "/";
+    return `/${languageCode}${suffix}`;
+  },
+
   init(options = {}) {
     this.config = { ...this.config, ...options };
     this.renderHeader();
@@ -125,12 +200,13 @@ const GlobalDentalLab = {
   },
 
   renderHeader() {
+    const currentLanguage = this.getCurrentLanguage().toUpperCase();
     const headerHTML = `
       <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" data-transparent="true">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-20">
             <!-- Logo -->
-            <a href="index.html" class="flex items-center gap-3 cursor-pointer flex-shrink-0">
+            <a href="${this.getLocalizedHref("index.html")}" class="flex items-center gap-3 cursor-pointer flex-shrink-0">
               <div class="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 logo-bg">
                 <svg class="w-7 h-7 text-white logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
@@ -156,34 +232,34 @@ const GlobalDentalLab = {
                     <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
                     <path stroke-width="1.5" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                   </svg>
-                  <span class="text-xs font-medium" id="current-lang">EN</span>
+                  <span class="text-xs font-medium" id="current-lang">${currentLanguage}</span>
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
                 </button>
                 <div id="lang-menu" class="hidden absolute right-0 top-full mt-2 bg-white rounded-lg shadow-xl py-2 min-w-[160px] z-50">
-                  <a href="?lang=en" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("en")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇬🇧</span> English
                   </a>
-                  <a href="?lang=fr" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("fr")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇫🇷</span> Français
                   </a>
-                  <a href="?lang=de" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("de")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇩🇪</span> Deutsch
                   </a>
-                  <a href="?lang=it" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("it")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇮🇹</span> Italiano
                   </a>
-                  <a href="?lang=es" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("es")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇪🇸</span> Español
                   </a>
-                  <a href="?lang=pt" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("pt")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇵🇹</span> Português
                   </a>
-                  <a href="?lang=ar" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("ar")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇸🇦</span> العربية
                   </a>
-                  <a href="?lang=he" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <a href="${this.getLanguageHref("he")}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     <span class="w-6 text-center">🇮🇱</span> עברית
                   </a>
                 </div>
@@ -194,7 +270,7 @@ const GlobalDentalLab = {
                 </svg>
                 +852 9142 4923
               </a>
-              <a href="send-a-case.html" class="flex items-center gap-2 px-5 py-2 bg-white text-navy rounded text-[13px] font-bold hover:bg-gray-100 transition-colors duration-200 cursor-pointer whitespace-nowrap uppercase header-cta">
+              <a href="${this.getLocalizedHref("send-a-case.html")}" class="flex items-center gap-2 px-5 py-2 bg-white text-navy rounded text-[13px] font-bold hover:bg-gray-100 transition-colors duration-200 cursor-pointer whitespace-nowrap uppercase header-cta">
                 Send A Case
               </a>
             </div>
@@ -211,24 +287,24 @@ const GlobalDentalLab = {
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden lg:hidden bg-white/95 backdrop-blur-md">
           <div class="px-4 py-4 space-y-1">
-            <a href="index.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Home</a>
+            <a href="${this.getLocalizedHref("index.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Home</a>
             <div class="border-t border-gray-200 my-2"></div>
             <p class="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Products</p>
-            <a href="services.html#cad-veneers" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">CAD Veneers</a>
-            <a href="services.html#ceramics" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">All Ceramics</a>
-            <a href="services.html#implants" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Products</a>
-            <a href="services.html#guides" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Surgical Guides</a>
-            <a href="services.html#pfm" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">PFM & Snap-On Smile</a>
-            <a href="services.html#aligners" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clear Aligners</a>
-            <a href="services.html#removable" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removables</a>
-            <a href="services.html#orthodontics" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontics</a>
+            <a href="${this.getLocalizedHref("services.html#cad-veneers")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">CAD Veneers</a>
+            <a href="${this.getLocalizedHref("services.html#ceramics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">All Ceramics</a>
+            <a href="${this.getLocalizedHref("services.html#implants")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Products</a>
+            <a href="${this.getLocalizedHref("services.html#guides")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Surgical Guides</a>
+            <a href="${this.getLocalizedHref("services.html#pfm")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">PFM & Snap-On Smile</a>
+            <a href="${this.getLocalizedHref("services.html#aligners")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clear Aligners</a>
+            <a href="${this.getLocalizedHref("services.html#removable")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removables</a>
+            <a href="${this.getLocalizedHref("services.html#orthodontics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontics</a>
             <div class="border-t border-gray-200 my-2"></div>
-            <a href="materials.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Materials</a>
-            <a href="about.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">About</a>
-            <a href="certificates.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Certificates</a>
-            <a href="downloads.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Downloads</a>
-            <a href="send-a-case.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Send A Case</a>
-            <a href="contact.html" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Contact</a>
+            <a href="${this.getLocalizedHref("materials.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Materials</a>
+            <a href="${this.getLocalizedHref("about.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">About</a>
+            <a href="${this.getLocalizedHref("certificates.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Certificates</a>
+            <a href="${this.getLocalizedHref("downloads.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Downloads</a>
+            <a href="${this.getLocalizedHref("send-a-case.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Send A Case</a>
+            <a href="${this.getLocalizedHref("contact.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Contact</a>
             <div class="pt-4 border-t border-gray-200 mt-4">
               <a href="tel:+85291424923" class="flex items-center justify-center gap-2 text-navy py-3 cursor-pointer">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,21 +312,21 @@ const GlobalDentalLab = {
                 </svg>
                 +852 9142 4923
               </a>
-              <a href="send-a-case.html" class="block mt-3 bg-primary text-white text-center py-3 rounded font-semibold cursor-pointer">
+              <a href="${this.getLocalizedHref("send-a-case.html")}" class="block mt-3 bg-primary text-white text-center py-3 rounded font-semibold cursor-pointer">
                 Send A Case
               </a>
               <!-- Mobile Language Selector -->
               <div class="mt-4 pt-4 border-t border-gray-200">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Language</p>
                 <div class="grid grid-cols-4 gap-2">
-                  <a href="?lang=en" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇬🇧 EN</a>
-                  <a href="?lang=fr" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇫🇷 FR</a>
-                  <a href="?lang=de" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇩🇪 DE</a>
-                  <a href="?lang=it" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇮🇹 IT</a>
-                  <a href="?lang=es" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇪🇸 ES</a>
-                  <a href="?lang=pt" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇵🇹 PT</a>
-                  <a href="?lang=ar" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇸🇦 AR</a>
-                  <a href="?lang=he" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇮🇱 HE</a>
+                  <a href="${this.getLanguageHref("en")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇬🇧 EN</a>
+                  <a href="${this.getLanguageHref("fr")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇫🇷 FR</a>
+                  <a href="${this.getLanguageHref("de")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇩🇪 DE</a>
+                  <a href="${this.getLanguageHref("it")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇮🇹 IT</a>
+                  <a href="${this.getLanguageHref("es")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇪🇸 ES</a>
+                  <a href="${this.getLanguageHref("pt")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇵🇹 PT</a>
+                  <a href="${this.getLanguageHref("ar")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇸🇦 AR</a>
+                  <a href="${this.getLanguageHref("he")}" class="text-center py-2 text-sm rounded hover:bg-gray-100">🇮🇱 HE</a>
                 </div>
               </div>
             </div>
@@ -331,7 +407,7 @@ const GlobalDentalLab = {
         if (item.hasDropdown) {
           return `
           <div class="relative group">
-            <a href="${item.href}" class="nav-link px-4 py-3 text-[13px] tracking-wide text-white font-semibold hover:text-white transition-colors duration-200 cursor-pointer flex items-center gap-1 header-link whitespace-nowrap uppercase">
+          <a href="${this.getLocalizedHref(item.href)}" class="nav-link px-4 py-3 text-[13px] tracking-wide text-white font-semibold hover:text-white transition-colors duration-200 cursor-pointer flex items-center gap-1 header-link whitespace-nowrap uppercase">
               ${item.label}
               <svg class="w-3 h-3 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
@@ -342,7 +418,7 @@ const GlobalDentalLab = {
                 ${item.dropdownItems
                   .map(
                     (sub) => `
-                  <a href="${sub.href}" class="block px-5 py-3 hover:bg-gray-50 text-navy hover:text-primary cursor-pointer transition-colors duration-200">${sub.label}</a>
+                  <a href="${this.getLocalizedHref(sub.href)}" class="block px-5 py-3 hover:bg-gray-50 text-navy hover:text-primary cursor-pointer transition-colors duration-200">${sub.label}</a>
                 `,
                   )
                   .join("")}
@@ -352,7 +428,7 @@ const GlobalDentalLab = {
         `;
         } else {
           return `
-          <a href="${item.href}" class="nav-link px-4 py-3 text-[13px] tracking-wide text-white font-semibold hover:text-white transition-colors duration-200 cursor-pointer header-link whitespace-nowrap uppercase">${item.label}</a>
+          <a href="${this.getLocalizedHref(item.href)}" class="nav-link px-4 py-3 text-[13px] tracking-wide text-white font-semibold hover:text-white transition-colors duration-200 cursor-pointer header-link whitespace-nowrap uppercase">${item.label}</a>
         `;
         }
       })
@@ -426,10 +502,10 @@ const GlobalDentalLab = {
                   </p>
                   
                   <div class="flex flex-col sm:flex-row gap-5">
-                      <a href="send-a-case.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
+                      <a href="${this.getLocalizedHref("send-a-case.html")}" class="btn-primary inline-flex items-center justify-center px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl rounded-sm">
                           Send a Case
                       </a>
-                      <a href="downloads.html" class="btn-secondary inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-white hover:bg-white hover:text-navy rounded-sm">
+                      <a href="${this.getLocalizedHref("downloads.html")}" class="btn-secondary inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-white hover:bg-white hover:text-navy rounded-sm">
                           Download RX Forms
                       </a>
                   </div>
@@ -713,10 +789,7 @@ const GlobalDentalLab = {
       he: "HE",
     };
 
-    // Get current language from URL or localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const savedLang =
-      urlParams.get("lang") || localStorage.getItem("gdl-lang") || "en";
+    const savedLang = this.getCurrentLanguage();
     if (currentLang) currentLang.textContent = langMap[savedLang] || "EN";
     if (savedLang !== "en") localStorage.setItem("gdl-lang", savedLang);
 
@@ -733,11 +806,10 @@ const GlobalDentalLab = {
 
     // Prevent menu clicks from closing
     langMenu.addEventListener("click", (e) => {
-      const lang = new URL(e.target.href, window.location).searchParams.get(
-        "lang",
-      );
-      if (lang) {
-        localStorage.setItem("gdl-lang", lang);
+      const href = e.target.closest("a")?.getAttribute("href") || "";
+      const match = href.match(/^\/([a-z]{2})(?:\/|$)/);
+      if (match) {
+        localStorage.setItem("gdl-lang", match[1]);
       }
     });
   },
