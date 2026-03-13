@@ -5,6 +5,16 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/bootstrap.php';
 
 $languages = cms_languages();
+$existingCategoryIds = [];
+$existingProductIds = [];
+
+foreach (cms_db()->query('SELECT id, slug FROM product_categories')->fetchAll() as $row) {
+    $existingCategoryIds[$row['slug']] = (int) $row['id'];
+}
+
+foreach (cms_db()->query('SELECT id, slug FROM products')->fetchAll() as $row) {
+    $existingProductIds[$row['slug']] = (int) $row['id'];
+}
 
 $categories = [
     [
@@ -397,6 +407,7 @@ foreach ($categories as $category) {
     foreach ($languages as $language) {
         $translations[$language['code']] = $category['translations'][$language['code']] ?? ($category['translations']['en'] ?? []);
     }
+    $category['id'] = $existingCategoryIds[$category['slug']] ?? null;
     $categoryIds[$category['slug']] = cms_upsert_product_category($category, $translations);
 }
 
@@ -406,6 +417,7 @@ foreach ($products as $product) {
         $translations[$language['code']] = $product['translations'][$language['code']] ?? ($product['translations']['en'] ?? []);
     }
     cms_upsert_product([
+        'id' => $existingProductIds[$product['slug']] ?? null,
         'category_id' => $categoryIds[$product['category_slug']] ?? null,
         'slug' => $product['slug'],
         'page_slug' => $product['page_slug'],
