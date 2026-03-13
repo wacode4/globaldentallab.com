@@ -734,7 +734,7 @@ $modules = [
     'contact-cta' => [
         'definition' => ['contact-cta', 'cta_banner', 'default', 'published', '{}'],
         'translations' => [
-            'en' => ['Next Step', 'Ready To Start The Relationship Properly?', 'Use the right intake route from the beginning: digital submission for platform-connected cases, downloads for RX forms, or direct contact for onboarding and shipping.', '', json_encode([
+            'en' => ['Ready To Start The Relationship Properly?', 'Next Step', 'Use the right intake route from the beginning: digital submission for platform-connected cases, downloads for RX forms, or direct contact for onboarding and shipping.', '', json_encode([
                 'buttons' => [
                     ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Open Downloads', 'href' => '/en/downloads', 'style' => 'secondary'],
