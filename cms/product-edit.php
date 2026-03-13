@@ -14,11 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $translations = [];
     foreach ($languages as $language) {
         $code = $language['code'];
+        $sections = cms_catalog_section_rows_from_input($_POST['translation'][$code]['sections'] ?? []);
         $translations[$code] = [
             'name' => $_POST['translation'][$code]['name'] ?? '',
             'nav_label' => $_POST['translation'][$code]['nav_label'] ?? '',
             'short_description' => $_POST['translation'][$code]['short_description'] ?? '',
-            'content_html' => $_POST['translation'][$code]['content_html'] ?? '',
+            'content_json' => cms_catalog_section_rows_to_json($sections),
             'seo_title' => $_POST['translation'][$code]['seo_title'] ?? '',
             'seo_description' => $_POST['translation'][$code]['seo_description'] ?? '',
         ];
@@ -122,6 +123,7 @@ $product = $product ?? [
 
             <?php foreach ($languages as $language): ?>
                 <?php $translation = $product['translations'][$language['code']] ?? []; ?>
+                <?php $sections = cms_catalog_section_rows_from_json($translation['content_json'] ?? '', 2); ?>
                 <div class="rounded-3xl bg-white p-8 shadow">
                     <h2 class="mb-6 text-2xl font-bold"><?= strtoupper(cms_escape($language['code'])) ?> Translation</h2>
                     <div class="grid gap-6 md:grid-cols-2">
@@ -138,8 +140,29 @@ $product = $product ?? [
                             <textarea class="min-h-28 w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][short_description]"><?= cms_escape($translation['short_description'] ?? '') ?></textarea>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="mb-2 block text-sm font-medium">Content HTML</label>
-                            <textarea class="min-h-40 w-full rounded-xl border border-slate-300 px-4 py-3 font-mono text-sm" name="translation[<?= cms_escape($language['code']) ?>][content_html]"><?= cms_escape($translation['content_html'] ?? '') ?></textarea>
+                            <label class="mb-2 block text-sm font-medium">Structured Content</label>
+                            <p class="mb-4 text-sm text-slate-500">Use plain text section fields below. The product page content block will be generated automatically.</p>
+                            <div class="grid gap-6">
+                                <?php foreach ($sections as $index => $section): ?>
+                                    <div class="rounded-2xl border border-slate-200 p-5">
+                                        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Section <?= $index + 1 ?></p>
+                                        <div class="grid gap-4">
+                                            <div>
+                                                <label class="mb-2 block text-sm font-medium">Title</label>
+                                                <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][sections][<?= $index ?>][title]" value="<?= cms_escape($section['title'] ?? '') ?>">
+                                            </div>
+                                            <div>
+                                                <label class="mb-2 block text-sm font-medium">Intro Text</label>
+                                                <textarea class="min-h-24 w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][sections][<?= $index ?>][body]"><?= cms_escape($section['body'] ?? '') ?></textarea>
+                                            </div>
+                                            <div>
+                                                <label class="mb-2 block text-sm font-medium">Bullet Items</label>
+                                                <textarea class="min-h-28 w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][sections][<?= $index ?>][items_text]" placeholder="One bullet per line"><?= cms_escape($section['items_text'] ?? '') ?></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium">SEO Title</label>

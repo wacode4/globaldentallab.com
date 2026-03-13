@@ -524,11 +524,23 @@ function cms_find_public_page(string $languageCode, string $slug): ?array
         $modules[] = $module;
     }
 
+    $heroModule = null;
+    $visibleModules = [];
+    foreach ($modules as $module) {
+        if ($heroModule === null && ($module['module_type'] ?? '') === 'hero') {
+            $heroModule = $module;
+            continue;
+        }
+        $visibleModules[] = $module;
+    }
+
     $page['language'] = $language;
     $page['languages'] = cms_languages();
     $page['navigation'] = cms_public_navigation($language['code']);
     $page['footer_navigation'] = cms_public_menu('footer', $language['code']);
-    $page['modules'] = $modules;
+    $page['hero_module'] = $heroModule;
+    $page['hero_config'] = cms_public_page_hero_config($page, $heroModule);
+    $page['modules'] = $visibleModules;
     $page['slug'] = $normalizedSlug;
 
     return $page;
@@ -609,13 +621,14 @@ function cms_upsert_product_category(array $categoryData, array $translations): 
 
         $translationStmt = $pdo->prepare(
             'INSERT INTO product_category_translations
-                (category_id, language_id, name, nav_label, summary, content_html, seo_title, seo_description)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (category_id, language_id, name, nav_label, summary, content_html, content_json, seo_title, seo_description)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE
                 name = VALUES(name),
                 nav_label = VALUES(nav_label),
                 summary = VALUES(summary),
                 content_html = VALUES(content_html),
+                content_json = VALUES(content_json),
                 seo_title = VALUES(seo_title),
                 seo_description = VALUES(seo_description)'
         );
@@ -623,13 +636,18 @@ function cms_upsert_product_category(array $categoryData, array $translations): 
         foreach (cms_languages() as $language) {
             $code = $language['code'];
             $row = $translations[$code] ?? [];
+            $contentJson = cms_trimmed($row['content_json'] ?? '');
+            $contentHtml = $contentJson !== ''
+                ? cms_catalog_section_rows_to_html(cms_catalog_section_rows_from_json($contentJson, 0))
+                : (string) ($row['content_html'] ?? '');
             $translationStmt->execute([
                 $categoryId,
                 (int) $language['id'],
                 cms_trimmed($row['name'] ?? ''),
                 cms_trimmed($row['nav_label'] ?? ''),
                 cms_trimmed($row['summary'] ?? ''),
-                (string) ($row['content_html'] ?? ''),
+                $contentHtml,
+                $contentJson ?: null,
                 cms_trimmed($row['seo_title'] ?? ''),
                 cms_trimmed($row['seo_description'] ?? ''),
             ]);
@@ -720,13 +738,14 @@ function cms_upsert_product(array $productData, array $translations): int
 
         $translationStmt = $pdo->prepare(
             'INSERT INTO product_translations
-                (product_id, language_id, name, nav_label, short_description, content_html, seo_title, seo_description)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (product_id, language_id, name, nav_label, short_description, content_html, content_json, seo_title, seo_description)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE
                 name = VALUES(name),
                 nav_label = VALUES(nav_label),
                 short_description = VALUES(short_description),
                 content_html = VALUES(content_html),
+                content_json = VALUES(content_json),
                 seo_title = VALUES(seo_title),
                 seo_description = VALUES(seo_description)'
         );
@@ -734,13 +753,18 @@ function cms_upsert_product(array $productData, array $translations): int
         foreach (cms_languages() as $language) {
             $code = $language['code'];
             $row = $translations[$code] ?? [];
+            $contentJson = cms_trimmed($row['content_json'] ?? '');
+            $contentHtml = $contentJson !== ''
+                ? cms_catalog_section_rows_to_html(cms_catalog_section_rows_from_json($contentJson, 0))
+                : (string) ($row['content_html'] ?? '');
             $translationStmt->execute([
                 $productId,
                 (int) $language['id'],
                 cms_trimmed($row['name'] ?? ''),
                 cms_trimmed($row['nav_label'] ?? ''),
                 cms_trimmed($row['short_description'] ?? ''),
-                (string) ($row['content_html'] ?? ''),
+                $contentHtml,
+                $contentJson ?: null,
                 cms_trimmed($row['seo_title'] ?? ''),
                 cms_trimmed($row['seo_description'] ?? ''),
             ]);
@@ -765,6 +789,7 @@ function cms_public_catalog(string $languageCode): array
                 COALESCE(NULLIF(pct_lang.nav_label, ""), NULLIF(pct_lang.name, ""), pct_default.nav_label, pct_default.name) AS nav_label,
                 COALESCE(NULLIF(pct_lang.summary, ""), pct_default.summary) AS summary,
                 COALESCE(NULLIF(pct_lang.content_html, ""), pct_default.content_html) AS content_html,
+                COALESCE(NULLIF(pct_lang.content_json, ""), pct_default.content_json) AS content_json,
                 COALESCE(NULLIF(pct_lang.seo_title, ""), pct_default.seo_title) AS seo_title,
                 COALESCE(NULLIF(pct_lang.seo_description, ""), pct_default.seo_description) AS seo_description
          FROM product_categories pc
@@ -782,6 +807,7 @@ function cms_public_catalog(string $languageCode): array
                 COALESCE(NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.name, ""), pt_default.nav_label, pt_default.name) AS nav_label,
                 COALESCE(NULLIF(pt_lang.short_description, ""), pt_default.short_description) AS short_description,
                 COALESCE(NULLIF(pt_lang.content_html, ""), pt_default.content_html) AS content_html,
+                COALESCE(NULLIF(pt_lang.content_json, ""), pt_default.content_json) AS content_json,
                 COALESCE(NULLIF(pt_lang.seo_title, ""), pt_default.seo_title) AS seo_title,
                 COALESCE(NULLIF(pt_lang.seo_description, ""), pt_default.seo_description) AS seo_description
          FROM products p

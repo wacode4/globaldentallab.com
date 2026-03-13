@@ -16,6 +16,11 @@ foreach (cms_db()->query('SELECT id, slug FROM products')->fetchAll() as $row) {
     $existingProductIds[$row['slug']] = (int) $row['id'];
 }
 
+function cms_seed_catalog_sections(array $sections): string
+{
+    return cms_catalog_section_rows_to_json($sections);
+}
+
 $categories = [
     [
         'slug' => 'new-cad-veneers',
@@ -37,6 +42,13 @@ $categories = [
 </ul>
 <p>Use this category when veneer planning needs a distinct intake path rather than being buried inside general ceramics.</p>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Where this route fits', 'body' => 'Use this category when veneer planning needs a distinct intake path rather than being buried inside general ceramics.', 'items' => [
+                        'Smile-design cases that need planning before production starts.',
+                        'Digital veneer workflows supported by scans, photos, and preparation guidance.',
+                        'Anterior esthetic cases where communication matters as much as material choice.',
+                    ]],
+                ]),
                 'seo_title' => 'NEW CAD VENEERS',
                 'seo_description' => 'Digital veneer workflow and esthetic planning support.',
             ],
@@ -63,6 +75,14 @@ HTML,
 </ul>
 <p>Use this category when the clinic is still comparing product routes inside ceramics and wants the product options narrowed before submission.</p>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'What this category covers', 'body' => 'Use this category when the clinic is still comparing product routes inside ceramics and wants the product options narrowed before submission.', 'items' => [
+                        'Esthetic zirconia for visible-zone work where translucency matters.',
+                        'Lithium disilicate for smile-zone crowns, veneers, and bonded restorations.',
+                        'Strength-led zirconia for posterior or durability-driven case plans.',
+                        'Conservative indirects such as veneers, inlays, and onlays.',
+                    ]],
+                ]),
                 'seo_title' => 'ALL-CERAMICS',
                 'seo_description' => 'Ceramic workflow category and product family.',
             ],
@@ -87,6 +107,13 @@ HTML,
     <li><strong>Cases crossing restorative and surgical decisions</strong> that need direct lab communication.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Primary use cases', 'body' => '', 'items' => [
+                        'Restorative implant cases needing compatibility review before production.',
+                        'Single-unit to full-arch planning where the submission package must be checked early.',
+                        'Cases crossing restorative and surgical decisions that need direct lab communication.',
+                    ]],
+                ]),
                 'seo_title' => 'Implant Products',
                 'seo_description' => 'Implant restorations and support workflows.',
             ],
@@ -111,6 +138,13 @@ HTML,
     <li><strong>Best paired with digital workflow pages</strong> when clinics need help on file transfer and intake.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'What makes guide cases different', 'body' => '', 'items' => [
+                        'Data quality matters first because guide production depends on accurate scans and planning files.',
+                        'Submission should be planning-led with implant positions and restorative intent aligned.',
+                        'Best paired with digital workflow pages when clinics need help on file transfer and intake.',
+                    ]],
+                ]),
                 'seo_title' => 'Implant Surgical Guide',
                 'seo_description' => 'Digital planning and surgical guide support.',
             ],
@@ -135,6 +169,13 @@ HTML,
     <li><strong>Snap-On Smile requests</strong> sit closer to practical restorative support than premium ceramic planning.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Why this category stays separate', 'body' => '', 'items' => [
+                        'Conventional fixed workflows still need a clear intake route for repeat ordering clinics.',
+                        'RX-form driven cases often move through downloads and shipment-based intake.',
+                        'Snap-On Smile requests sit closer to practical restorative support than premium ceramic planning.',
+                    ]],
+                ]),
                 'seo_title' => 'PFM / Snap-On Smile',
                 'seo_description' => 'PFM and conventional restorative workflows.',
             ],
@@ -159,6 +200,13 @@ HTML,
     <li><strong>Communication-sensitive workflows</strong> where setup review and iteration matter.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Typical submission profile', 'body' => '', 'items' => [
+                        'Digital-first practices using scanner-based records and cloud file transfer.',
+                        'Cases needing guided intake before the first aligner order goes live.',
+                        'Communication-sensitive workflows where setup review and iteration matter.',
+                    ]],
+                ]),
                 'seo_title' => 'Clear Aligners',
                 'seo_description' => 'Clear aligner production and intake support.',
             ],
@@ -183,6 +231,13 @@ HTML,
     <li><strong>Conventional shipments</strong> where forms and physical intake still matter.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Where this category helps', 'body' => '', 'items' => [
+                        'Denture and partial cases that need a dependable removable workflow.',
+                        'Hybrid clinics consolidating fixed and removable cases with one lab partner.',
+                        'Conventional shipments where forms and physical intake still matter.',
+                    ]],
+                ]),
                 'seo_title' => 'Removables Denture',
                 'seo_description' => 'Removable denture and prosthetic workflows.',
             ],
@@ -207,6 +262,13 @@ HTML,
     <li><strong>Pre-submission review</strong> when the appliance choice needs manual confirmation.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Workflow scope', 'body' => '', 'items' => [
+                        'Retainers and appliances that sit outside aligner-only production.',
+                        'Digital or traditional intake depending on the appliance type.',
+                        'Pre-submission review when the appliance choice needs manual confirmation.',
+                    ]],
+                ]),
                 'seo_title' => 'Orthodontics Products',
                 'seo_description' => 'Orthodontic product workflows and support.',
             ],
@@ -231,6 +293,13 @@ HTML,
     <li><strong>Discussion support</strong> when treatment direction is still being decided.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'How to use this section', 'body' => '', 'items' => [
+                        'Reference positioning for clinics comparing similar restorative paths.',
+                        'Planning conversations before the case becomes a fixed production order.',
+                        'Discussion support when treatment direction is still being decided.',
+                    ]],
+                ]),
                 'seo_title' => 'Clinical Cases of Prosthodontics',
                 'seo_description' => 'Clinical case framing for prosthodontic workflows.',
             ],
@@ -262,6 +331,13 @@ $products = [
 <h3>Submission notes</h3>
 <p>Include scans, shade notes, and esthetic direction so translucency expectations are aligned before production.</p>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Best fit', 'body' => 'Include scans, shade notes, and esthetic direction so translucency expectations are aligned before production.', 'items' => [
+                        'Visible-zone zirconia cases where the clinic wants more translucency without leaving the zirconia family.',
+                        'Cases balancing esthetics and practicality rather than going fully glass-ceramic first.',
+                        'Doctors who want a zirconia-led workflow with more natural presentation than a strength-only route.',
+                    ]],
+                ]),
                 'seo_title' => 'Zirconia Ultra',
                 'seo_description' => 'High-translucency zirconia restorations.',
             ],
@@ -290,6 +366,14 @@ HTML,
 <h3>Typical comparison set</h3>
 <p>Doctors usually compare IPS e.max against ultra translucent zirconia and veneers when refining smile-zone treatment plans.</p>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Decision checkpoints', 'body' => '', 'items' => [
+                        'Prep design should support thickness, finish-line clarity, and esthetic control.',
+                        'Shade communication matters more when this route is chosen for visible-zone cases.',
+                        'Material expectation should be esthetic-led rather than strength-led.',
+                    ]],
+                    ['title' => 'Typical comparison set', 'body' => 'Doctors usually compare IPS e.max against ultra translucent zirconia and veneers when refining smile-zone treatment plans.', 'items' => []],
+                ]),
                 'seo_title' => 'IPS e.max Lithium Disilicate',
                 'seo_description' => 'Lithium disilicate ceramic workflows for high-esthetic cases.',
             ],
@@ -316,6 +400,13 @@ HTML,
     <li><strong>Clinics balancing strength and presentation</strong> inside the zirconia family.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Where layered zirconia fits', 'body' => '', 'items' => [
+                        'Cases needing zirconia support plus more nuanced esthetic finishing.',
+                        'Visible restorations where a monolithic route may look too flat.',
+                        'Clinics balancing strength and presentation inside the zirconia family.',
+                    ]],
+                ]),
                 'seo_title' => 'Layered Zirconia',
                 'seo_description' => 'Layered zirconia workflow for esthetic restorative cases.',
             ],
@@ -342,6 +433,13 @@ HTML,
     <li><strong>Load-bearing cases</strong> often default here when resilience is the main concern.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Why clinics choose this route', 'body' => '', 'items' => [
+                        'Posterior durability matters more than layered esthetic detail.',
+                        'Simpler material decisions help repeat posterior workflows move faster.',
+                        'Load-bearing cases often default here when resilience is the main concern.',
+                    ]],
+                ]),
                 'seo_title' => 'Monolithic Zirconia',
                 'seo_description' => 'Monolithic zirconia workflow for durability-driven cases.',
             ],
@@ -368,6 +466,13 @@ HTML,
     <li><strong>Smile-design intent</strong> should be clear before production begins.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'What makes veneer cases different', 'body' => '', 'items' => [
+                        'Preparation discipline and reduction planning influence final esthetics immediately.',
+                        'Photo communication is often as important as impressions or scans.',
+                        'Smile-design intent should be clear before production begins.',
+                    ]],
+                ]),
                 'seo_title' => 'Ceramic Veneers',
                 'seo_description' => 'Ceramic veneer workflows for smile-zone restorations.',
             ],
@@ -394,6 +499,13 @@ HTML,
     <li><strong>Doctors comparing restoration extent</strong> before defaulting to crowns.</li>
 </ul>
 HTML,
+                'content_json' => cms_seed_catalog_sections([
+                    ['title' => 'Where these restorations fit', 'body' => '', 'items' => [
+                        'Conservative preparations where full coverage is not the preferred first move.',
+                        'Bonded indirect workflows that preserve more natural structure.',
+                        'Doctors comparing restoration extent before defaulting to crowns.',
+                    ]],
+                ]),
                 'seo_title' => 'Inlays & Onlays',
                 'seo_description' => 'Partial-coverage ceramic restorations and conservative workflows.',
             ],

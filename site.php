@@ -50,6 +50,11 @@ if (!$page) {
     exit;
 }
 
+if (in_array((string) ($page['slug'] ?? ''), ['home', 'downloads', 'materials'], true)) {
+    echo cms_render_view('pages/public', ['page' => $page], 'site');
+    exit;
+}
+
 if ($legacyHtml = cms_render_legacy_public_page((string) ($page['slug'] ?? ''), (string) ($page['language']['code'] ?? ''))) {
     echo $legacyHtml;
     exit;

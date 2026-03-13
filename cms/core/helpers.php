@@ -187,6 +187,148 @@ function cms_localized_href(?string $href, string $languageCode): string
     return '/' . $languageCode . $href;
 }
 
+function cms_catalog_section_rows_from_json(?string $value, int $minimumRows = 2): array
+{
+    $decoded = cms_decode_json($value, []);
+    $sections = is_array($decoded['sections'] ?? null) ? $decoded['sections'] : [];
+    $rows = [];
+
+    foreach ($sections as $section) {
+        if (!is_array($section)) {
+            continue;
+        }
+
+        $items = [];
+        foreach (($section['items'] ?? []) as $item) {
+            $item = cms_trimmed(is_array($item) ? ($item['text'] ?? '') : (string) $item);
+            if ($item !== '') {
+                $items[] = $item;
+            }
+        }
+
+        $rows[] = [
+            'title' => cms_trimmed($section['title'] ?? ''),
+            'body' => cms_trimmed($section['body'] ?? ''),
+            'items_text' => implode("\n", $items),
+        ];
+    }
+
+    while (count($rows) < $minimumRows) {
+        $rows[] = ['title' => '', 'body' => '', 'items_text' => ''];
+    }
+
+    return $rows;
+}
+
+function cms_catalog_section_rows_from_input(array $rows): array
+{
+    $sections = [];
+
+    foreach ($rows as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+
+        $title = cms_trimmed($row['title'] ?? '');
+        $body = cms_trimmed($row['body'] ?? '');
+        $items = [];
+
+        foreach (preg_split('/\r\n|\r|\n/', (string) ($row['items_text'] ?? '')) as $item) {
+            $item = cms_trimmed($item);
+            if ($item !== '') {
+                $items[] = $item;
+            }
+        }
+
+        if ($title === '' && $body === '' && $items === []) {
+            continue;
+        }
+
+        $sections[] = [
+            'title' => $title,
+            'body' => $body,
+            'items' => $items,
+        ];
+    }
+
+    return $sections;
+}
+
+function cms_catalog_section_rows_to_json(array $sections): string
+{
+    return cms_encode_json(['sections' => array_values($sections)]);
+}
+
+function cms_catalog_section_rows_to_html(array $sections): string
+{
+    $html = '';
+
+    foreach ($sections as $section) {
+        if (!is_array($section)) {
+            continue;
+        }
+
+        $title = cms_trimmed($section['title'] ?? '');
+        $body = cms_trimmed($section['body'] ?? '');
+        $items = array_values(array_filter(
+            array_map(static fn ($item): string => cms_trimmed(is_array($item) ? ($item['text'] ?? '') : (string) $item), $section['items'] ?? []),
+            static fn (string $item): bool => $item !== ''
+        ));
+
+        if ($title === '' && $body === '' && $items === []) {
+            continue;
+        }
+
+        if ($title !== '') {
+            $html .= '<h3>' . cms_escape($title) . '</h3>';
+        }
+
+        if ($body !== '') {
+            $html .= '<p>' . nl2br(cms_escape($body)) . '</p>';
+        }
+
+        if ($items !== []) {
+            $html .= '<ul>';
+            foreach ($items as $item) {
+                $html .= '<li>' . cms_escape($item) . '</li>';
+            }
+            $html .= '</ul>';
+        }
+    }
+
+    return $html;
+}
+
+function cms_default_hero_image(string $slug): string
+{
+    return match ($slug) {
+        'home' => '/images/hero/slider-2.jpg',
+        'technology' => '/images/hero/technology-hero.jpg',
+        'contact' => '/images/hero/contact-hero.jpg',
+        default => '/images/hero/services-hero.jpg',
+    };
+}
+
+function cms_public_page_hero_config(array $page, ?array $heroModule = null): array
+{
+    $slug = cms_normalize_slug((string) ($page['slug'] ?? ''));
+    $heroContent = is_array($heroModule['content'] ?? null) ? $heroModule['content'] : [];
+    $buttons = is_array($heroContent['buttons'] ?? null) && $heroContent['buttons'] !== []
+        ? $heroContent['buttons']
+        : [['text' => 'CONTACT US', 'href' => cms_localized_href('/contact', $page['language']['code'] ?? 'en'), 'style' => 'primary']];
+
+    return [
+        'heroType' => 'static',
+        'heroImage' => cms_default_hero_image($slug),
+        'heroTitle' => (string) ($heroContent['title_html'] ?? ($heroModule['title'] ?? ($page['page_name'] ?? 'Global Dental Lab'))),
+        'heroSubtitle' => (string) ($heroContent['subtitle_html'] ?? ($heroModule['subtitle'] ?? ($page['seo_description'] ?? ''))),
+        'heroLabel' => (string) ($heroContent['label'] ?? ($heroModule['kicker'] ?? ($page['page_name'] ?? 'Page'))),
+        'heroCTAs' => $buttons,
+        'showTrustBadges' => $slug === 'home',
+        'activePage' => $slug === '' ? 'home' : $slug,
+    ];
+}
+
 function cms_legacy_page_map(): array
 {
     return [
