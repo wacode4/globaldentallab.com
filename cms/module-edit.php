@@ -93,15 +93,111 @@ function cms_module_editor_cards(array $cards, int $minimumRows = 4): array
     return $rows;
 }
 
-function cms_module_editor_rich_text_template(string $moduleKey): ?string
+function cms_module_editor_contact_links(array $items, int $minimumRows = 3): array
 {
-    return match ($moduleKey) {
-        'downloads-files' => 'resource_groups',
-        'downloads-links' => 'link_grid',
-        'materials-brands' => 'logo_grid',
-        'materials-charts' => 'figure_grid',
-        default => null,
-    };
+    $rows = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $rows[] = [
+            'kind' => cms_trimmed($item['kind'] ?? 'phone') ?: 'phone',
+            'label' => cms_trimmed($item['label'] ?? ''),
+            'value' => cms_trimmed($item['value'] ?? ''),
+            'href' => cms_trimmed($item['href'] ?? ''),
+        ];
+    }
+
+    while (count($rows) < $minimumRows) {
+        $rows[] = ['kind' => 'phone', 'label' => '', 'value' => '', 'href' => ''];
+    }
+
+    return $rows;
+}
+
+function cms_module_editor_next_steps(array $items, int $minimumRows = 2): array
+{
+    $rows = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $rows[] = [
+            'eyebrow' => cms_trimmed($item['eyebrow'] ?? ''),
+            'title' => cms_trimmed($item['title'] ?? ''),
+            'text' => cms_trimmed($item['text'] ?? ''),
+            'href' => cms_trimmed($item['href'] ?? ''),
+            'cta' => cms_trimmed($item['cta'] ?? ''),
+            'tone' => cms_trimmed($item['tone'] ?? 'primary') ?: 'primary',
+        ];
+    }
+
+    while (count($rows) < $minimumRows) {
+        $rows[] = ['eyebrow' => '', 'title' => '', 'text' => '', 'href' => '', 'cta' => '', 'tone' => 'primary'];
+    }
+
+    return $rows;
+}
+
+function cms_module_editor_locations(array $items, int $minimumRows = 2): array
+{
+    $rows = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $rows[] = [
+            'kind' => cms_trimmed($item['kind'] ?? 'location') ?: 'location',
+            'title' => cms_trimmed($item['title'] ?? ''),
+            'body_html' => (string) ($item['body_html'] ?? ''),
+        ];
+    }
+
+    while (count($rows) < $minimumRows) {
+        $rows[] = ['kind' => 'location', 'title' => '', 'body_html' => ''];
+    }
+
+    return $rows;
+}
+
+function cms_module_editor_hours(array $items, int $minimumRows = 3): array
+{
+    $rows = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $rows[] = [
+            'label' => cms_trimmed($item['label'] ?? ''),
+            'value' => cms_trimmed($item['value'] ?? ''),
+        ];
+    }
+
+    while (count($rows) < $minimumRows) {
+        $rows[] = ['label' => '', 'value' => ''];
+    }
+
+    return $rows;
+}
+
+function cms_module_editor_service_options(array $items, int $minimumRows = 11): array
+{
+    $rows = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $rows[] = [
+            'label' => cms_trimmed($item['label'] ?? ''),
+            'value' => cms_trimmed($item['value'] ?? ''),
+        ];
+    }
+
+    while (count($rows) < $minimumRows) {
+        $rows[] = ['label' => '', 'value' => ''];
+    }
+
+    return $rows;
 }
 
 function cms_module_editor_decode_text(string $value): string
@@ -484,6 +580,107 @@ function cms_module_editor_content_json(string $moduleType, string $moduleKey, a
                 ];
             }
             return ['content_json' => cms_encode_json(['cards' => $cards]), 'content_html' => (string) ($translationInput['content_html'] ?? '')];
+        case 'contact_panel':
+            $contacts = [];
+            foreach (($translationInput['contacts'] ?? []) as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $label = cms_trimmed($item['label'] ?? '');
+                $value = cms_trimmed($item['value'] ?? '');
+                $href = cms_trimmed($item['href'] ?? '');
+                if ($label === '' && $value === '' && $href === '') {
+                    continue;
+                }
+                $contacts[] = [
+                    'kind' => cms_trimmed($item['kind'] ?? 'phone') ?: 'phone',
+                    'label' => $label,
+                    'value' => $value,
+                    'href' => $href,
+                ];
+            }
+
+            $nextSteps = [];
+            foreach (($translationInput['next_steps'] ?? []) as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $eyebrow = cms_trimmed($item['eyebrow'] ?? '');
+                $title = cms_trimmed($item['title'] ?? '');
+                $text = cms_trimmed($item['text'] ?? '');
+                $href = cms_trimmed($item['href'] ?? '');
+                $cta = cms_trimmed($item['cta'] ?? '');
+                if ($eyebrow === '' && $title === '' && $text === '' && $href === '' && $cta === '') {
+                    continue;
+                }
+                $nextSteps[] = [
+                    'eyebrow' => $eyebrow,
+                    'title' => $title,
+                    'text' => $text,
+                    'href' => $href,
+                    'cta' => $cta,
+                    'tone' => cms_trimmed($item['tone'] ?? 'primary') ?: 'primary',
+                ];
+            }
+
+            $locations = [];
+            foreach (($translationInput['locations'] ?? []) as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $title = cms_trimmed($item['title'] ?? '');
+                $bodyHtml = (string) ($item['body_html'] ?? '');
+                if ($title === '' && trim(strip_tags($bodyHtml)) === '') {
+                    continue;
+                }
+                $locations[] = [
+                    'kind' => cms_trimmed($item['kind'] ?? 'location') ?: 'location',
+                    'title' => $title,
+                    'body_html' => $bodyHtml,
+                ];
+            }
+
+            $hours = [];
+            foreach (($translationInput['hours'] ?? []) as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $label = cms_trimmed($item['label'] ?? '');
+                $value = cms_trimmed($item['value'] ?? '');
+                if ($label === '' && $value === '') {
+                    continue;
+                }
+                $hours[] = ['label' => $label, 'value' => $value];
+            }
+
+            $serviceOptions = [];
+            foreach (($translationInput['service_options'] ?? []) as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $label = cms_trimmed($item['label'] ?? '');
+                $value = cms_trimmed($item['value'] ?? '');
+                if ($label === '' && $value === '') {
+                    continue;
+                }
+                $serviceOptions[] = ['label' => $label, 'value' => $value];
+            }
+
+            return [
+                'content_json' => cms_encode_json([
+                    'aside_title' => cms_trimmed($translationInput['aside_title'] ?? ''),
+                    'aside_intro' => cms_trimmed($translationInput['aside_intro'] ?? ''),
+                    'contacts' => $contacts,
+                    'next_steps' => $nextSteps,
+                    'locations_title' => cms_trimmed($translationInput['locations_title'] ?? ''),
+                    'locations' => $locations,
+                    'hours_title' => cms_trimmed($translationInput['hours_title'] ?? ''),
+                    'hours_note' => cms_trimmed($translationInput['hours_note'] ?? ''),
+                    'hours' => $hours,
+                    'service_options' => $serviceOptions,
+                ]),
+                'content_html' => '',
+            ];
         case 'cta_banner':
             return ['content_json' => cms_encode_json(['buttons' => $buttons]), 'content_html' => (string) ($translationInput['content_html'] ?? '')];
         case 'rich_text':
@@ -550,6 +747,7 @@ $module = $module ?? [
 $moduleType = $module['module_type'];
 $settings = cms_decode_json($module['settings_json'], []);
 $richTextTemplate = $moduleType === 'rich_text' ? cms_module_editor_rich_text_template($module['module_key']) : null;
+$templateMeta = cms_module_editor_template_meta($moduleType, $module['module_key']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -606,6 +804,14 @@ $richTextTemplate = $moduleType === 'rich_text' ? cms_module_editor_rich_text_te
                     </div>
                 </div>
 
+                <div class="mt-6 rounded-2xl <?= $templateMeta['mode'] === 'structured' ? 'bg-emerald-50 text-emerald-800' : 'bg-slate-50 text-slate-700' ?> px-4 py-3 text-sm">
+                    <span class="font-semibold">Template Type:</span>
+                    <?= cms_escape($templateMeta['label']) ?>
+                    <span class="ml-2 text-xs uppercase tracking-[0.22em] <?= $templateMeta['mode'] === 'structured' ? 'text-emerald-600' : 'text-slate-400' ?>">
+                        <?= $templateMeta['mode'] === 'structured' ? 'Structured' : 'Raw' ?>
+                    </span>
+                </div>
+
                 <?php if ($moduleType === 'media_split'): ?>
                     <div class="mt-6 grid gap-6 md:grid-cols-2">
                         <div>
@@ -659,6 +865,14 @@ $richTextTemplate = $moduleType === 'rich_text' ? cms_module_editor_rich_text_te
                 $statsItems = cms_module_editor_stats_items($content['items'] ?? []);
                 $cards = cms_module_editor_cards($content['cards'] ?? []);
                 $richState = $richTextTemplate ? cms_module_editor_rich_text_state($richTextTemplate, $content, (string) ($translation['content_html'] ?? '')) : [];
+                $contactPanelContent = $moduleType === 'contact_panel'
+                    ? array_replace_recursive(cms_contact_panel_default_content($language['code']), $content)
+                    : [];
+                $contactLinks = cms_module_editor_contact_links($contactPanelContent['contacts'] ?? []);
+                $contactNextSteps = cms_module_editor_next_steps($contactPanelContent['next_steps'] ?? []);
+                $contactLocations = cms_module_editor_locations($contactPanelContent['locations'] ?? []);
+                $contactHours = cms_module_editor_hours($contactPanelContent['hours'] ?? []);
+                $serviceOptions = cms_module_editor_service_options($contactPanelContent['service_options'] ?? []);
                 ?>
                 <div class="rounded-3xl bg-white p-8 shadow">
                     <h2 class="mb-6 text-2xl font-bold"><?= strtoupper(cms_escape($language['code'])) ?> Content</h2>
@@ -779,6 +993,112 @@ $richTextTemplate = $moduleType === 'rich_text' ? cms_module_editor_rich_text_te
                                     <?php endforeach; ?>
                                 </div>
                             </div>
+                        <?php elseif ($moduleType === 'contact_panel'): ?>
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">Aside Title</label>
+                                <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][aside_title]" value="<?= cms_escape($contactPanelContent['aside_title'] ?? '') ?>">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Aside Intro</label>
+                                <textarea class="min-h-24 w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][aside_intro]"><?= cms_escape($contactPanelContent['aside_intro'] ?? '') ?></textarea>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Quick Contact Cards</label>
+                                <div class="grid gap-4">
+                                    <?php foreach ($contactLinks as $index => $item): ?>
+                                        <div class="grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-4">
+                                            <select class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][contacts][<?= $index ?>][kind]">
+                                                <?php foreach (['phone', 'whatsapp', 'email'] as $kind): ?>
+                                                    <option value="<?= $kind ?>" <?= $item['kind'] === $kind ? 'selected' : '' ?>><?= ucfirst($kind) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][contacts][<?= $index ?>][label]" placeholder="Label" value="<?= cms_escape($item['label']) ?>">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][contacts][<?= $index ?>][value]" placeholder="Display value" value="<?= cms_escape($item['value']) ?>">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][contacts][<?= $index ?>][href]" placeholder="tel: / mailto: / https://" value="<?= cms_escape($item['href']) ?>">
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Next Step Cards</label>
+                                <div class="grid gap-4">
+                                    <?php foreach ($contactNextSteps as $index => $item): ?>
+                                        <div class="rounded-2xl border border-slate-200 p-5">
+                                            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Card <?= $index + 1 ?></p>
+                                            <div class="grid gap-4 md:grid-cols-2">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][next_steps][<?= $index ?>][eyebrow]" placeholder="Eyebrow" value="<?= cms_escape($item['eyebrow']) ?>">
+                                                <select class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][next_steps][<?= $index ?>][tone]">
+                                                    <?php foreach (['primary', 'secondary'] as $tone): ?>
+                                                        <option value="<?= $tone ?>" <?= $item['tone'] === $tone ? 'selected' : '' ?>><?= ucfirst($tone) ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][next_steps][<?= $index ?>][title]" placeholder="Title" value="<?= cms_escape($item['title']) ?>">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][next_steps][<?= $index ?>][cta]" placeholder="CTA label" value="<?= cms_escape($item['cta']) ?>">
+                                                <textarea class="min-h-24 rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="translation[<?= cms_escape($language['code']) ?>][next_steps][<?= $index ?>][text]" placeholder="Card text"><?= cms_escape($item['text']) ?></textarea>
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="translation[<?= cms_escape($language['code']) ?>][next_steps][<?= $index ?>][href]" placeholder="/en/send-a-case" value="<?= cms_escape($item['href']) ?>">
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">Locations Title</label>
+                                <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][locations_title]" value="<?= cms_escape($contactPanelContent['locations_title'] ?? '') ?>">
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">Business Hours Title</label>
+                                <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][hours_title]" value="<?= cms_escape($contactPanelContent['hours_title'] ?? '') ?>">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Business Hours Note</label>
+                                <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][hours_note]" value="<?= cms_escape($contactPanelContent['hours_note'] ?? '') ?>">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Shipping Location Cards</label>
+                                <div class="grid gap-4">
+                                    <?php foreach ($contactLocations as $index => $item): ?>
+                                        <div class="rounded-2xl border border-slate-200 p-5">
+                                            <div class="grid gap-4 md:grid-cols-2">
+                                                <select class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][locations][<?= $index ?>][kind]">
+                                                    <?php foreach (['location', 'facility'] as $kind): ?>
+                                                        <option value="<?= $kind ?>" <?= $item['kind'] === $kind ? 'selected' : '' ?>><?= ucfirst($kind) ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][locations][<?= $index ?>][title]" placeholder="Location title" value="<?= cms_escape($item['title']) ?>">
+                                                <textarea class="min-h-28 rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" name="translation[<?= cms_escape($language['code']) ?>][locations][<?= $index ?>][body_html]" placeholder="Address HTML"><?= cms_escape($item['body_html']) ?></textarea>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Business Hours Rows</label>
+                                <div class="grid gap-4">
+                                    <?php foreach ($contactHours as $index => $item): ?>
+                                        <div class="grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-2">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][hours][<?= $index ?>][label]" placeholder="Day label" value="<?= cms_escape($item['label']) ?>">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][hours][<?= $index ?>][value]" placeholder="Hours" value="<?= cms_escape($item['value']) ?>">
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Service Options</label>
+                                <div class="grid gap-4">
+                                    <?php foreach ($serviceOptions as $index => $item): ?>
+                                        <div class="grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-2">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][service_options][<?= $index ?>][label]" placeholder="Option label" value="<?= cms_escape($item['label']) ?>">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][service_options][<?= $index ?>][value]" placeholder="option-value" value="<?= cms_escape($item['value']) ?>">
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
                         <?php elseif ($moduleType === 'rich_text' && $richTextTemplate === 'resource_groups'): ?>
                             <div class="md:col-span-2">
                                 <label class="mb-2 block text-sm font-medium">Download Groups</label>
@@ -847,7 +1167,7 @@ $richTextTemplate = $moduleType === 'rich_text' ? cms_module_editor_rich_text_te
                             </div>
                         <?php endif; ?>
 
-                        <?php if (!in_array($moduleType, ['hero', 'media_split', 'feature_list', 'stats_grid', 'card_grid', 'cta_banner', 'rich_text'], true)): ?>
+                        <?php if (!in_array($moduleType, ['hero', 'media_split', 'feature_list', 'stats_grid', 'card_grid', 'contact_panel', 'cta_banner', 'rich_text'], true)): ?>
                             <div class="md:col-span-2">
                                 <label class="mb-2 block text-sm font-medium">Content HTML</label>
                                 <textarea class="min-h-40 w-full rounded-xl border border-slate-300 px-4 py-3 font-mono text-sm" name="translation[<?= cms_escape($language['code']) ?>][content_html]"><?= cms_escape($translation['content_html'] ?? '') ?></textarea>

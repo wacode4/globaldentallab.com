@@ -50,7 +50,7 @@ if (!$page) {
     exit;
 }
 
-if (in_array((string) ($page['slug'] ?? ''), ['home', 'downloads', 'materials'], true)) {
+if (in_array((string) ($page['slug'] ?? ''), ['home', 'downloads', 'materials', 'contact'], true)) {
     echo cms_render_view('pages/public', ['page' => $page], 'site');
     exit;
 }

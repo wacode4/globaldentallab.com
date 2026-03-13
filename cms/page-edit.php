@@ -157,8 +157,9 @@ $page = $page ?? [
                             <select class="rounded-xl border border-slate-300 px-4 py-3" name="assignments[<?= $index ?>][module_id]">
                                 <option value="">Select module</option>
                                 <?php foreach ($availableModules as $module): ?>
+                                    <?php $templateMeta = cms_module_editor_template_meta($module['module_type'], $module['module_key']); ?>
                                     <option value="<?= (int) $module['id'] ?>" <?= (int) $assignment['module_id'] === (int) $module['id'] ? 'selected' : '' ?>>
-                                        <?= cms_escape($module['module_key']) ?> (<?= cms_escape($module['module_type']) ?>)
+                                        <?= cms_escape($module['module_key']) ?> (<?= cms_escape($module['module_type']) ?> / <?= cms_escape($templateMeta['label']) ?>)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -177,7 +178,13 @@ $page = $page ?? [
         </form>
     </div>
     <script>
-        const availableModules = <?= json_encode(array_map(static fn ($module) => ['id' => (int) $module['id'], 'label' => $module['module_key'] . ' (' . $module['module_type'] . ')'], $availableModules), JSON_UNESCAPED_SLASHES) ?>;
+        const availableModules = <?= json_encode(array_map(static function ($module): array {
+            $templateMeta = cms_module_editor_template_meta($module['module_type'], $module['module_key']);
+            return [
+                'id' => (int) $module['id'],
+                'label' => $module['module_key'] . ' (' . $module['module_type'] . ' / ' . $templateMeta['label'] . ')',
+            ];
+        }, $availableModules), JSON_UNESCAPED_SLASHES) ?>;
         let moduleIndex = <?= count($assignments) ?>;
         document.getElementById('add-module-row').addEventListener('click', () => {
             const wrapper = document.createElement('div');

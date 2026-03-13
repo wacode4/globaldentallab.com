@@ -274,6 +274,15 @@ $pages = [
             'Download RX forms, catalogs, preparation guides, and implant references from Global Dental Lab.'
         ),
     ],
+    'send-a-case' => [
+        'definition' => ['send-a-case', 'conversion', 'marketing', 'published', 135, 0],
+        'translations' => cms_seed_page_translations(
+            'Send A Case',
+            'Send A Case',
+            'Send A Case - Digital Submission & Shipping',
+            'Send digital cases to Global Dental Lab through scanner platforms, cloud delivery, or physical shipment.'
+        ),
+    ],
     'materials' => [
         'definition' => ['materials', 'resource', 'marketing', 'published', 140, 0],
         'translations' => cms_seed_page_translations(
@@ -546,9 +555,10 @@ $menuDefinitions = [
             ['page_slug' => 'ceramics', 'sort_order' => 40],
             ['page_slug' => 'materials', 'sort_order' => 50],
             ['page_slug' => 'downloads', 'sort_order' => 60],
-            ['page_slug' => 'certificates', 'sort_order' => 70],
-            ['page_slug' => 'lab-tour', 'sort_order' => 80],
-            ['page_slug' => 'contact', 'sort_order' => 90],
+            ['page_slug' => 'send-a-case', 'sort_order' => 70],
+            ['page_slug' => 'certificates', 'sort_order' => 80],
+            ['page_slug' => 'lab-tour', 'sort_order' => 90],
+            ['page_slug' => 'contact', 'sort_order' => 100],
         ],
     ],
 ];
@@ -654,13 +664,13 @@ $modules = [
     'contact-hero' => [
         'definition' => ['contact-hero', 'hero', 'primary', 'published', '{}'],
         'translations' => [
-            'en' => ['Contact Route', 'Dynamic Contact Page', 'A contact and intake page rendered from modules so the same layout can be reused across languages.', '', json_encode([
-                'label' => 'Reusable Contact Template',
-                'title_html' => 'Contact The Lab<br>On The New Route',
-                'subtitle_html' => 'This page demonstrates how a single template can support language-aware URLs, editable content, and server-side inquiry handling.',
+            'en' => ['Contact & Case Intake', 'Contact The Lab Or Start Intake', 'Use the inquiry form for onboarding and support, or go straight to digital submission and downloads.', '', json_encode([
+                'label' => 'Contact & Intake',
+                'title_html' => 'Contact The Lab<br>Or Start Intake',
+                'subtitle_html' => 'Use the inquiry form for onboarding and support, or go straight to digital submission and downloads.',
                 'buttons' => [
-                    ['text' => 'Send Inquiry', 'href' => '#contact-form', 'style' => 'primary'],
-                    ['text' => 'Back Home', 'href' => '/en/', 'style' => 'secondary'],
+                    ['text' => 'SEND A CASE', 'href' => '/en/send-a-case', 'style' => 'white'],
+                    ['text' => 'DOWNLOAD FORMS', 'href' => '/en/downloads', 'style' => 'primary'],
                 ],
             ], JSON_UNESCAPED_SLASHES)],
         ],
@@ -668,16 +678,66 @@ $modules = [
     'contact-panel' => [
         'definition' => ['contact-panel', 'contact_panel', 'default', 'published', '{}'],
         'translations' => [
-            'en' => ['Inquiry And Intake', 'Server-Side Form', 'Messages submitted here write directly into the MySQL-backed CMS instead of depending on Cloudflare functions.', '', '{}'],
+            'en' => ['Inquiry & Case Intake Form', '', 'Use this form for new account questions, case planning support, turnaround discussions, or anything that does not fit one of the direct submission routes below.', '', cms_encode_json([
+                'aside_title' => 'Fastest Ways To Reach The Lab',
+                'aside_intro' => 'Use this page as the intake hub for first-contact questions, submission support, shipping coordination, and onboarding help.',
+                'contacts' => [
+                    ['kind' => 'phone', 'label' => 'Phone', 'value' => '+852 9142 4923', 'href' => 'tel:+85291424923'],
+                    ['kind' => 'whatsapp', 'label' => 'WhatsApp', 'value' => '+852 9142 4923', 'href' => 'https://wa.me/85291424923'],
+                    ['kind' => 'email', 'label' => 'Email', 'value' => 'info@globaldentallab.com', 'href' => 'mailto:info@globaldentallab.com'],
+                ],
+                'next_steps' => [
+                    ['eyebrow' => 'Best For', 'title' => 'Digital Case Submission', 'text' => 'Platform connections, scanner workflows, and cloud delivery routes.', 'href' => '/en/send-a-case', 'cta' => 'Send A Case', 'tone' => 'primary'],
+                    ['eyebrow' => 'Best For', 'title' => 'RX Forms & Guides', 'text' => 'Preparation guides, PFM forms, denture forms, and product catalogs.', 'href' => '/en/downloads', 'cta' => 'Open Downloads', 'tone' => 'secondary'],
+                ],
+                'locations_title' => 'Shipping Addresses',
+                'locations' => [
+                    ['kind' => 'location', 'title' => 'Hong Kong Office', 'body_html' => '1/F Tung Chung 41 Ma Wan New Village<br>Lantau Island, Hong Kong'],
+                    ['kind' => 'facility', 'title' => 'Shenzhen Production Facility', 'body_html' => '4/F, Building 1 HeTai Industrial Area<br>Shenzhen, China'],
+                ],
+                'hours_title' => 'Business Hours',
+                'hours_note' => 'Times shown in Hong Kong Time (HKT)',
+                'hours' => [
+                    ['label' => 'Monday - Friday', 'value' => '9:00 AM - 6:00 PM'],
+                    ['label' => 'Saturday', 'value' => '9:00 AM - 1:00 PM'],
+                    ['label' => 'Sunday', 'value' => 'Closed'],
+                ],
+                'service_options' => [
+                    ['value' => '', 'label' => 'Select a service'],
+                    ['value' => 'cad-veneers', 'label' => 'CAD Veneers'],
+                    ['value' => 'ceramics', 'label' => 'All Ceramics'],
+                    ['value' => 'implants', 'label' => 'Implant Products'],
+                    ['value' => 'surgical-guides', 'label' => 'Implant Surgical Guides'],
+                    ['value' => 'pfm', 'label' => 'PFM & Snap-On Smile'],
+                    ['value' => 'aligners', 'label' => 'Clear Aligners'],
+                    ['value' => 'removable', 'label' => 'Removables'],
+                    ['value' => 'orthodontics', 'label' => 'Orthodontics'],
+                    ['value' => 'shipping', 'label' => 'Shipping / New Account Setup'],
+                    ['value' => 'other', 'label' => 'Other'],
+                ],
+            ])],
+        ],
+    ],
+    'contact-faq' => [
+        'definition' => ['contact-faq', 'feature_list', 'default', 'published', cms_encode_json(['columns' => 2, 'section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['Before You Send The First Case', 'Common Questions', '', '', cms_encode_json([
+                'items' => [
+                    ['title' => 'Can you accept digital impressions?', 'text' => 'Yes. The current workflow supports major platforms including TRIOS, Medit, iTero, Carestream, Dentsply Sirona, Shining3D, and cloud-delivered files.'],
+                    ['title' => 'Can I still ship physical impressions?', 'text' => 'Yes. Traditional case intake remains part of the operating model. Use the shipping addresses above and pair the shipment with the correct RX form.'],
+                    ['title' => 'Where do I get RX forms?', 'text' => 'Use the downloads page for catalogs, preparation guides, denture RX forms, and PFM forms.'],
+                    ['title' => 'What if my scanner platform is not listed?', 'text' => 'Use the contact form, phone, or WhatsApp and the intake team will route you to the correct submission method.'],
+                ],
+            ])],
         ],
     ],
     'contact-cta' => [
         'definition' => ['contact-cta', 'cta_banner', 'default', 'published', '{}'],
         'translations' => [
-            'en' => ['Editing Workflow', 'Everything Here Is CMS-Managed', 'After sign-in, page records, module records, and route composition are all editable from the content backend.', '', json_encode([
+            'en' => ['Next Step', 'Ready To Start The Relationship Properly?', 'Use the right intake route from the beginning: digital submission for platform-connected cases, downloads for RX forms, or direct contact for onboarding and shipping.', '', json_encode([
                 'buttons' => [
-                    ['text' => 'Edit Contact Page', 'href' => '/cms/pages.php', 'style' => 'primary'],
-                    ['text' => 'View Inquiries', 'href' => '/cms/inquiries.php', 'style' => 'secondary'],
+                    ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
+                    ['text' => 'Open Downloads', 'href' => '/en/downloads', 'style' => 'secondary'],
                 ],
             ], JSON_UNESCAPED_SLASHES)],
         ],
@@ -1033,7 +1093,7 @@ $modules = [
                 'title_html' => 'Downloads &amp;<br>Case Forms',
                 'subtitle_html' => 'Catalogs, RX forms, preparation guides, and manufacturer references for faster case intake.',
                 'buttons' => [
-                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Contact Us', 'href' => '/en/contact', 'style' => 'secondary'],
                 ],
             ])],
@@ -1046,7 +1106,7 @@ $modules = [
                 'image' => '/images/content/digital-workflow.jpg',
                 'image_alt' => 'Digital intake and planning workflow',
                 'buttons' => [
-                    ['text' => 'Go To Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Go To Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Need Help Choosing?', 'href' => '/en/contact', 'style' => 'secondary'],
                 ],
             ])],
@@ -1123,8 +1183,151 @@ HTML, '{}'],
         'translations' => [
             'en' => ['Use The Right File Before Intake', 'Download The Form, Then Submit The Case', 'Pick the matching RX form, prep the scans or shipment, and move straight into intake with fewer clarification loops.', '', cms_encode_json([
                 'buttons' => [
-                    ['text' => 'Go To Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Go To Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Need Help Choosing?', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'send-a-case-hero' => [
+        'definition' => ['send-a-case-hero', 'hero', 'primary', 'published', '{}'],
+        'translations' => [
+            'en' => ['Send A Case', 'Case Intake', 'Connect by scanner platform, cloud delivery, or conventional shipping workflow.', '', cms_encode_json([
+                'label' => 'Case Intake',
+                'title_html' => 'Send A Case<br>Without Friction',
+                'subtitle_html' => 'Connect by scanner platform, cloud delivery, or conventional shipping workflow.',
+                'buttons' => [
+                    ['text' => 'Download RX Forms', 'href' => '/en/downloads', 'style' => 'primary'],
+                    ['text' => 'Contact Intake', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'send-a-case-workflow' => [
+        'definition' => ['send-a-case-workflow', 'feature_list', 'default', 'published', cms_encode_json(['columns' => 4, 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['Connect Your Scanner Or Send Files Directly', 'Digital Case Workflow', 'The legacy Bright Dental Lab workflow is preserved here so clinics can submit cases with minimal retraining.', '', cms_encode_json([
+                'items' => [
+                    [
+                        'eyebrow' => 'Platforms',
+                        'title' => 'Supported Scanners',
+                        'text' => 'Major scanner ecosystems can be routed directly into the lab workflow.',
+                        'bullets' => ['TRIOS / 3Shape Communicate', 'Medit', 'iTero', 'Carestream', 'Dentsply Sirona', 'Shining3D'],
+                    ],
+                    [
+                        'eyebrow' => 'Fallback',
+                        'title' => 'Cloud Delivery',
+                        'text' => 'If direct scanner routing is not available, file delivery can still move through common transfer tools.',
+                        'bullets' => ['Dropbox', 'OneDrive', 'WeTransfer', 'Direct email delivery'],
+                    ],
+                    [
+                        'eyebrow' => 'Support',
+                        'title' => 'Intake Follow-Up',
+                        'text' => 'Use support channels when a case needs help before submission is finalized.',
+                        'bullets' => ['WhatsApp follow-up', 'Intake email support', 'Phone support'],
+                    ],
+                    [
+                        'eyebrow' => 'Outcome',
+                        'title' => 'Less Retraining',
+                        'text' => 'The page preserves familiar submission behavior while fitting the new CMS route model.',
+                        'meta' => 'Fast intake routing',
+                    ],
+                ],
+            ])],
+        ],
+    ],
+    'send-a-case-accounts' => [
+        'definition' => ['send-a-case-accounts', 'rich_text', 'default', 'published', cms_encode_json(['section_class' => 'bg-slate-50 py-20'])],
+        'translations' => [
+            'en' => ['Submission Accounts And Platform Steps', 'Current Accounts', 'Use the matching account block below, then follow the platform-specific submission path.', <<<'HTML'
+<div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] not-prose">
+    <div class="rounded-3xl bg-navy p-8 text-white shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-[0.24em] text-white/60">Current Accounts</p>
+        <div class="mt-6 space-y-4 text-sm">
+            <div class="rounded-2xl bg-white/5 p-4">
+                <p class="font-semibold text-white">Medit / TRIOS / iTero / 3Shape / Carestream</p>
+                <p class="mt-1 text-white/75">dentallabcn@gmail.com</p>
+            </div>
+            <div class="rounded-2xl bg-white/5 p-4">
+                <p class="font-semibold text-white">Dentsply Sirona</p>
+                <p class="mt-1 text-white/75">BDL-2025</p>
+            </div>
+            <div class="rounded-2xl bg-white/5 p-4">
+                <p class="font-semibold text-white">Shining3D</p>
+                <p class="mt-1 text-white/75">+86-138-2352-9264</p>
+            </div>
+            <div class="rounded-2xl bg-white/5 p-4">
+                <p class="font-semibold text-white">Dropbox / OneDrive / WeTransfer</p>
+                <p class="mt-1 text-white/75">Dropbox: info@dental-lab-china.com</p>
+                <p class="text-white/75">OneDrive: brightdentallab@outlook.com</p>
+                <p class="text-white/75">WeTransfer / email: bright-digital@dental-lab-china.com</p>
+            </div>
+        </div>
+    </div>
+    <div class="space-y-6">
+        <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-2xl font-bold text-navy">TRIOS / 3Shape Communicate</h3>
+            <ol class="mt-4 list-inside list-decimal space-y-3 text-sm leading-7 text-slate-600">
+                <li>Visit portal.3shapecommunicate.com and log in.</li>
+                <li>Open Connections and choose Add Connection.</li>
+                <li>Search for dentallabcn@gmail.com with Show me Labs enabled.</li>
+                <li>Select Bright Dental Laboratory and request connection.</li>
+                <li>After approval, refresh scanner lab connections and submit normally.</li>
+            </ol>
+        </div>
+        <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-2xl font-bold text-navy">Dentsply Sirona / CEREC Connect</h3>
+            <ol class="mt-4 list-inside list-decimal space-y-3 text-sm leading-7 text-slate-600">
+                <li>Log in via customer.connectcasecentre.com.</li>
+                <li>Open My Favourite Contractors and search recipients.</li>
+                <li>Select country China and use zip code 518103.</li>
+                <li>Add Bright Dental Lab from the search results.</li>
+                <li>After scanning, choose Connect and submit the impression to the lab.</li>
+            </ol>
+        </div>
+        <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-2xl font-bold text-navy">Carestream Connect</h3>
+            <ol class="mt-4 list-inside list-decimal space-y-3 text-sm leading-7 text-slate-600">
+                <li>Log into CS Connect.</li>
+                <li>Open Partners and choose Invite a partner.</li>
+                <li>Enter dentallabcn@gmail.com and send the invitation.</li>
+                <li>Once accepted, select Global Dental Lab during case submission.</li>
+            </ol>
+        </div>
+        <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-2xl font-bold text-navy">If Your Platform Is Not Listed</h3>
+            <p class="mt-4 text-sm leading-7 text-slate-600">Contact the intake team and we will map the correct delivery route for your scanner, transfer portal, or cloud storage workflow.</p>
+            <div class="mt-5 space-y-3 text-sm">
+                <a href="mailto:info@globaldentallab.com" class="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 font-semibold text-navy transition hover:bg-slate-100"><span>Email intake support</span><span class="text-primary">info@globaldentallab.com</span></a>
+                <a href="https://wa.me/85291424923" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 font-semibold text-navy transition hover:bg-slate-100"><span>WhatsApp case support</span><span class="text-primary">Open chat</span></a>
+                <a href="tel:+85291424923" class="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 font-semibold text-navy transition hover:bg-slate-100"><span>Call the intake desk</span><span class="text-primary">+852 9142 4923</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+HTML, '{}'],
+        ],
+    ],
+    'send-a-case-shipping' => [
+        'definition' => ['send-a-case-shipping', 'media_split', 'default', 'published', cms_encode_json(['image_position' => 'left', 'section_class' => 'bg-white py-20'])],
+        'translations' => [
+            'en' => ['Ship Traditional Impressions Or Models', 'Physical Case Shipping', 'You can still send conventional cases. Download the correct RX form, pack impressions or models securely, and notify the lab with the shipment tracking number.', '<div class="space-y-4"><div class="rounded-2xl bg-slate-50 p-6"><p class="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Hong Kong</p><p class="mt-2 font-semibold text-navy">Global Dental Lab</p><p class="mt-2 text-sm leading-7 text-slate-600">1/F Tung Chung 41 Ma Wan New Village<br>Lantau Island, Hong Kong</p></div><div class="rounded-2xl bg-slate-50 p-6"><p class="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Shenzhen Production</p><p class="mt-2 font-semibold text-navy">Global Dental Lab Production Facility</p><p class="mt-2 text-sm leading-7 text-slate-600">4/F, Building 1 HeTai Industrial Area<br>Shenzhen, China</p></div></div>', cms_encode_json([
+                'image' => '/images/source-lab-tour/lab-tour-07.jpg',
+                'image_alt' => 'Facility shipping and intake support context',
+                'buttons' => [
+                    ['text' => 'Download RX Forms', 'href' => '/en/downloads', 'style' => 'primary'],
+                    ['text' => 'Ask About Shipping', 'href' => '/en/contact', 'style' => 'secondary'],
+                ],
+            ])],
+        ],
+    ],
+    'send-a-case-cta' => [
+        'definition' => ['send-a-case-cta', 'cta_banner', 'default', 'published', '{}'],
+        'translations' => [
+            'en' => ['Need Help Mapping Your Submission Route?', 'Still Not Sure Which Workflow To Use?', 'Use the contact route when you need help matching the right scanner path, cloud delivery option, or shipping workflow before the case is sent.', '', cms_encode_json([
+                'buttons' => [
+                    ['text' => 'Contact Intake', 'href' => '/en/contact', 'style' => 'primary'],
+                    ['text' => 'Open Downloads', 'href' => '/en/downloads', 'style' => 'secondary'],
                 ],
             ])],
         ],
@@ -1138,7 +1341,7 @@ HTML, '{}'],
                 'subtitle_html' => 'A practical overview of restorative materials, removable options, and supported compatibility references.',
                 'buttons' => [
                     ['text' => 'See Downloads', 'href' => '/en/downloads', 'style' => 'primary'],
-                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'secondary'],
+                    ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'secondary'],
                 ],
             ])],
         ],
@@ -1151,7 +1354,7 @@ HTML, '{}'],
                 'image_alt' => 'Compatibility reference chart for materials',
                 'buttons' => [
                     ['text' => 'Open Downloads', 'href' => '/en/downloads', 'style' => 'primary'],
-                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'secondary'],
+                    ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'secondary'],
                 ],
             ])],
         ],
@@ -1213,7 +1416,7 @@ HTML, '{}'],
         'translations' => [
             'en' => ['Turn Compatibility Questions Into Cleaner Submissions', 'Next Step', 'If the restorative direction is clear, use this page as a pre-submission check. If not, send the scans, photos, and treatment goal first and let the lab help align the material route.', '', cms_encode_json([
                 'buttons' => [
-                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Ask About Compatibility', 'href' => '/en/contact', 'style' => 'secondary'],
                 ],
             ])],
@@ -1227,7 +1430,7 @@ HTML, '{}'],
                 'title_html' => 'Certificates &amp;<br>Compliance',
                 'subtitle_html' => 'A clear trust page for clinics that need documentation before onboarding or scaling volume.',
                 'buttons' => [
-                    ['text' => 'Send A Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Send A Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Contact Us', 'href' => '/en/contact', 'style' => 'secondary'],
                 ],
             ])],
@@ -1330,7 +1533,7 @@ HTML, '{}'],
         'translations' => [
             'en' => ['You Do Not Need An In-Person Visit To Understand How The Lab Works', 'Remote Trust', 'For many clinics this is the first confidence-building step before sample cases. Pair it with certificates, downloads, and a direct case review conversation so the relationship starts with clearer expectations.', '', cms_encode_json([
                 'buttons' => [
-                    ['text' => 'Send A Trial Case', 'href' => '/send-a-case.html', 'style' => 'primary'],
+                    ['text' => 'Send A Trial Case', 'href' => '/en/send-a-case', 'style' => 'primary'],
                     ['text' => 'Check Documents', 'href' => '/en/certificates', 'style' => 'secondary'],
                 ],
             ])],
@@ -1373,7 +1576,8 @@ $pageModules = [
     ['home', 'home-cta', 'main', 50, 1],
     ['contact', 'contact-hero', 'main', 10, 1],
     ['contact', 'contact-panel', 'main', 20, 1],
-    ['contact', 'contact-cta', 'main', 30, 1],
+    ['contact', 'contact-faq', 'main', 30, 1],
+    ['contact', 'contact-cta', 'main', 40, 1],
     ['about', 'about-hero', 'main', 10, 1],
     ['about', 'about-story', 'main', 20, 1],
     ['about', 'about-values', 'main', 30, 1],
@@ -1402,6 +1606,11 @@ $pageModules = [
     ['downloads', 'downloads-files', 'main', 30, 1],
     ['downloads', 'downloads-links', 'main', 40, 1],
     ['downloads', 'downloads-cta', 'main', 50, 1],
+    ['send-a-case', 'send-a-case-hero', 'main', 10, 1],
+    ['send-a-case', 'send-a-case-workflow', 'main', 20, 1],
+    ['send-a-case', 'send-a-case-accounts', 'main', 30, 1],
+    ['send-a-case', 'send-a-case-shipping', 'main', 40, 1],
+    ['send-a-case', 'send-a-case-cta', 'main', 50, 1],
     ['materials', 'materials-hero', 'main', 10, 1],
     ['materials', 'materials-intro', 'main', 20, 1],
     ['materials', 'materials-brands', 'main', 30, 1],

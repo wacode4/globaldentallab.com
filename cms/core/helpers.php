@@ -187,6 +187,135 @@ function cms_localized_href(?string $href, string $languageCode): string
     return '/' . $languageCode . $href;
 }
 
+function cms_module_editor_rich_text_template(string $moduleKey): ?string
+{
+    return match ($moduleKey) {
+        'downloads-files' => 'resource_groups',
+        'downloads-links' => 'link_grid',
+        'materials-brands' => 'logo_grid',
+        'materials-charts' => 'figure_grid',
+        default => null,
+    };
+}
+
+function cms_module_editor_template_meta(string $moduleType, ?string $moduleKey = null): array
+{
+    $moduleType = cms_trimmed($moduleType);
+    $moduleKey = cms_trimmed((string) $moduleKey);
+
+    $templateKey = match ($moduleType) {
+        'hero' => 'hero',
+        'media_split' => 'media_split',
+        'feature_list' => 'feature_list',
+        'stats_grid' => 'stats_grid',
+        'card_grid' => 'card_grid',
+        'contact_panel' => 'contact_panel',
+        'cta_banner' => 'cta_banner',
+        'rich_text' => cms_module_editor_rich_text_template($moduleKey) ?? 'advanced_html',
+        default => 'advanced_json',
+    };
+
+    $templates = [
+        'hero' => ['label' => 'hero', 'mode' => 'structured'],
+        'media_split' => ['label' => 'media-split', 'mode' => 'structured'],
+        'feature_list' => ['label' => 'feature-list', 'mode' => 'structured'],
+        'stats_grid' => ['label' => 'stats-grid', 'mode' => 'structured'],
+        'card_grid' => ['label' => 'card-grid', 'mode' => 'structured'],
+        'contact_panel' => ['label' => 'contact-panel', 'mode' => 'structured'],
+        'cta_banner' => ['label' => 'cta-banner', 'mode' => 'structured'],
+        'resource_groups' => ['label' => 'resource-groups', 'mode' => 'structured'],
+        'link_grid' => ['label' => 'link-grid', 'mode' => 'structured'],
+        'logo_grid' => ['label' => 'logo-grid', 'mode' => 'structured'],
+        'figure_grid' => ['label' => 'figure-grid', 'mode' => 'structured'],
+        'advanced_html' => ['label' => 'advanced-html', 'mode' => 'raw'],
+        'advanced_json' => ['label' => 'advanced-json', 'mode' => 'raw'],
+    ];
+
+    return ['key' => $templateKey] + ($templates[$templateKey] ?? ['label' => $templateKey, 'mode' => 'raw']);
+}
+
+function cms_contact_panel_default_content(?string $languageCode = null): array
+{
+    $languageCode = strtolower(trim((string) $languageCode)) ?: 'en';
+    $siteSettings = cms_setting_map($languageCode);
+
+    return [
+        'aside_title' => 'Fastest Ways To Reach The Lab',
+        'aside_intro' => 'Use this page as the intake hub for first-contact questions, submission support, shipping coordination, and onboarding help.',
+        'contacts' => [
+            [
+                'kind' => 'phone',
+                'label' => 'Phone',
+                'value' => $siteSettings['site_phone_display'] ?? '',
+                'href' => $siteSettings['site_phone_href'] ?? '',
+            ],
+            [
+                'kind' => 'whatsapp',
+                'label' => 'WhatsApp',
+                'value' => $siteSettings['site_whatsapp_display'] ?? '',
+                'href' => $siteSettings['site_whatsapp_href'] ?? '',
+            ],
+            [
+                'kind' => 'email',
+                'label' => 'Email',
+                'value' => $siteSettings['site_email_display'] ?? '',
+                'href' => $siteSettings['site_email_href'] ?? '',
+            ],
+        ],
+        'next_steps' => [
+            [
+                'eyebrow' => 'Best For',
+                'title' => 'Digital Case Submission',
+                'text' => 'Platform connections, scanner workflows, and cloud delivery routes.',
+                'href' => cms_localized_href('/send-a-case', $languageCode),
+                'cta' => 'Send A Case',
+                'tone' => 'primary',
+            ],
+            [
+                'eyebrow' => 'Best For',
+                'title' => 'RX Forms & Guides',
+                'text' => 'Preparation guides, PFM forms, denture forms, and product catalogs.',
+                'href' => cms_localized_href('/downloads', $languageCode),
+                'cta' => 'Open Downloads',
+                'tone' => 'secondary',
+            ],
+        ],
+        'locations_title' => 'Shipping Addresses',
+        'locations' => [
+            [
+                'kind' => 'location',
+                'title' => 'Hong Kong Office',
+                'body_html' => $siteSettings['site_hk_address_html'] ?? '',
+            ],
+            [
+                'kind' => 'facility',
+                'title' => 'Shenzhen Production Facility',
+                'body_html' => $siteSettings['site_sz_address_html'] ?? '',
+            ],
+        ],
+        'hours_title' => 'Business Hours',
+        'hours_note' => 'Times shown in Hong Kong Time (HKT)',
+        'hours' => [
+            ['label' => 'Monday - Friday', 'value' => '9:00 AM - 6:00 PM'],
+            ['label' => 'Saturday', 'value' => '9:00 AM - 1:00 PM'],
+            ['label' => 'Sunday', 'value' => 'Closed'],
+        ],
+        'service_options' => [
+            ['value' => '', 'label' => 'Select a service'],
+            ['value' => 'cad-veneers', 'label' => 'CAD Veneers'],
+            ['value' => 'ceramics', 'label' => 'All Ceramics'],
+            ['value' => 'implants', 'label' => 'Implant Products'],
+            ['value' => 'surgical-guides', 'label' => 'Implant Surgical Guides'],
+            ['value' => 'pfm', 'label' => 'PFM & Snap-On Smile'],
+            ['value' => 'aligners', 'label' => 'Clear Aligners'],
+            ['value' => 'removable', 'label' => 'Removables'],
+            ['value' => 'orthodontics', 'label' => 'Orthodontics'],
+            ['value' => 'shipping', 'label' => 'Shipping / New Account Setup'],
+            ['value' => 'other', 'label' => 'Other'],
+        ],
+    ];
+}
+
 function cms_catalog_section_rows_from_json(?string $value, int $minimumRows = 2): array
 {
     $decoded = cms_decode_json($value, []);
