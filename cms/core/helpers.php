@@ -272,5 +272,11 @@ function cms_transform_legacy_public_html(string $html, string $languageCode): s
         $html
     );
 
+    $html = (string) preg_replace(
+        '#<script(?![^>]*data-cfasync)(?![^>]*type="application/ld\+json")#',
+        '<script data-cfasync="false"',
+        $html
+    );
+
     return $html;
 }
