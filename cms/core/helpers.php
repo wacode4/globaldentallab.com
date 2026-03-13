@@ -270,8 +270,13 @@ function cms_catalog_section_rows_to_html(array $sections): string
 
         $title = cms_trimmed($section['title'] ?? '');
         $body = cms_trimmed($section['body'] ?? '');
+        $rawItems = $section['items'] ?? [];
+        if ($rawItems === [] && !empty($section['items_text'])) {
+            $rawItems = preg_split('/\r\n|\r|\n/', (string) $section['items_text']);
+        }
+
         $items = array_values(array_filter(
-            array_map(static fn ($item): string => cms_trimmed(is_array($item) ? ($item['text'] ?? '') : (string) $item), $section['items'] ?? []),
+            array_map(static fn ($item): string => cms_trimmed(is_array($item) ? ($item['text'] ?? '') : (string) $item), $rawItems),
             static fn (string $item): bool => $item !== ''
         ));
 
