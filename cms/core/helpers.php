@@ -268,7 +268,7 @@ function cms_transform_legacy_public_html(string $html, string $languageCode): s
 
     $html = (string) preg_replace(
         '#/js/header-hero\.js\?v=[0-9-]+#',
-        '/js/header-hero.js?v=20260313-1',
+        '/js/header-hero.js?v=20260313-2',
         $html
     );
 

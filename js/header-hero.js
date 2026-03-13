@@ -290,14 +290,15 @@ const GlobalDentalLab = {
             <a href="${this.getLocalizedHref("index.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Home</a>
             <div class="border-t border-gray-200 my-2"></div>
             <p class="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Products</p>
-            <a href="${this.getLocalizedHref("services.html#cad-veneers")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">CAD Veneers</a>
-            <a href="${this.getLocalizedHref("services.html#ceramics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">All Ceramics</a>
+            <a href="${this.getLocalizedHref("services.html#cad-veneers")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">NEW CAD VENEERS</a>
+            <a href="${this.getLocalizedHref("services.html#ceramics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">ALL-CERAMICS</a>
             <a href="${this.getLocalizedHref("services.html#implants")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Products</a>
-            <a href="${this.getLocalizedHref("services.html#guides")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Surgical Guides</a>
-            <a href="${this.getLocalizedHref("services.html#pfm")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">PFM & Snap-On Smile</a>
+            <a href="${this.getLocalizedHref("services.html#guides")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Surgical Guide</a>
+            <a href="${this.getLocalizedHref("services.html#pfm")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">PFM / Snap-On Smile</a>
             <a href="${this.getLocalizedHref("services.html#aligners")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clear Aligners</a>
-            <a href="${this.getLocalizedHref("services.html#removable")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removables</a>
-            <a href="${this.getLocalizedHref("services.html#orthodontics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontics</a>
+            <a href="${this.getLocalizedHref("services.html#removable")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removables Denture</a>
+            <a href="${this.getLocalizedHref("services.html#orthodontics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontics Products</a>
+            <a href="${this.getLocalizedHref("services.html")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clinical Cases of Prosthodontics</a>
             <div class="border-t border-gray-200 my-2"></div>
             <a href="${this.getLocalizedHref("materials.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Materials</a>
             <a href="${this.getLocalizedHref("about.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">About</a>
@@ -350,14 +351,15 @@ const GlobalDentalLab = {
         href: "services.html",
         hasDropdown: true,
         dropdownItems: [
-          { label: "CAD Veneers", href: "services.html#cad-veneers" },
-          { label: "All Ceramics", href: "services.html#ceramics" },
+          { label: "NEW CAD VENEERS", href: "services.html#cad-veneers" },
+          { label: "ALL-CERAMICS", href: "services.html#ceramics" },
           { label: "Implant Products", href: "services.html#implants" },
-          { label: "Surgical Guides", href: "services.html#guides" },
-          { label: "PFM & Snap-On Smile", href: "services.html#pfm" },
+          { label: "Implant Surgical Guide", href: "services.html#guides" },
+          { label: "PFM / Snap-On Smile", href: "services.html#pfm" },
           { label: "Clear Aligners", href: "services.html#aligners" },
-          { label: "Removables", href: "services.html#removable" },
-          { label: "Orthodontics", href: "services.html#orthodontics" },
+          { label: "Removables Denture", href: "services.html#removable" },
+          { label: "Orthodontics Products", href: "services.html#orthodontics" },
+          { label: "Clinical Cases of Prosthodontics", href: "services.html" },
         ],
       },
       {
