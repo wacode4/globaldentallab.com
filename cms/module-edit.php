@@ -93,6 +93,280 @@ function cms_module_editor_cards(array $cards, int $minimumRows = 4): array
     return $rows;
 }
 
+function cms_module_editor_rich_text_template(string $moduleKey): ?string
+{
+    return match ($moduleKey) {
+        'downloads-files' => 'resource_groups',
+        'downloads-links' => 'link_grid',
+        'materials-brands' => 'logo_grid',
+        'materials-charts' => 'figure_grid',
+        default => null,
+    };
+}
+
+function cms_module_editor_decode_text(string $value): string
+{
+    return trim(html_entity_decode(strip_tags($value), ENT_QUOTES, 'UTF-8'));
+}
+
+function cms_module_editor_parse_resource_groups(string $html): array
+{
+    $groups = [];
+    if (preg_match_all('#<div class="rounded-3xl[^"]*">\s*<p[^>]*>(.*?)</p>\s*<h3[^>]*>(.*?)</h3>\s*<div class="mt-6 space-y-4">(.*?)</div>\s*</div>#s', $html, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+            $items = [];
+            if (preg_match_all('#<a href="([^"]+)"[^>]*>\s*<span>(.*?)</span>\s*<span>(.*?)</span>\s*</a>#s', $match[3], $itemMatches, PREG_SET_ORDER)) {
+                foreach ($itemMatches as $itemMatch) {
+                    $items[] = [
+                        'label' => cms_module_editor_decode_text($itemMatch[2]),
+                        'href' => cms_trimmed($itemMatch[1]),
+                        'cta' => cms_module_editor_decode_text($itemMatch[3]),
+                    ];
+                }
+            }
+
+            $groups[] = [
+                'eyebrow' => cms_module_editor_decode_text($match[1]),
+                'title' => cms_module_editor_decode_text($match[2]),
+                'items' => $items,
+            ];
+        }
+    }
+
+    while (count($groups) < 2) {
+        $groups[] = ['eyebrow' => '', 'title' => '', 'items' => []];
+    }
+
+    foreach ($groups as &$group) {
+        while (count($group['items']) < 4) {
+            $group['items'][] = ['label' => '', 'href' => '', 'cta' => 'Download'];
+        }
+    }
+    unset($group);
+
+    return $groups;
+}
+
+function cms_module_editor_parse_link_grid(string $html): array
+{
+    $items = [];
+    if (preg_match_all('#<a href="([^"]+)"[^>]*>(.*?)</a>#s', $html, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+            $items[] = [
+                'label' => cms_module_editor_decode_text($match[2]),
+                'href' => cms_trimmed($match[1]),
+            ];
+        }
+    }
+
+    while (count($items) < 8) {
+        $items[] = ['label' => '', 'href' => ''];
+    }
+
+    return $items;
+}
+
+function cms_module_editor_parse_logo_grid(string $html): array
+{
+    $items = [];
+    if (preg_match_all('#<div class="rounded-3xl[^"]*">\s*<img src="([^"]+)" alt="([^"]*)"[^>]*>\s*<h3[^>]*>(.*?)</h3>\s*<p[^>]*>(.*?)</p>\s*</div>#s', $html, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+            $items[] = [
+                'image' => cms_trimmed($match[1]),
+                'alt' => cms_trimmed($match[2]),
+                'title' => cms_module_editor_decode_text($match[3]),
+                'text' => cms_module_editor_decode_text($match[4]),
+            ];
+        }
+    }
+
+    while (count($items) < 10) {
+        $items[] = ['image' => '', 'alt' => '', 'title' => '', 'text' => ''];
+    }
+
+    return $items;
+}
+
+function cms_module_editor_parse_figure_grid(string $html): array
+{
+    $items = [];
+    if (preg_match_all('#<figure[^>]*>\s*<img src="([^"]+)" alt="([^"]*)"[^>]*>\s*<figcaption[^>]*>(.*?)</figcaption>\s*</figure>#s', $html, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+            $items[] = [
+                'image' => cms_trimmed($match[1]),
+                'alt' => cms_trimmed($match[2]),
+                'caption' => cms_module_editor_decode_text($match[3]),
+            ];
+        }
+    }
+
+    while (count($items) < 3) {
+        $items[] = ['image' => '', 'alt' => '', 'caption' => ''];
+    }
+
+    return $items;
+}
+
+function cms_module_editor_rich_text_state(string $template, array $content, string $contentHtml): array
+{
+    if ($template === 'resource_groups') {
+        return ['groups' => is_array($content['groups'] ?? null) ? $content['groups'] : cms_module_editor_parse_resource_groups($contentHtml)];
+    }
+
+    if ($template === 'link_grid') {
+        return ['links' => is_array($content['links'] ?? null) ? $content['links'] : cms_module_editor_parse_link_grid($contentHtml)];
+    }
+
+    if ($template === 'logo_grid') {
+        return ['logos' => is_array($content['logos'] ?? null) ? $content['logos'] : cms_module_editor_parse_logo_grid($contentHtml)];
+    }
+
+    if ($template === 'figure_grid') {
+        return ['figures' => is_array($content['figures'] ?? null) ? $content['figures'] : cms_module_editor_parse_figure_grid($contentHtml)];
+    }
+
+    return [];
+}
+
+function cms_module_editor_generate_rich_text(array $translationInput, string $template): array
+{
+    if ($template === 'resource_groups') {
+        $groups = [];
+        foreach (($translationInput['groups'] ?? []) as $groupInput) {
+            if (!is_array($groupInput)) {
+                continue;
+            }
+            $items = [];
+            foreach (($groupInput['items'] ?? []) as $itemInput) {
+                if (!is_array($itemInput)) {
+                    continue;
+                }
+                $label = cms_trimmed($itemInput['label'] ?? '');
+                $href = cms_trimmed($itemInput['href'] ?? '');
+                $cta = cms_trimmed($itemInput['cta'] ?? 'Download') ?: 'Download';
+                if ($label === '' && $href === '') {
+                    continue;
+                }
+                $items[] = ['label' => $label, 'href' => $href, 'cta' => $cta];
+            }
+
+            $eyebrow = cms_trimmed($groupInput['eyebrow'] ?? '');
+            $title = cms_trimmed($groupInput['title'] ?? '');
+            if ($eyebrow === '' && $title === '' && $items === []) {
+                continue;
+            }
+
+            $groups[] = ['eyebrow' => $eyebrow, 'title' => $title, 'items' => $items];
+        }
+
+        $html = '<div class="grid gap-8 lg:grid-cols-2 not-prose">';
+        foreach ($groups as $group) {
+            $html .= '<div class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">';
+            if ($group['eyebrow'] !== '') {
+                $html .= '<p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">' . cms_escape($group['eyebrow']) . '</p>';
+            }
+            if ($group['title'] !== '') {
+                $html .= '<h3 class="mt-3 text-2xl font-bold text-navy">' . cms_escape($group['title']) . '</h3>';
+            }
+            $html .= '<div class="mt-6 space-y-4">';
+            foreach ($group['items'] as $item) {
+                $html .= '<a href="' . cms_escape($item['href']) . '" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">';
+                $html .= '<span>' . cms_escape($item['label']) . '</span><span>' . cms_escape($item['cta']) . '</span></a>';
+            }
+            $html .= '</div></div>';
+        }
+        $html .= '</div>';
+
+        return ['content_json' => cms_encode_json(['groups' => $groups]), 'content_html' => $html];
+    }
+
+    if ($template === 'link_grid') {
+        $links = [];
+        foreach (($translationInput['links'] ?? []) as $linkInput) {
+            if (!is_array($linkInput)) {
+                continue;
+            }
+            $label = cms_trimmed($linkInput['label'] ?? '');
+            $href = cms_trimmed($linkInput['href'] ?? '');
+            if ($label === '' && $href === '') {
+                continue;
+            }
+            $links[] = ['label' => $label, 'href' => $href];
+        }
+
+        $html = '<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 not-prose">';
+        foreach ($links as $link) {
+            $html .= '<a href="' . cms_escape($link['href']) . '" target="_blank" rel="noopener noreferrer" class="rounded-2xl border border-slate-200 px-5 py-4 text-sm font-semibold text-navy transition hover:border-primary hover:text-primary">' . cms_escape($link['label']) . '</a>';
+        }
+        $html .= '</div>';
+
+        return ['content_json' => cms_encode_json(['links' => $links]), 'content_html' => $html];
+    }
+
+    if ($template === 'logo_grid') {
+        $logos = [];
+        foreach (($translationInput['logos'] ?? []) as $logoInput) {
+            if (!is_array($logoInput)) {
+                continue;
+            }
+            $image = cms_trimmed($logoInput['image'] ?? '');
+            $alt = cms_trimmed($logoInput['alt'] ?? '');
+            $title = cms_trimmed($logoInput['title'] ?? '');
+            $text = cms_trimmed($logoInput['text'] ?? '');
+            if ($image === '' && $title === '' && $text === '') {
+                continue;
+            }
+            $logos[] = ['image' => $image, 'alt' => $alt, 'title' => $title, 'text' => $text];
+        }
+
+        $html = '<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5 not-prose">';
+        foreach ($logos as $logo) {
+            $html .= '<div class="rounded-3xl border border-slate-200 bg-white p-6 text-center">';
+            if ($logo['image'] !== '') {
+                $html .= '<img src="' . cms_escape($logo['image']) . '" alt="' . cms_escape($logo['alt']) . '" class="mx-auto h-12 object-contain">';
+            }
+            $html .= '<h3 class="mt-4 text-lg font-bold text-navy">' . cms_escape($logo['title']) . '</h3>';
+            $html .= '<p class="mt-2 text-sm text-slate-600">' . cms_escape($logo['text']) . '</p></div>';
+        }
+        $html .= '</div>';
+
+        return ['content_json' => cms_encode_json(['logos' => $logos]), 'content_html' => $html];
+    }
+
+    if ($template === 'figure_grid') {
+        $figures = [];
+        foreach (($translationInput['figures'] ?? []) as $figureInput) {
+            if (!is_array($figureInput)) {
+                continue;
+            }
+            $image = cms_trimmed($figureInput['image'] ?? '');
+            $alt = cms_trimmed($figureInput['alt'] ?? '');
+            $caption = cms_trimmed($figureInput['caption'] ?? '');
+            if ($image === '' && $caption === '') {
+                continue;
+            }
+            $figures[] = ['image' => $image, 'alt' => $alt, 'caption' => $caption];
+        }
+
+        $html = '<div class="grid gap-6 md:grid-cols-3 not-prose">';
+        foreach ($figures as $figure) {
+            $html .= '<figure class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">';
+            if ($figure['image'] !== '') {
+                $html .= '<img src="' . cms_escape($figure['image']) . '" alt="' . cms_escape($figure['alt']) . '" class="h-80 w-full object-cover object-top">';
+            }
+            $html .= '<figcaption class="p-4 text-sm text-slate-600">' . cms_escape($figure['caption']) . '</figcaption></figure>';
+        }
+        $html .= '</div>';
+
+        return ['content_json' => cms_encode_json(['figures' => $figures]), 'content_html' => $html];
+    }
+
+    return [
+        'content_json' => cms_trimmed($translationInput['content_json'] ?? '{}'),
+        'content_html' => (string) ($translationInput['content_html'] ?? ''),
+    ];
+}
+
 function cms_module_editor_settings_json(string $moduleType, array $settingsInput, string $fallbackJson): string
 {
     $settings = cms_decode_json($fallbackJson, []);
@@ -102,16 +376,13 @@ function cms_module_editor_settings_json(string $moduleType, array $settingsInpu
             $settings['image_position'] = ($settingsInput['image_position'] ?? 'right') === 'left' ? 'left' : 'right';
             $settings['section_class'] = cms_trimmed($settingsInput['section_class'] ?? ($settings['section_class'] ?? 'bg-white py-20'));
             break;
-
         case 'feature_list':
             $settings['columns'] = max(1, min(4, (int) ($settingsInput['columns'] ?? ($settings['columns'] ?? 3))));
             $settings['section_class'] = cms_trimmed($settingsInput['section_class'] ?? ($settings['section_class'] ?? 'bg-slate-50 py-20'));
             break;
-
         case 'rich_text':
             $settings['section_class'] = cms_trimmed($settingsInput['section_class'] ?? ($settings['section_class'] ?? 'py-20 bg-white'));
             break;
-
         default:
             break;
     }
@@ -119,7 +390,7 @@ function cms_module_editor_settings_json(string $moduleType, array $settingsInpu
     return cms_encode_json($settings);
 }
 
-function cms_module_editor_content_json(string $moduleType, array $translationInput, string $fallbackJson): string
+function cms_module_editor_content_json(string $moduleType, string $moduleKey, array $translationInput, string $fallbackJson): array
 {
     $fallback = cms_decode_json($fallbackJson, []);
 
@@ -133,7 +404,6 @@ function cms_module_editor_content_json(string $moduleType, array $translationIn
         if ($text === '' && $href === '') {
             continue;
         }
-
         $buttons[] = [
             'text' => $text,
             'href' => $href,
@@ -143,42 +413,34 @@ function cms_module_editor_content_json(string $moduleType, array $translationIn
 
     switch ($moduleType) {
         case 'hero':
-            return cms_encode_json([
-                'label' => cms_trimmed($translationInput['label'] ?? ''),
-                'title_html' => (string) ($translationInput['title_html'] ?? ''),
-                'subtitle_html' => (string) ($translationInput['subtitle_html'] ?? ''),
-                'buttons' => $buttons,
-            ]);
-
+            return [
+                'content_json' => cms_encode_json([
+                    'label' => cms_trimmed($translationInput['label'] ?? ''),
+                    'title_html' => (string) ($translationInput['title_html'] ?? ''),
+                    'subtitle_html' => (string) ($translationInput['subtitle_html'] ?? ''),
+                    'buttons' => $buttons,
+                ]),
+                'content_html' => (string) ($translationInput['content_html'] ?? ''),
+            ];
         case 'media_split':
-            return cms_encode_json([
-                'image' => cms_trimmed($translationInput['image'] ?? ''),
-                'image_alt' => cms_trimmed($translationInput['image_alt'] ?? ''),
-                'buttons' => $buttons,
-            ]);
-
+            return [
+                'content_json' => cms_encode_json([
+                    'image' => cms_trimmed($translationInput['image'] ?? ''),
+                    'image_alt' => cms_trimmed($translationInput['image_alt'] ?? ''),
+                    'buttons' => $buttons,
+                ]),
+                'content_html' => (string) ($translationInput['content_html'] ?? ''),
+            ];
         case 'feature_list':
             $items = [];
             foreach (($translationInput['items'] ?? []) as $item) {
                 if (!is_array($item)) {
                     continue;
                 }
-
-                $bullets = array_values(array_filter(array_map(
-                    'cms_trimmed',
-                    preg_split('/\r\n|\r|\n/', (string) ($item['bullets_text'] ?? ''))
-                )));
-
-                if (
-                    cms_trimmed($item['eyebrow'] ?? '') === '' &&
-                    cms_trimmed($item['title'] ?? '') === '' &&
-                    cms_trimmed($item['text'] ?? '') === '' &&
-                    $bullets === [] &&
-                    cms_trimmed($item['meta'] ?? '') === ''
-                ) {
+                $bullets = array_values(array_filter(array_map('cms_trimmed', preg_split('/\r\n|\r|\n/', (string) ($item['bullets_text'] ?? '')))));
+                if (cms_trimmed($item['eyebrow'] ?? '') === '' && cms_trimmed($item['title'] ?? '') === '' && cms_trimmed($item['text'] ?? '') === '' && $bullets === [] && cms_trimmed($item['meta'] ?? '') === '') {
                     continue;
                 }
-
                 $items[] = [
                     'eyebrow' => cms_trimmed($item['eyebrow'] ?? ''),
                     'title' => cms_trimmed($item['title'] ?? ''),
@@ -187,20 +449,14 @@ function cms_module_editor_content_json(string $moduleType, array $translationIn
                     'meta' => cms_trimmed($item['meta'] ?? ''),
                 ];
             }
-
-            return cms_encode_json(['items' => $items]);
-
+            return ['content_json' => cms_encode_json(['items' => $items]), 'content_html' => (string) ($translationInput['content_html'] ?? '')];
         case 'stats_grid':
             $items = [];
             foreach (($translationInput['items'] ?? []) as $item) {
                 if (!is_array($item)) {
                     continue;
                 }
-                if (
-                    cms_trimmed($item['value'] ?? '') === '' &&
-                    cms_trimmed($item['label'] ?? '') === '' &&
-                    cms_trimmed($item['description'] ?? '') === ''
-                ) {
+                if (cms_trimmed($item['value'] ?? '') === '' && cms_trimmed($item['label'] ?? '') === '' && cms_trimmed($item['description'] ?? '') === '') {
                     continue;
                 }
                 $items[] = [
@@ -209,22 +465,14 @@ function cms_module_editor_content_json(string $moduleType, array $translationIn
                     'description' => cms_trimmed($item['description'] ?? ''),
                 ];
             }
-
-            return cms_encode_json(['items' => $items]);
-
+            return ['content_json' => cms_encode_json(['items' => $items]), 'content_html' => (string) ($translationInput['content_html'] ?? '')];
         case 'card_grid':
             $cards = [];
             foreach (($translationInput['cards'] ?? []) as $card) {
                 if (!is_array($card)) {
                     continue;
                 }
-                if (
-                    cms_trimmed($card['title'] ?? '') === '' &&
-                    cms_trimmed($card['text'] ?? '') === '' &&
-                    cms_trimmed($card['image'] ?? '') === '' &&
-                    cms_trimmed($card['href'] ?? '') === '' &&
-                    cms_trimmed($card['cta'] ?? '') === ''
-                ) {
+                if (cms_trimmed($card['title'] ?? '') === '' && cms_trimmed($card['text'] ?? '') === '' && cms_trimmed($card['image'] ?? '') === '' && cms_trimmed($card['href'] ?? '') === '' && cms_trimmed($card['cta'] ?? '') === '') {
                     continue;
                 }
                 $cards[] = [
@@ -235,14 +483,23 @@ function cms_module_editor_content_json(string $moduleType, array $translationIn
                     'cta' => cms_trimmed($card['cta'] ?? ''),
                 ];
             }
-
-            return cms_encode_json(['cards' => $cards]);
-
+            return ['content_json' => cms_encode_json(['cards' => $cards]), 'content_html' => (string) ($translationInput['content_html'] ?? '')];
         case 'cta_banner':
-            return cms_encode_json(['buttons' => $buttons]);
-
+            return ['content_json' => cms_encode_json(['buttons' => $buttons]), 'content_html' => (string) ($translationInput['content_html'] ?? '')];
+        case 'rich_text':
+            $template = cms_module_editor_rich_text_template($moduleKey);
+            if ($template !== null) {
+                return cms_module_editor_generate_rich_text($translationInput, $template);
+            }
+            return [
+                'content_json' => cms_trimmed($translationInput['content_json'] ?? $fallbackJson) ?: cms_encode_json($fallback),
+                'content_html' => (string) ($translationInput['content_html'] ?? ''),
+            ];
         default:
-            return cms_trimmed($translationInput['content_json'] ?? $fallbackJson) ?: cms_encode_json($fallback);
+            return [
+                'content_json' => cms_trimmed($translationInput['content_json'] ?? $fallbackJson) ?: cms_encode_json($fallback),
+                'content_html' => (string) ($translationInput['content_html'] ?? ''),
+            ];
     }
 }
 
@@ -252,22 +509,24 @@ $module = cms_admin_module($moduleId);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $moduleType = $_POST['module_type'] ?? 'rich_text';
+    $moduleKey = $_POST['module_key'] ?? '';
     $translations = [];
     foreach ($languages as $language) {
         $code = $language['code'];
         $translationInput = $_POST['translation'][$code] ?? [];
+        $contentPayload = cms_module_editor_content_json($moduleType, $moduleKey, $translationInput, $translationInput['content_json'] ?? '{}');
         $translations[$code] = [
             'title' => $translationInput['title'] ?? '',
             'kicker' => $translationInput['kicker'] ?? '',
             'subtitle' => $translationInput['subtitle'] ?? '',
-            'content_html' => $translationInput['content_html'] ?? '',
-            'content_json' => cms_module_editor_content_json($moduleType, $translationInput, $translationInput['content_json'] ?? '{}'),
+            'content_html' => $contentPayload['content_html'],
+            'content_json' => $contentPayload['content_json'],
         ];
     }
 
     $savedId = cms_upsert_module([
         'id' => $_POST['id'] ?? null,
-        'module_key' => $_POST['module_key'] ?? '',
+        'module_key' => $moduleKey,
         'module_type' => $moduleType,
         'variant' => $_POST['variant'] ?? 'default',
         'status' => $_POST['status'] ?? 'published',
@@ -290,6 +549,7 @@ $module = $module ?? [
 
 $moduleType = $module['module_type'];
 $settings = cms_decode_json($module['settings_json'], []);
+$richTextTemplate = $moduleType === 'rich_text' ? cms_module_editor_rich_text_template($module['module_key']) : null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -372,9 +632,15 @@ $settings = cms_decode_json($module['settings_json'], []);
                         </div>
                     </div>
                 <?php elseif ($moduleType === 'rich_text'): ?>
-                    <div class="mt-6">
-                        <label class="mb-2 block text-sm font-medium">Section Class</label>
-                        <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="settings[section_class]" value="<?= cms_escape($settings['section_class'] ?? 'py-20 bg-white') ?>">
+                    <div class="mt-6 grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium">Section Class</label>
+                            <input class="w-full rounded-xl border border-slate-300 px-4 py-3" name="settings[section_class]" value="<?= cms_escape($settings['section_class'] ?? 'py-20 bg-white') ?>">
+                        </div>
+                        <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                            <span class="font-semibold text-slate-800">Editor Template:</span>
+                            <?= cms_escape($richTextTemplate ?: 'advanced-html') ?>
+                        </div>
                     </div>
                 <?php else: ?>
                     <div class="mt-6">
@@ -392,6 +658,7 @@ $settings = cms_decode_json($module['settings_json'], []);
                 $featureItems = cms_module_editor_feature_items($content['items'] ?? []);
                 $statsItems = cms_module_editor_stats_items($content['items'] ?? []);
                 $cards = cms_module_editor_cards($content['cards'] ?? []);
+                $richState = $richTextTemplate ? cms_module_editor_rich_text_state($richTextTemplate, $content, (string) ($translation['content_html'] ?? '')) : [];
                 ?>
                 <div class="rounded-3xl bg-white p-8 shadow">
                     <h2 class="mb-6 text-2xl font-bold"><?= strtoupper(cms_escape($language['code'])) ?> Content</h2>
@@ -437,7 +704,7 @@ $settings = cms_decode_json($module['settings_json'], []);
                                 <label class="mb-2 block text-sm font-medium">Body HTML</label>
                                 <textarea class="min-h-40 w-full rounded-xl border border-slate-300 px-4 py-3 font-mono text-sm" name="translation[<?= cms_escape($language['code']) ?>][content_html]"><?= cms_escape($translation['content_html'] ?? '') ?></textarea>
                             </div>
-                        <?php elseif ($moduleType === 'rich_text'): ?>
+                        <?php elseif ($moduleType === 'rich_text' && $richTextTemplate === null): ?>
                             <div class="md:col-span-2">
                                 <label class="mb-2 block text-sm font-medium">Body HTML</label>
                                 <textarea class="min-h-48 w-full rounded-xl border border-slate-300 px-4 py-3 font-mono text-sm" name="translation[<?= cms_escape($language['code']) ?>][content_html]"><?= cms_escape($translation['content_html'] ?? '') ?></textarea>
@@ -508,6 +775,72 @@ $settings = cms_decode_json($module['settings_json'], []);
                                                 <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][cards][<?= $index ?>][href]" placeholder="/en/contact" value="<?= cms_escape($card['href']) ?>">
                                                 <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][cards][<?= $index ?>][cta]" placeholder="CTA text" value="<?= cms_escape($card['cta']) ?>">
                                             </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php elseif ($moduleType === 'rich_text' && $richTextTemplate === 'resource_groups'): ?>
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Download Groups</label>
+                                <div class="grid gap-4">
+                                    <?php foreach (($richState['groups'] ?? []) as $groupIndex => $group): ?>
+                                        <div class="rounded-2xl border border-slate-200 p-5">
+                                            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Group <?= $groupIndex + 1 ?></p>
+                                            <div class="grid gap-4 md:grid-cols-2">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][groups][<?= $groupIndex ?>][eyebrow]" placeholder="Eyebrow" value="<?= cms_escape($group['eyebrow'] ?? '') ?>">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][groups][<?= $groupIndex ?>][title]" placeholder="Group title" value="<?= cms_escape($group['title'] ?? '') ?>">
+                                            </div>
+                                            <div class="mt-4 grid gap-3">
+                                                <?php foreach (($group['items'] ?? []) as $itemIndex => $item): ?>
+                                                    <div class="grid gap-3 md:grid-cols-3">
+                                                        <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][groups][<?= $groupIndex ?>][items][<?= $itemIndex ?>][label]" placeholder="File label" value="<?= cms_escape($item['label'] ?? '') ?>">
+                                                        <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][groups][<?= $groupIndex ?>][items][<?= $itemIndex ?>][href]" placeholder="/downloads/file.pdf" value="<?= cms_escape($item['href'] ?? '') ?>">
+                                                        <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][groups][<?= $groupIndex ?>][items][<?= $itemIndex ?>][cta]" placeholder="Download" value="<?= cms_escape($item['cta'] ?? 'Download') ?>">
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php elseif ($moduleType === 'rich_text' && $richTextTemplate === 'link_grid'): ?>
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Reference Links</label>
+                                <div class="grid gap-3">
+                                    <?php foreach (($richState['links'] ?? []) as $index => $link): ?>
+                                        <div class="grid gap-3 md:grid-cols-2">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][links][<?= $index ?>][label]" placeholder="Link label" value="<?= cms_escape($link['label'] ?? '') ?>">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][links][<?= $index ?>][href]" placeholder="https://example.com" value="<?= cms_escape($link['href'] ?? '') ?>">
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php elseif ($moduleType === 'rich_text' && $richTextTemplate === 'logo_grid'): ?>
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Logo Cards</label>
+                                <div class="grid gap-4">
+                                    <?php foreach (($richState['logos'] ?? []) as $index => $logo): ?>
+                                        <div class="rounded-2xl border border-slate-200 p-5">
+                                            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Logo <?= $index + 1 ?></p>
+                                            <div class="grid gap-4 md:grid-cols-2">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][logos][<?= $index ?>][image]" placeholder="/images/logo.png" value="<?= cms_escape($logo['image'] ?? '') ?>">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][logos][<?= $index ?>][alt]" placeholder="Image alt" value="<?= cms_escape($logo['alt'] ?? '') ?>">
+                                                <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][logos][<?= $index ?>][title]" placeholder="Brand name" value="<?= cms_escape($logo['title'] ?? '') ?>">
+                                                <textarea class="min-h-24 rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][logos][<?= $index ?>][text]" placeholder="Description"><?= cms_escape($logo['text'] ?? '') ?></textarea>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php elseif ($moduleType === 'rich_text' && $richTextTemplate === 'figure_grid'): ?>
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-medium">Image Figures</label>
+                                <div class="grid gap-4">
+                                    <?php foreach (($richState['figures'] ?? []) as $index => $figure): ?>
+                                        <div class="grid gap-4 rounded-2xl border border-slate-200 p-5 md:grid-cols-3">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][figures][<?= $index ?>][image]" placeholder="/images/chart.png" value="<?= cms_escape($figure['image'] ?? '') ?>">
+                                            <input class="rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][figures][<?= $index ?>][alt]" placeholder="Image alt" value="<?= cms_escape($figure['alt'] ?? '') ?>">
+                                            <textarea class="min-h-24 rounded-xl border border-slate-300 px-4 py-3" name="translation[<?= cms_escape($language['code']) ?>][figures][<?= $index ?>][caption]" placeholder="Caption"><?= cms_escape($figure['caption'] ?? '') ?></textarea>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
