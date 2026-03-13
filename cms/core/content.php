@@ -533,3 +533,281 @@ function cms_find_public_page(string $languageCode, string $slug): ?array
 
     return $page;
 }
+
+function cms_admin_product_categories(): array
+{
+    $defaultLanguage = cms_default_language();
+    $stmt = cms_db()->prepare(
+        'SELECT pc.*, pct.name, pct.nav_label,
+                (SELECT COUNT(*) FROM products p WHERE p.category_id = pc.id) AS product_count
+         FROM product_categories pc
+         LEFT JOIN product_category_translations pct ON pct.category_id = pc.id AND pct.language_id = ?
+         ORDER BY pc.sort_order ASC, pc.id ASC'
+    );
+    $stmt->execute([(int) $defaultLanguage['id']]);
+    return $stmt->fetchAll();
+}
+
+function cms_admin_product_category(?int $categoryId): ?array
+{
+    if (!$categoryId) {
+        return null;
+    }
+
+    $stmt = cms_db()->prepare('SELECT * FROM product_categories WHERE id = ? LIMIT 1');
+    $stmt->execute([$categoryId]);
+    $category = $stmt->fetch();
+    if (!$category) {
+        return null;
+    }
+
+    $translationsStmt = cms_db()->prepare(
+        'SELECT pct.*, l.code AS language_code
+         FROM product_category_translations pct
+         INNER JOIN languages l ON l.id = pct.language_id
+         WHERE pct.category_id = ?'
+    );
+    $translationsStmt->execute([$categoryId]);
+
+    $translations = [];
+    foreach ($translationsStmt->fetchAll() as $row) {
+        $translations[$row['language_code']] = $row;
+    }
+
+    $category['translations'] = $translations;
+    return $category;
+}
+
+function cms_upsert_product_category(array $categoryData, array $translations): int
+{
+    $pdo = cms_db();
+    $pdo->beginTransaction();
+
+    try {
+        $categoryId = !empty($categoryData['id']) ? (int) $categoryData['id'] : null;
+        $slug = cms_normalize_slug($categoryData['slug'] ?? '');
+        $pageSlug = cms_normalize_slug($categoryData['page_slug'] ?? '');
+        $status = cms_trimmed($categoryData['status'] ?? 'draft');
+        $sortOrder = (int) ($categoryData['sort_order'] ?? 100);
+        $imagePath = cms_trimmed($categoryData['image_path'] ?? '');
+
+        if ($categoryId) {
+            $stmt = $pdo->prepare(
+                'UPDATE product_categories
+                 SET slug = ?, page_slug = ?, status = ?, sort_order = ?, image_path = ?, updated_at = CURRENT_TIMESTAMP
+                 WHERE id = ?'
+            );
+            $stmt->execute([$slug, $pageSlug ?: null, $status, $sortOrder, $imagePath ?: null, $categoryId]);
+        } else {
+            $stmt = $pdo->prepare(
+                'INSERT INTO product_categories (slug, page_slug, status, sort_order, image_path)
+                 VALUES (?, ?, ?, ?, ?)'
+            );
+            $stmt->execute([$slug, $pageSlug ?: null, $status, $sortOrder, $imagePath ?: null]);
+            $categoryId = (int) $pdo->lastInsertId();
+        }
+
+        $translationStmt = $pdo->prepare(
+            'INSERT INTO product_category_translations
+                (category_id, language_id, name, nav_label, summary, content_html, seo_title, seo_description)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE
+                name = VALUES(name),
+                nav_label = VALUES(nav_label),
+                summary = VALUES(summary),
+                content_html = VALUES(content_html),
+                seo_title = VALUES(seo_title),
+                seo_description = VALUES(seo_description)'
+        );
+
+        foreach (cms_languages() as $language) {
+            $code = $language['code'];
+            $row = $translations[$code] ?? [];
+            $translationStmt->execute([
+                $categoryId,
+                (int) $language['id'],
+                cms_trimmed($row['name'] ?? ''),
+                cms_trimmed($row['nav_label'] ?? ''),
+                cms_trimmed($row['summary'] ?? ''),
+                (string) ($row['content_html'] ?? ''),
+                cms_trimmed($row['seo_title'] ?? ''),
+                cms_trimmed($row['seo_description'] ?? ''),
+            ]);
+        }
+
+        $pdo->commit();
+        return $categoryId;
+    } catch (Throwable $error) {
+        $pdo->rollBack();
+        throw $error;
+    }
+}
+
+function cms_admin_products(): array
+{
+    $defaultLanguage = cms_default_language();
+    $stmt = cms_db()->prepare(
+        'SELECT p.*, pt.name, pt.nav_label, pct.name AS category_name
+         FROM products p
+         LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.language_id = ?
+         LEFT JOIN product_category_translations pct ON pct.category_id = p.category_id AND pct.language_id = ?
+         ORDER BY p.sort_order ASC, p.id ASC'
+    );
+    $stmt->execute([(int) $defaultLanguage['id'], (int) $defaultLanguage['id']]);
+    return $stmt->fetchAll();
+}
+
+function cms_admin_product(?int $productId): ?array
+{
+    if (!$productId) {
+        return null;
+    }
+
+    $stmt = cms_db()->prepare('SELECT * FROM products WHERE id = ? LIMIT 1');
+    $stmt->execute([$productId]);
+    $product = $stmt->fetch();
+    if (!$product) {
+        return null;
+    }
+
+    $translationsStmt = cms_db()->prepare(
+        'SELECT pt.*, l.code AS language_code
+         FROM product_translations pt
+         INNER JOIN languages l ON l.id = pt.language_id
+         WHERE pt.product_id = ?'
+    );
+    $translationsStmt->execute([$productId]);
+
+    $translations = [];
+    foreach ($translationsStmt->fetchAll() as $row) {
+        $translations[$row['language_code']] = $row;
+    }
+
+    $product['translations'] = $translations;
+    return $product;
+}
+
+function cms_upsert_product(array $productData, array $translations): int
+{
+    $pdo = cms_db();
+    $pdo->beginTransaction();
+
+    try {
+        $productId = !empty($productData['id']) ? (int) $productData['id'] : null;
+        $categoryId = !empty($productData['category_id']) ? (int) $productData['category_id'] : null;
+        $slug = cms_normalize_slug($productData['slug'] ?? '');
+        $pageSlug = cms_normalize_slug($productData['page_slug'] ?? '');
+        $status = cms_trimmed($productData['status'] ?? 'draft');
+        $sortOrder = (int) ($productData['sort_order'] ?? 100);
+        $imagePath = cms_trimmed($productData['image_path'] ?? '');
+        $badge = cms_trimmed($productData['badge'] ?? '');
+
+        if ($productId) {
+            $stmt = $pdo->prepare(
+                'UPDATE products
+                 SET category_id = ?, slug = ?, page_slug = ?, status = ?, sort_order = ?, image_path = ?, badge = ?, updated_at = CURRENT_TIMESTAMP
+                 WHERE id = ?'
+            );
+            $stmt->execute([$categoryId, $slug, $pageSlug ?: null, $status, $sortOrder, $imagePath ?: null, $badge ?: null, $productId]);
+        } else {
+            $stmt = $pdo->prepare(
+                'INSERT INTO products (category_id, slug, page_slug, status, sort_order, image_path, badge)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+            );
+            $stmt->execute([$categoryId, $slug, $pageSlug ?: null, $status, $sortOrder, $imagePath ?: null, $badge ?: null]);
+            $productId = (int) $pdo->lastInsertId();
+        }
+
+        $translationStmt = $pdo->prepare(
+            'INSERT INTO product_translations
+                (product_id, language_id, name, nav_label, short_description, content_html, seo_title, seo_description)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE
+                name = VALUES(name),
+                nav_label = VALUES(nav_label),
+                short_description = VALUES(short_description),
+                content_html = VALUES(content_html),
+                seo_title = VALUES(seo_title),
+                seo_description = VALUES(seo_description)'
+        );
+
+        foreach (cms_languages() as $language) {
+            $code = $language['code'];
+            $row = $translations[$code] ?? [];
+            $translationStmt->execute([
+                $productId,
+                (int) $language['id'],
+                cms_trimmed($row['name'] ?? ''),
+                cms_trimmed($row['nav_label'] ?? ''),
+                cms_trimmed($row['short_description'] ?? ''),
+                (string) ($row['content_html'] ?? ''),
+                cms_trimmed($row['seo_title'] ?? ''),
+                cms_trimmed($row['seo_description'] ?? ''),
+            ]);
+        }
+
+        $pdo->commit();
+        return $productId;
+    } catch (Throwable $error) {
+        $pdo->rollBack();
+        throw $error;
+    }
+}
+
+function cms_public_catalog(string $languageCode): array
+{
+    $language = cms_resolve_language($languageCode);
+    $defaultLanguage = cms_default_language();
+
+    $categoryStmt = cms_db()->prepare(
+        'SELECT pc.*,
+                COALESCE(NULLIF(pct_lang.name, ""), pct_default.name) AS name,
+                COALESCE(NULLIF(pct_lang.nav_label, ""), NULLIF(pct_lang.name, ""), pct_default.nav_label, pct_default.name) AS nav_label,
+                COALESCE(NULLIF(pct_lang.summary, ""), pct_default.summary) AS summary,
+                COALESCE(NULLIF(pct_lang.content_html, ""), pct_default.content_html) AS content_html,
+                COALESCE(NULLIF(pct_lang.seo_title, ""), pct_default.seo_title) AS seo_title,
+                COALESCE(NULLIF(pct_lang.seo_description, ""), pct_default.seo_description) AS seo_description
+         FROM product_categories pc
+         LEFT JOIN product_category_translations pct_lang ON pct_lang.category_id = pc.id AND pct_lang.language_id = ?
+         LEFT JOIN product_category_translations pct_default ON pct_default.category_id = pc.id AND pct_default.language_id = ?
+         WHERE pc.status = "published"
+         ORDER BY pc.sort_order ASC, pc.id ASC'
+    );
+    $categoryStmt->execute([(int) $language['id'], (int) $defaultLanguage['id']]);
+    $categories = $categoryStmt->fetchAll();
+
+    $productStmt = cms_db()->prepare(
+        'SELECT p.*,
+                COALESCE(NULLIF(pt_lang.name, ""), pt_default.name) AS name,
+                COALESCE(NULLIF(pt_lang.nav_label, ""), NULLIF(pt_lang.name, ""), pt_default.nav_label, pt_default.name) AS nav_label,
+                COALESCE(NULLIF(pt_lang.short_description, ""), pt_default.short_description) AS short_description,
+                COALESCE(NULLIF(pt_lang.content_html, ""), pt_default.content_html) AS content_html,
+                COALESCE(NULLIF(pt_lang.seo_title, ""), pt_default.seo_title) AS seo_title,
+                COALESCE(NULLIF(pt_lang.seo_description, ""), pt_default.seo_description) AS seo_description
+         FROM products p
+         LEFT JOIN product_translations pt_lang ON pt_lang.product_id = p.id AND pt_lang.language_id = ?
+         LEFT JOIN product_translations pt_default ON pt_default.product_id = p.id AND pt_default.language_id = ?
+         WHERE p.status = "published"
+         ORDER BY p.sort_order ASC, p.id ASC'
+    );
+    $productStmt->execute([(int) $language['id'], (int) $defaultLanguage['id']]);
+
+    $productsByCategory = [];
+    foreach ($productStmt->fetchAll() as $product) {
+        $product['href'] = $product['page_slug']
+            ? cms_localized_href('/' . $product['page_slug'], $language['code'])
+            : '#';
+        $productsByCategory[(int) ($product['category_id'] ?? 0)][] = $product;
+    }
+
+    $catalog = [];
+    foreach ($categories as $category) {
+        $category['href'] = $category['page_slug']
+            ? cms_localized_href('/' . $category['page_slug'], $language['code'])
+            : '#';
+        $category['products'] = $productsByCategory[(int) $category['id']] ?? [];
+        $catalog[] = $category;
+    }
+
+    return $catalog;
+}

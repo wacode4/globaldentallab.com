@@ -11,6 +11,8 @@ $settingsCount = (int) cms_db()->query('SELECT COUNT(*) FROM cms_settings')->fet
 $pageCount = (int) cms_db()->query('SELECT COUNT(*) FROM pages')->fetchColumn();
 $moduleCount = (int) cms_db()->query('SELECT COUNT(*) FROM modules')->fetchColumn();
 $menuCount = (int) cms_db()->query('SELECT COUNT(*) FROM menus')->fetchColumn();
+$productCategoryCount = (int) cms_db()->query('SELECT COUNT(*) FROM product_categories')->fetchColumn();
+$productCount = (int) cms_db()->query('SELECT COUNT(*) FROM products')->fetchColumn();
 $recentInquiries = cms_db()->query('SELECT id, full_name, email, service, created_at FROM inquiries ORDER BY created_at DESC LIMIT 8')->fetchAll();
 $flash = cms_flash();
 ?>
@@ -33,6 +35,8 @@ $flash = cms_flash();
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/pages.php">Pages</a>
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/modules.php">Modules</a>
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/menus.php">Menus</a>
+                <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/product-categories.php">Product Categories</a>
+                <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/products.php">Products</a>
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/settings.php">Content Settings</a>
                 <a class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50" href="/cms/inquiries.php">Inquiries</a>
                 <a class="rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800" href="/cms/logout.php">Log Out</a>
@@ -43,7 +47,7 @@ $flash = cms_flash();
             <div class="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-700"><?= cms_escape($flash) ?></div>
         <?php endif; ?>
 
-        <div class="mb-10 grid gap-6 md:grid-cols-6">
+        <div class="mb-10 grid gap-6 md:grid-cols-8">
             <div class="rounded-3xl bg-white p-6 shadow">
                 <p class="text-sm text-slate-500">Total Inquiries</p>
                 <p class="mt-3 text-4xl font-bold"><?= $inquiryCount ?></p>
@@ -67,6 +71,14 @@ $flash = cms_flash();
             <div class="rounded-3xl bg-white p-6 shadow">
                 <p class="text-sm text-slate-500">Menus</p>
                 <p class="mt-3 text-4xl font-bold"><?= $menuCount ?></p>
+            </div>
+            <div class="rounded-3xl bg-white p-6 shadow">
+                <p class="text-sm text-slate-500">Product Categories</p>
+                <p class="mt-3 text-4xl font-bold"><?= $productCategoryCount ?></p>
+            </div>
+            <div class="rounded-3xl bg-white p-6 shadow">
+                <p class="text-sm text-slate-500">Products</p>
+                <p class="mt-3 text-4xl font-bold"><?= $productCount ?></p>
             </div>
         </div>
 

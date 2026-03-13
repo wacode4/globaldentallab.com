@@ -329,7 +329,7 @@ $certificatesHref = cms_localized_href('/certificates', $languageCode);
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/js/header-hero.js?v=20260313-1"></script>
+    <script data-cfasync="false" src="/js/header-hero.js?v=20260313-3"></script>
     <script data-cfasync="false" src="/js/cms-runtime.js?v=20260310-1"></script>
 
     <script data-cfasync="false">

@@ -144,3 +144,62 @@ CREATE TABLE IF NOT EXISTS page_modules (
     CONSTRAINT fk_page_modules_module FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE CASCADE,
     KEY idx_page_modules_page_sort (page_id, sort_order)
 );
+
+CREATE TABLE IF NOT EXISTS product_categories (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(120) NOT NULL UNIQUE,
+    page_slug VARCHAR(120) NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'draft',
+    sort_order INT NOT NULL DEFAULT 100,
+    image_path VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_product_categories_sort (sort_order, id)
+);
+
+CREATE TABLE IF NOT EXISTS product_category_translations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    category_id INT UNSIGNED NOT NULL,
+    language_id INT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    nav_label VARCHAR(150) NULL,
+    summary TEXT NULL,
+    content_html MEDIUMTEXT NULL,
+    seo_title VARCHAR(255) NULL,
+    seo_description TEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_product_category_language (category_id, language_id),
+    CONSTRAINT fk_product_category_translations_category FOREIGN KEY (category_id) REFERENCES product_categories(id) ON DELETE CASCADE,
+    CONSTRAINT fk_product_category_translations_language FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    category_id INT UNSIGNED NULL,
+    slug VARCHAR(120) NOT NULL UNIQUE,
+    page_slug VARCHAR(120) NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'draft',
+    sort_order INT NOT NULL DEFAULT 100,
+    image_path VARCHAR(255) NULL,
+    badge VARCHAR(120) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES product_categories(id) ON DELETE SET NULL,
+    KEY idx_products_category_sort (category_id, sort_order, id)
+);
+
+CREATE TABLE IF NOT EXISTS product_translations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    product_id INT UNSIGNED NOT NULL,
+    language_id INT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    nav_label VARCHAR(150) NULL,
+    short_description TEXT NULL,
+    content_html MEDIUMTEXT NULL,
+    seo_title VARCHAR(255) NULL,
+    seo_description TEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_product_language (product_id, language_id),
+    CONSTRAINT fk_product_translations_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT fk_product_translations_language FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE CASCADE
+);

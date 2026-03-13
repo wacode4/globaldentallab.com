@@ -23,6 +23,7 @@
  */
 
 const GlobalDentalLab = {
+  catalogCategories: null,
   config: {
     heroType: "slider",
     slides: [
@@ -144,6 +145,72 @@ const GlobalDentalLab = {
     this.initParallax();
     this.initScrollAnimations();
     this.initMagneticButtons();
+    this.loadCatalog();
+  },
+
+  async loadCatalog() {
+    try {
+      const response = await fetch(
+        `/cms/api/catalog.php?lang=${encodeURIComponent(this.getCurrentLanguage())}`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) return;
+
+      const payload = await response.json();
+      if (!payload?.success || !Array.isArray(payload.catalog) || payload.catalog.length === 0) {
+        return;
+      }
+
+      this.catalogCategories = payload.catalog
+        .filter((category) => category?.status !== "draft")
+        .map((category) => ({
+          label: category.nav_label || category.name || "",
+          href: category.href || "#",
+        }))
+        .filter((category) => category.label !== "");
+
+      if (!this.catalogCategories.length) return;
+
+      this.renderHeader();
+      this.initHeaderScroll();
+      this.initMobileMenu();
+      this.initLanguageSwitcher();
+    } catch (error) {
+      console.warn("Catalog API unavailable.", error);
+    }
+  },
+
+  getProductMenuItems() {
+    if (Array.isArray(this.catalogCategories) && this.catalogCategories.length > 0) {
+      return this.catalogCategories;
+    }
+
+    return [
+      { label: "NEW CAD VENEERS", href: "services.html#cad-veneers" },
+      { label: "ALL-CERAMICS", href: "services.html#ceramics" },
+      { label: "Implant Products", href: "services.html#implants" },
+      { label: "Implant Surgical Guide", href: "services.html#guides" },
+      { label: "PFM / Snap-On Smile", href: "services.html#pfm" },
+      { label: "Clear Aligners", href: "services.html#aligners" },
+      { label: "Removables Denture", href: "services.html#removable" },
+      { label: "Orthodontics Products", href: "services.html#orthodontics" },
+      { label: "Clinical Cases of Prosthodontics", href: "services.html" },
+    ];
+  },
+
+  renderMobileProductLinks() {
+    return this.getProductMenuItems()
+      .map(
+        (item) => `
+            <a href="${this.getLocalizedHref(item.href)}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">${item.label}</a>
+          `,
+      )
+      .join("");
   },
 
   initParallax() {
@@ -290,15 +357,7 @@ const GlobalDentalLab = {
             <a href="${this.getLocalizedHref("index.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Home</a>
             <div class="border-t border-gray-200 my-2"></div>
             <p class="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Products</p>
-            <a href="${this.getLocalizedHref("services.html#cad-veneers")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">NEW CAD VENEERS</a>
-            <a href="${this.getLocalizedHref("services.html#ceramics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">ALL-CERAMICS</a>
-            <a href="${this.getLocalizedHref("services.html#implants")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Products</a>
-            <a href="${this.getLocalizedHref("services.html#guides")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Implant Surgical Guide</a>
-            <a href="${this.getLocalizedHref("services.html#pfm")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">PFM / Snap-On Smile</a>
-            <a href="${this.getLocalizedHref("services.html#aligners")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clear Aligners</a>
-            <a href="${this.getLocalizedHref("services.html#removable")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Removables Denture</a>
-            <a href="${this.getLocalizedHref("services.html#orthodontics")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Orthodontics Products</a>
-            <a href="${this.getLocalizedHref("services.html")}" class="block py-2 px-3 text-navy hover:text-primary hover:bg-gray-100 rounded cursor-pointer">Clinical Cases of Prosthodontics</a>
+            ${this.renderMobileProductLinks()}
             <div class="border-t border-gray-200 my-2"></div>
             <a href="${this.getLocalizedHref("materials.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">Materials</a>
             <a href="${this.getLocalizedHref("about.html")}" class="block py-3 px-3 text-navy font-semibold rounded hover:bg-gray-100 cursor-pointer">About</a>
@@ -345,22 +404,13 @@ const GlobalDentalLab = {
   },
 
   renderNavItems() {
+    const productItems = this.getProductMenuItems();
     const navItems = [
       {
         label: "Products",
         href: "services.html",
         hasDropdown: true,
-        dropdownItems: [
-          { label: "NEW CAD VENEERS", href: "services.html#cad-veneers" },
-          { label: "ALL-CERAMICS", href: "services.html#ceramics" },
-          { label: "Implant Products", href: "services.html#implants" },
-          { label: "Implant Surgical Guide", href: "services.html#guides" },
-          { label: "PFM / Snap-On Smile", href: "services.html#pfm" },
-          { label: "Clear Aligners", href: "services.html#aligners" },
-          { label: "Removables Denture", href: "services.html#removable" },
-          { label: "Orthodontics Products", href: "services.html#orthodontics" },
-          { label: "Clinical Cases of Prosthodontics", href: "services.html" },
-        ],
+        dropdownItems: productItems,
       },
       {
         label: "Materials",
