@@ -43,7 +43,7 @@ if ($items === []) {
             </div>
         </div>
     </div>
-    <script>
+    <script data-cfasync="false">
         document.getElementById('contact-form')?.addEventListener('submit', async function (event) {
             event.preventDefault();
             const form = event.currentTarget;

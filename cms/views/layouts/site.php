@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= cms_escape($page['seo_title'] ?: $page['page_name']) ?> | Global Dental Lab</title>
     <meta name="description" content="<?= cms_escape($page['seo_description']) ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <script data-cfasync="false">
         tailwind.config = {
             theme: {
                 extend: {
